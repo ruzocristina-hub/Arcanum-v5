@@ -1,0 +1,7 @@
+{
+  "name": "arcanum",
+  "version": "0.5.0",
+  "description": "Arcanum Oráculo v5",
+  "private": true,
+  "engines": { "node": ">=18.0.0" }
+}
