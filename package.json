@@ -3,5 +3,10 @@
   "version": "0.5.0",
   "description": "Arcanum Oráculo v5",
   "private": true,
-  "engines": { "node": ">=18.0.0" }
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  }
 }
