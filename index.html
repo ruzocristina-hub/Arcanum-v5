@@ -245,6 +245,50 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   #zwrap canvas{width:300px!important;height:300px!important}
 }
 
+
+/* ── MICRÓFONO, NAVEGACIÓN, LECTURA PERSONAL, RITUALES, TIENDA ── */
+.qwrap{position:relative}
+.qwrap .inp{padding-right:62px}
+.mic{position:absolute;right:10px;bottom:14px;width:46px;height:46px;border-radius:50%;border:1px solid #a78bfa;
+  background:#2a1458;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.mic:hover{background:#3b1d7a}
+.mic.on{background:#dc2626;border-color:#fecaca;animation:micPulse 1s infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 #dc262699}50%{box-shadow:0 0 0 12px #dc262600}}
+.navx{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+.navx button{background:#1c0b40;border:1px solid #8b5cf677;color:#efe0ff;border-radius:999px;padding:10px 18px;
+  font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.08em;cursor:pointer}
+.navx button:hover{border-color:#c084fc}
+.navx .prem{border-color:#fde68aaa;color:#fde68a}
+.sub{max-width:520px;text-align:center;color:#e6dcf7;font-size:1.02rem;line-height:1.7;margin:0 auto 22px}
+.pform{max-width:500px;width:100%;display:flex;flex-direction:column;gap:6px}
+.pform .lbl{display:block;color:#e6c98f;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-top:10px}
+.pform input.inp{color-scheme:dark}
+.err{color:#fca5a5;min-height:1.2em;font-size:.95rem}
+.pres{display:none;flex-direction:column;gap:12px;max-width:640px;width:100%;margin-top:26px}
+.bloq{filter:blur(5px);user-select:none;pointer-events:none;opacity:.75}
+.paywall{text-align:center;padding:20px 18px;border:1px solid #fde68a88;border-radius:12px;background:linear-gradient(135deg,#2a1458,#1a0a3a)}
+.paywall p{color:#efe6ff;margin:6px 0 14px;line-height:1.6}
+.pw-t{font-family:'Cinzel',serif;color:#fde68a;letter-spacing:.1em}
+#rlist{max-width:640px;width:100%;display:flex;flex-direction:column;gap:10px}
+.rit{background:#1a0a3a;border:1px solid #8b5cf666;border-radius:11px;padding:4px 16px}
+.rit summary{display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 0;font-size:1.1rem;color:#fff4e0;list-style:none}
+.rit summary::-webkit-details-marker{display:none}
+.rit[open] summary{border-bottom:1px solid #8b5cf644;margin-bottom:8px}
+.ri{font-size:1.5rem;line-height:1}
+.rc{color:#e6dcf7;margin:6px 0;line-height:1.6}.rc b{color:#e6c98f;font-weight:600}
+.rit ol{color:#f7eedf;padding-left:22px;margin:8px 0 14px;line-height:1.7}.rit li{margin-bottom:4px}
+.aviso{max-width:640px;color:#cbb3f7;font-style:italic;text-align:center;margin-top:16px;font-size:.95rem}
+.rec{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:#1c0b40;border:1px solid #fde68a77;
+  border-radius:11px;padding:12px 16px;color:#f7eedf;cursor:pointer;font-family:'EB Garamond',serif;font-size:1.05rem}
+.rec small{color:#e6c98f;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase}
+.rec span:last-child{margin-left:auto;color:#fde68a}
+.shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;max-width:760px;width:100%}
+.prod{background:#1a0a3a;border:1px solid #8b5cf666;border-radius:12px;padding:18px 16px;text-align:center}
+.prod .pi{font-size:2rem}.prod h3{font-family:'Cinzel',serif;color:#fff4e0;font-size:.95rem;letter-spacing:.06em;margin:8px 0 6px}
+.prod p{color:#e6dcf7;font-size:.98rem;line-height:1.55}
+.prox{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:999px;border:1px solid #fde68a88;color:#fde68a;
+  font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
+
 /* La web ya es oscura: los navegadores (Chrome, Samsung Internet) no deben repintarla */
 @media (prefers-color-scheme:dark){:root{color-scheme:dark only}}
 
@@ -333,6 +377,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     Cinco tradiciones místicas aguardan tu consulta. Formula tu pregunta y el ritual tomará forma.
   </p>
   <button class="bp" onclick="goTo('s-metodo')">✦ Abrir el Portal ✦</button>
+  <div class="navx"><button class="prem" onclick="verPersonal()">✦ Lectura personal</button><button onclick="goTo('s-rituales')">Rituales</button><button onclick="goTo('s-tienda')">Tienda</button></div>
   <p style="margin-top:30px;color:#7c3aed44;font-size:.78rem;letter-spacing:.1em;text-align:center">
     Tarot · Runas · I Ching · Cristal · Astrología
   </p>
@@ -360,8 +405,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   </div>
   <div style="max-width:500px;width:100%">
     <label class="hf" style="display:block;color:var(--gold);margin-bottom:7px;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase">Tu pregunta al Oráculo</label>
-    <textarea id="qi" class="inp" rows="4" placeholder="Escribe aquí tu pregunta…"
-      oninput="document.getElementById('ab').disabled=!this.value.trim()"></textarea>
+    <div class="qwrap"><textarea id="qi" class="inp" rows="4" placeholder="Escribe o dicta tu pregunta…" oninput="document.getElementById('ab').disabled=!this.value.trim()"></textarea><button type="button" class="mic" id="mic" aria-label="Dictar la pregunta"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="#fff"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
     <button id="ab" class="bp w" style="margin-top:14px" onclick="startRitual()" disabled>✦ Iniciar el Ritual ✦</button>
   </div>
   <button class="bt" onclick="goTo('s-metodo')">← Cambiar método</button>
@@ -399,6 +443,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
       <p id="ac4t" class="at"></p>
     </div>
   </div>
+  <div id="arec" style="max-width:640px;width:100%;margin-top:14px"></div>
   <div id="abtns" style="display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;justify-content:center;opacity:0;transition:opacity .65s ease .5s" class="brow">
     <button class="bp" onclick="goTo('s-preg')">✦ Nueva Consulta</button>
     <button class="bg" onclick="goTo('s-intro')">← Inicio</button>
@@ -406,6 +451,45 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   <p id="aftr" style="margin-top:20px;color:#7c3aed44;font-size:.8rem;text-align:center;font-style:italic;opacity:0;transition:opacity .9s ease 1.1s">
     El Oráculo habla. La sabiduría reside en quien sabe escuchar.
   </p>
+</div>
+
+
+<!-- LECTURA PERSONAL -->
+<div class="scr top off" id="s-personal">
+  <div class="divl"><span>✦</span></div>
+  <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Tu lectura personal</h2>
+  <p class="sub">Con tu nombre y tu fecha de nacimiento, el oráculo calcula tu número de vida, tu signo solar, tu carta de nacimiento y lo que te trae este año.</p>
+  <div class="pform">
+    <label class="lbl hf" for="pnom">Tu nombre completo</label>
+    <input id="pnom" class="inp" autocomplete="name" placeholder="Nombre y apellidos">
+    <label class="lbl hf" for="pfec">Fecha de nacimiento</label>
+    <input id="pfec" class="inp" type="date" min="1900-01-01">
+    <label class="lbl hf" for="pq">Tu pregunta (opcional)</label>
+    <div class="qwrap"><textarea id="pq" class="inp" rows="3" placeholder="Escribe o dicta tu pregunta…"></textarea><button type="button" class="mic" id="pmic" aria-label="Dictar la pregunta"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="#fff"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
+    <p id="perr" class="err" role="alert"></p>
+    <button class="bp w" onclick="generarPersonal()">✦ Ver mi lectura personal</button>
+  </div>
+  <div id="pres" class="pres"></div>
+  <button class="bt" onclick="goTo('s-intro')">← Volver</button>
+</div>
+
+<!-- RITUALES -->
+<div class="scr top off" id="s-rituales">
+  <div class="divl"><span>✦</span></div>
+  <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Rituales que te pueden ayudar</h2>
+  <p class="sub">Pequeños rituales para acompañar lo que el oráculo te muestra. Toca uno para ver cómo hacerlo.</p>
+  <div id="rlist"></div>
+  <p class="aviso">Nunca dejes una vela o un incienso encendidos sin vigilancia.</p>
+  <button class="bt" onclick="goTo('s-intro')">← Volver</button>
+</div>
+
+<!-- TIENDA -->
+<div class="scr top off" id="s-tienda">
+  <div class="divl"><span>✦</span></div>
+  <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Tienda</h2>
+  <p class="sub">Muy pronto encontrarás aquí todo lo que necesitas para tus rituales y lecturas.</p>
+  <div class="shop"><div class="prod"><div class="pi">🕯️</div><h3>Velas y cristales</h3><p>Velas para tus rituales, cuarzos y piedras energéticas.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">🎴</div><h3>Barajas y oráculos</h3><p>Barajas de tarot, runas y oráculos para tus propias lecturas.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">📜</div><h3>Guías y rituales</h3><p>Guías descargables y rituales completos paso a paso.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">✦</div><h3>Lecturas premium</h3><p>Lecturas con IA, lectura personal completa y packs de consultas.</p><span class="prox">Próximamente</span></div></div>
+  <button class="bt" onclick="goTo('s-intro')">← Volver</button>
 </div>
 
 <script>
@@ -720,6 +804,13 @@ function rTarot(m){
 
   /* Shuffle all 22, show all 22 */
   const shuffled=[...ARCANOS].sort(()=>Math.random()-.5);
+  const D0=dia(), nombresA=ARCANOS.map(a=>a.n);
+  const ordTono=ordenar(nombresA,'tarot',n=>TONO.tarot[n]);
+  const ordPasado=barajar(nombresA.filter(n=>TONO.tarot[n]!==D0.tono&&!D0.usados.tarot.includes(n)));
+  const elegidas=[];
+  const siguienteCarta=k=>{const pool=(k===0&&ordPasado.length)?ordPasado:ordTono;
+    const n=pool.find(x=>!elegidas.includes(x))||ordTono.find(x=>!elegidas.includes(x));
+    elegidas.push(n); return ARCANOS.find(a=>a.n===n);};
 
   const grid=document.createElement('div'); grid.className='tgrid'; stage.appendChild(grid);
   const cards=[];
@@ -737,13 +828,16 @@ function rTarot(m){
       const chosen=cards.filter(c=>c.classList.contains('ok'));
       if(chosen.length>=3) return;
       sndFlip();
+      const arcN=siguienteCarta(chosen.length);
+      card.querySelector('.em').textContent=arcN.e; card.querySelector('.tc-name').textContent=arcN.n;
+      card.dataset.n=arcN.n; card.dataset.e=arcN.e;
       card.classList.remove('fd'); card.classList.add('ok');
       const now=cards.filter(c=>c.classList.contains('ok'));
       if(now.length>=3){
         cards.forEach(c=>{if(!c.classList.contains('ok'))c.classList.add('nx');});
-        const names=now.map(c=>c.dataset.n).join(' · ');
+        const names=elegidas.join(' · ');
         hint.textContent='¡Tu tirada está lista!';
-        ritData={type:'tarot',cards:now.map(c=>c.dataset.n)};
+        ritData={type:'tarot',cards:elegidas.slice()};
         ritSel=names; showOk('✦ '+names);
       } else {
         hint.textContent=`${now.length} elegida${now.length>1?'s':''} — elige ${3-now.length} más`;
@@ -760,7 +854,7 @@ function rRunas(m){
   const stage=document.getElementById('ov-stage');
   hint.textContent='Toca el saco para extraer una runa. Hazlo 3 veces.';
 
-  let drawn=[], pool=[...Array(RN.length).keys()].sort(()=>Math.random()-.5);
+  let drawn=[], pool=ordenar([...Array(RN.length).keys()],'runas',i=>TONO.runas[i]);
 
   const wrap=document.createElement('div'); wrap.className='rune-bag-wrap'; stage.appendChild(wrap);
 
@@ -835,7 +929,7 @@ function rIChing(){
   const hint=document.getElementById('ov-hint');
   const stage=document.getElementById('ov-stage');
   hint.textContent='Lanza las monedas 6 veces para construir tu hexagrama.';
-  let throws=0; const yinLines=[];
+  let throws=0; const yinLines=[]; const objetivoHex=hexagramaDelDia();
 
   const hex=document.createElement('div'); hex.className='hex'; stage.appendChild(hex);
   const lineEls=[];
@@ -858,7 +952,7 @@ function rIChing(){
     if(throws>=6) return;
     cEls.forEach(c=>{ c.classList.add('flip'); setTimeout(()=>c.classList.remove('flip'),680); });
     sndCoin();
-    const yin=Math.random()<0.5; yinLines.push(yin);
+    const yin=objetivoHex[yinLines.length]==='0'; yinLines.push(yin);
     setTimeout(()=>{
       const hl=lineEls[throws]; hl.classList.add('v');
       if(yin){ hl.classList.add('yin'); hl.innerHTML='<div class="b"></div><div class="b"></div>'; }
@@ -952,7 +1046,7 @@ function rCristal(){
         clearInterval(timer); done=true; smokeActive=false;
         orb.classList.remove('gz'); orb.classList.add('done');
         lbl.textContent='';
-        const vi=Math.floor(Math.random()*L_CRISTAL.length), V=L_CRISTAL[vi];
+        const vi=ordenar([...Array(L_CRISTAL.length).keys()],'cristal',i=>TONO.cristal[i])[0], V=L_CRISTAL[vi];
         eye.textContent=V.sym; eye.classList.add('show');
         pf.style.width='100%';
         hint.textContent='¡El velo se ha rasgado!';
@@ -1083,16 +1177,31 @@ function rAstro(m){
   };
   draw();
 
-  const stopWheel=()=>{
-    spinning=false; chosen=true; cancelAnimationFrame(rafId); draw();
-    /* Which segment is under the top pointer */
-    const norm=(angle%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
-    const idx=Math.floor(((Math.PI*2-norm)%(Math.PI*2))/(Math.PI*2)*12)%12;
+  const finishWheel=idx=>{
     res.innerHTML=`${ZD[idx]} <span style="font-size:.8rem;color:#f9731699">${ZODIAC_NAMES_SHORT[idx]}</span>`;
     spinHint.textContent='';
     hint.textContent='¡Los astros han señalado tu signo!';
     ritData={type:'astro',sign:idx};
     ritSel=`Signo ${ZD[idx]}`; showOk(`★ ${ZD[idx]} señalado`);
+  };
+  /* Al frenar, la rueda avanza suavemente hasta un signo acorde con la energía del día */
+  const stopWheel=()=>{
+    spinning=false; chosen=true; cancelAnimationFrame(rafId);
+    const TAU=Math.PI*2, seg=TAU/12;
+    const norm=(angle%TAU+TAU)%TAU;
+    const cur=Math.floor(((TAU-norm)%TAU)/TAU*12)%12;
+    const D=dia(), delTono=[...Array(12).keys()].filter(i=>TONO.astro[i]===D.tono);
+    const libres=delTono.filter(i=>!D.usados.astro.includes(String(i)));
+    const vale=libres.length?libres:delTono;
+    let k=0; while(k<12&&!vale.includes(((cur-k)%12+12)%12)) k++;
+    const target=((cur-k)%12+12)%12;
+    if(k===0){ draw(); finishWheel(target); return; }
+    const desired=TAU-(target+.5)*seg;
+    const delta=((desired-norm)%TAU+TAU)%TAU;
+    const a0=angle, t0=performance.now(), dur=500+delta*450;
+    const glide=now=>{const t=Math.min((now-t0)/dur,1); angle=a0+delta*(1-Math.pow(1-t,3)); draw();
+      if(t<1) requestAnimationFrame(glide); else finishWheel(target);};
+    requestAnimationFrame(glide);
   };
 
   const loop=()=>{
@@ -1267,16 +1376,75 @@ function fixEs(o){
   return o;
 }
 
+/* ═══ MEMORIA DEL DÍA ═══
+   Cada persona (por dispositivo, hasta que haya login) tiene una "energía del día".
+   Todas sus lecturas de ese día van en la misma línea (nunca se contradicen),
+   y no se repiten cartas, runas, hexagramas, visiones ni signos. */
+const TONO={
+  tarot:{"El Mago":"luz","La Emperatriz":"luz","Los Amantes":"luz","El Carro":"luz","La Fuerza":"luz","La Estrella":"luz","El Sol":"luz","El Mundo":"luz",
+         "El Loco":"cambio","La Rueda":"cambio","La Muerte":"cambio","La Torre":"cambio","El Juicio":"cambio","El Diablo":"cambio",
+         "La Sacerdotisa":"calma","El Hierofante":"calma","El Ermitaño":"calma","El Colgado":"calma","La Templanza":"calma","La Luna":"calma","El Emperador":"calma","La Justicia":"calma"},
+  /* mismo orden que RNM */
+  runas:["luz","luz","cambio","luz","cambio","luz","luz","luz","cambio","calma","calma","calma","calma","cambio","calma","luz","cambio","luz","cambio","calma","calma","calma","cambio","calma"],
+  trig:{"111":"luz","101":"luz","110":"luz","100":"cambio","010":"cambio","000":"calma","001":"calma","011":"calma"},
+  /* mismo orden que L_CRISTAL */
+  cristal:["luz","cambio","cambio","luz","luz","calma","calma","luz","cambio","cambio","luz","calma"],
+  /* mismo orden que ZD */
+  astro:["cambio","calma","luz","calma","luz","calma","luz","cambio","luz","calma","cambio","calma"]
+};
+const TONOS={
+  luz:{n:"expansión",hilo:["Lo que el oráculo te mostró antes hoy se confirma: la energía de este día es de expansión.","Hoy el oráculo te habla con una misma voz, la de la luz que se abre paso.","Igual que en tu consulta anterior, hoy los caminos tienden a abrirse.","Todo lo que hoy te ha dicho el oráculo apunta hacia la misma luz.","La energía de expansión de este día sigue a tu favor.","Hoy el oráculo no cambia de opinión: hay luz en tu camino."]},
+  cambio:{n:"transformación",hilo:["Como ya te mostró hoy el oráculo, este es un día de movimiento y transformación.","El mensaje de hoy sigue siendo el mismo: algo se mueve y te pide adaptarte.","Igual que en tu consulta anterior, hoy sopla un viento de cambio.","Todo lo que hoy te ha dicho el oráculo apunta hacia la transformación.","La energía de cambio de este día sigue presente.","Hoy el oráculo no cambia de opinión: algo se está moviendo."]},
+  calma:{n:"pausa",hilo:["Como ya te mostró hoy el oráculo, este es un día para escuchar antes de actuar.","El mensaje de hoy sigue siendo el mismo: pausa, observa y deja madurar.","Igual que en tu consulta anterior, hoy el oráculo te pide calma.","Todo lo que hoy te ha dicho el oráculo apunta hacia la serenidad.","La energía de pausa de este día sigue presente.","Hoy el oráculo no cambia de opinión: es tiempo de esperar con confianza."]}
+};
+function hoyStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function devId(){try{let id=localStorage.getItem('arc_id');if(!id){id=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('arc_id',id);}return id;}catch(e){return 'anon';}}
+function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+let DIA=null;
+function dia(){
+  const hoy=hoyStr();
+  if(DIA&&DIA.fecha===hoy) return DIA;
+  try{DIA=JSON.parse(localStorage.getItem('arc_dia')||'null');}catch(e){DIA=null;}
+  if(!DIA||DIA.fecha!==hoy){
+    DIA={fecha:hoy,tono:['luz','cambio','calma'][hashStr(devId()+hoy)%3],
+         usados:{tarot:[],runas:[],trig:[],cristal:[],astro:[]},frases:[],n:0};
+  }
+  return DIA;
+}
+function guardaDia(){try{localStorage.setItem('arc_dia',JSON.stringify(DIA));}catch(e){}}
+const barajar=a=>a.sort(()=>Math.random()-.5);
+/* Ordena candidatos: primero del tono del día sin usar hoy, luego del tono ya usados, luego el resto */
+function ordenar(lista,tipo,tonoDe){
+  const D=dia(), u=D.usados[tipo], a=[],b=[],c=[];
+  lista.forEach(x=>{const ok=tonoDe(x)===D.tono, usado=u.includes(String(x)); (ok&&!usado?a:ok?b:c).push(x);});
+  return [...barajar(a),...barajar(b),...barajar(c)];
+}
+function marcar(tipo,x){const D=dia(); if(!D.usados[tipo].includes(String(x))) D.usados[tipo].push(String(x));}
+/* Elige una frase sin repetir en el día si es posible */
+function pickNueva(arr){
+  const D=dia(), libres=arr.filter(f=>!D.frases.includes(f)), f=pick(libres.length?libres:arr);
+  D.frases.push(f); return f;
+}
+/* Hexagrama objetivo para el I Ching: ambos trigramas del tono del día, sin repetir combinación */
+function hexagramaDelDia(){
+  const D=dia(), ks=Object.keys(TONO.trig).filter(k=>TONO.trig[k]===D.tono), pares=[];
+  ks.forEach(lo=>ks.forEach(up=>pares.push(lo+up)));
+  const libres=pares.filter(p=>!D.usados.trig.includes(p));
+  return pick(libres.length?libres:pares);
+}
+
 /* ── Generador de la lectura ── */
-function lecturaLocal(m,q){
-  const T=temaDe(q), intro=pick(T.i);
+function lecturaBase(m,q){
+  const T=temaDe(q), intro=pickNueva(T.i), alt=dia().n%2===1;
   const d=ritData||{type:'cristal'};
 
   if(d.type==='tarot' && d.cards && d.cards.length===3){
     const [A,B,C]=d.cards.map(n=>({n,...(L_TAROT[n]||L_TAROT["La Estrella"])}));
     const em=d.cards.map(n=>(ARCANOS.find(x=>x.n===n)||{e:'🃏'}).e).join(' ');
     return {simbolo:em,mensaje_corto:C.f,
-      interpretacion:`${intro} el pasado te habla a través de ${A.n}: ${A.s}. En el presente, ${B.n} trae ${B.s}. Y hacia el futuro, ${C.n} anuncia ${C.s}.`,
+      interpretacion: alt
+        ? `${intro} ${A.n} abre tu tirada desde el pasado y habla de ${A.s}. Hoy, ${B.n} pone sobre la mesa ${B.s}, y ${C.n} te muestra lo que viene: ${C.s}.`
+        : `${intro} el pasado te habla a través de ${A.n}: ${A.s}. En el presente, ${B.n} trae ${B.s}. Y hacia el futuro, ${C.n} anuncia ${C.s}.`,
       guia_practica:conTema(B.c,T), advertencia:C.a, conocimiento_arcano:pick([A,B,C]).d,
       energia:B.k, color_energia:B.col};
   }
@@ -1284,7 +1452,9 @@ function lecturaLocal(m,q){
   if(d.type==='runas' && d.runes && d.runes.length===3){
     const [A,B,C]=d.runes.map(i=>({n:`${RN[i]} ${RNM[i]}`,...L_RUNAS[i]}));
     return {simbolo:d.runes.map(i=>RN[i]).join(' '),mensaje_corto:C.f,
-      interpretacion:`${intro} la primera runa, ${A.n}, habla de ${A.s}. La segunda, ${B.n}, señala ${B.s}. Y la tercera, ${C.n}, revela ${C.s}.`,
+      interpretacion: alt
+        ? `${intro} del saco han salido ${A.n}, ${B.n} y ${C.n}. La primera recuerda ${A.s}; la segunda pide atención a ${B.s}; la última anuncia ${C.s}.`
+        : `${intro} la primera runa, ${A.n}, habla de ${A.s}. La segunda, ${B.n}, señala ${B.s}. Y la tercera, ${C.n}, revela ${C.s}.`,
       guia_practica:conTema(B.c,T), advertencia:A.a, conocimiento_arcano:pick([A,B,C]).d,
       energia:C.k, color_energia:C.col};
   }
@@ -1300,7 +1470,9 @@ function lecturaLocal(m,q){
              :"El yin inclina la balanza: escuchar te dará más que empujar.";
     const nombre=lo.n===up.n?`${lo.n} duplicado`:`${up.n} sobre ${lo.n}`;
     return {simbolo:up.sym+lo.sym,mensaje_corto:up.f,
-      interpretacion:`${intro} tu hexagrama es ${nombre}. En tu interior se mueve ${lo.s}; a tu alrededor, ${up.s}. ${bal}`,
+      interpretacion: alt
+        ? `${intro} las monedas han formado ${nombre}. Por dentro te acompaña ${lo.s}; por fuera, ${up.s}. ${bal}`
+        : `${intro} tu hexagrama es ${nombre}. En tu interior se mueve ${lo.s}; a tu alrededor, ${up.s}. ${bal}`,
       guia_practica:conTema(lo.c,T), advertencia:up.a, conocimiento_arcano:pick(D_ICHING),
       energia:lo.k, color_energia:lo.col};
   }
@@ -1308,18 +1480,172 @@ function lecturaLocal(m,q){
   if(d.type==='astro' && d.sign>=0){
     const S=L_ASTRO[d.sign], nm=ZD[d.sign];
     return {simbolo:nm.split(' ')[0],mensaje_corto:S.f,
-      interpretacion:`${intro} los astros señalan a ${nm.split(' ')[1]}, signo de ${S.el}. Su energía te habla de ${S.s}, y te invita a llevarla a tu situación con conciencia.`,
+      interpretacion: alt
+        ? `${intro} la rueda se ha detenido en ${nm.split(' ')[1]}, signo de ${S.el}. Hoy su influencia trae ${S.s}; llévala a tu situación con conciencia.`
+        : `${intro} los astros señalan a ${nm.split(' ')[1]}, signo de ${S.el}. Su energía te habla de ${S.s}, y te invita a llevarla a tu situación con conciencia.`,
       guia_practica:conTema(S.c,T), advertencia:S.a, conocimiento_arcano:S.d,
       energia:S.k, color_energia:ZCOLORS[d.sign]};
   }
 
   const V=L_CRISTAL[(d.vision>=0?d.vision:Math.floor(Math.random()*L_CRISTAL.length))];
   return {simbolo:V.sym,mensaje_corto:V.f,
-    interpretacion:`${intro} el humo se ha abierto y la esfera muestra ${V.s}.`,
+    interpretacion: alt ? `${intro} entre la bruma aparece ${V.s}.` : `${intro} el humo se ha abierto y la esfera muestra ${V.s}.`,
     guia_practica:conTema(V.c,T), advertencia:V.a, conocimiento_arcano:pick(D_CRISTAL),
     energia:V.k, color_energia:V.col};
 }
 
+
+/* Lectura con memoria del día: marca lo usado y enlaza con lecturas anteriores de hoy */
+function lecturaLocal(m,q){
+  const D=dia(), d=ritData||{};
+  const r=lecturaBase(m,q);
+  if(d.type==='tarot'&&d.cards) d.cards.forEach(n=>marcar('tarot',n));
+  if(d.type==='runas'&&d.runes) d.runes.forEach(i=>marcar('runas',i));
+  if(d.type==='iching'&&d.lines) marcar('trig',d.lines.map(y=>y?'0':'1').join(''));
+  if(d.type==='cristal'&&d.vision>=0) marcar('cristal',d.vision);
+  if(d.type==='astro'&&d.sign>=0) marcar('astro',d.sign);
+  if(D.n>0) r.interpretacion=pickNueva(TONOS[D.tono].hilo)+' '+r.interpretacion.charAt(0).toUpperCase()+r.interpretacion.slice(1);
+  D.n++; guardaDia();
+  return r;
+}
+
+/* ═══ MICRÓFONO: dictar la pregunta ═══ */
+function initMic(btnId,inputId){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const b=document.getElementById(btnId); if(!b) return;
+  if(!SR){ b.style.display='none'; return; }
+  let rec=null, activo=false;
+  b.onclick=()=>{
+    if(activo){ rec.stop(); return; }
+    const qi=document.getElementById(inputId);
+    const base=qi.value.trim()?qi.value.trim()+' ':'';
+    rec=new SR(); rec.lang='es-ES'; rec.interimResults=true; rec.continuous=false;
+    rec.onresult=e=>{let t=''; for(const r of e.results) t+=r[0].transcript;
+      qi.value=base+(base?t:t.charAt(0).toUpperCase()+t.slice(1)); qi.dispatchEvent(new Event('input'));};
+    rec.onstart=()=>{activo=true; b.classList.add('on'); b.setAttribute('aria-label','Parar de escuchar');};
+    rec.onend=()=>{activo=false; b.classList.remove('on'); b.setAttribute('aria-label','Dictar la pregunta');};
+    rec.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed')
+      alert('Para dictar tu pregunta, permite el uso del micrófono en tu navegador.'); };
+    try{ rec.start(); }catch(e){}
+  };
+}
+
+/* ═══ PREMIUM (pendiente de pagos) ═══
+   Mientras no haya pagos, se puede probar entera añadiendo ?prueba=1 a la dirección. */
+function esPremium(){
+  try{ if(new URLSearchParams(location.search).get('prueba')==='1') localStorage.setItem('arc_premium','1');
+       return localStorage.getItem('arc_premium')==='1'; }catch(e){ return false; }
+}
+
+/* ═══ LECTURA PERSONAL: nombre + fecha de nacimiento ═══ */
+const NUMS={
+  1:{t:"El Pionero",v:"Viniste a abrir caminos. Tu fuerza está en la iniciativa, la independencia y el valor de empezar lo que otros solo imaginan.",e:"Tu nombre vibra con el liderazgo: inspiras a los demás cuando te atreves a ir delante."},
+  2:{t:"El Mediador",v:"Tu camino es el de la unión. Tienes el don de escuchar, crear armonía y sentir lo que los demás no dicen.",e:"Tu nombre vibra con la diplomacia: tu mayor talento es acercar a las personas."},
+  3:{t:"El Creador",v:"Viniste a expresarte. La alegría, la comunicación y la creatividad son tu manera de dejar huella.",e:"Tu nombre vibra con la palabra y el arte: cuando creas, todo se ilumina a tu alrededor."},
+  4:{t:"El Constructor",v:"Tu camino es construir bases sólidas. Tu constancia, tu orden y tu lealtad convierten los sueños en algo real.",e:"Tu nombre vibra con la estabilidad: eres el pilar en el que otros se apoyan."},
+  5:{t:"El Aventurero",v:"Viniste a experimentar. La libertad, el cambio y la curiosidad te empujan a vivir mil vidas en una.",e:"Tu nombre vibra con el movimiento: tu talento es adaptarte y reinventarte."},
+  6:{t:"El Protector",v:"Tu camino es el del cuidado. El amor, la familia y la responsabilidad hacia los tuyos dan sentido a tu vida.",e:"Tu nombre vibra con la armonía del hogar: donde estás, la gente se siente en casa."},
+  7:{t:"El Buscador",v:"Viniste a comprender. Tu intuición, tu mente analítica y tu búsqueda espiritual te llevan más hondo que a nadie.",e:"Tu nombre vibra con la sabiduría: tu talento es ver lo que está oculto."},
+  8:{t:"El Realizador",v:"Tu camino es el del poder bien usado. Tienes visión, ambición y la capacidad de materializar grandes metas.",e:"Tu nombre vibra con la abundancia: sabes convertir el esfuerzo en resultados."},
+  9:{t:"El Sabio Compasivo",v:"Viniste a dar. Tu generosidad, tu visión amplia y tu capacidad de cerrar ciclos inspiran a quienes te rodean.",e:"Tu nombre vibra con la compasión: tu talento es ayudar a sanar."},
+  11:{t:"El Visionario · número maestro",v:"Llevas un número maestro: tu intuición es extraordinaria y tu camino es inspirar a otros con tu luz, aunque a veces esa sensibilidad pese.",e:"Tu nombre vibra con la inspiración: tus palabras pueden despertar a otros."},
+  22:{t:"El Gran Constructor · número maestro",v:"Llevas un número maestro: puedes convertir grandes visiones en obras que perduran, si unes tus sueños con la disciplina.",e:"Tu nombre vibra con la grandeza práctica: estás aquí para construir algo que trascienda."},
+  33:{t:"El Maestro del Amor · número maestro",v:"Llevas el número maestro más raro: tu camino es el servicio y el amor incondicional, sanar enseñando con el ejemplo.",e:"Tu nombre vibra con la entrega: tu presencia consuela."}
+};
+const ANYO={
+  1:"Año de comienzos: siembra, emprende y atrévete con lo nuevo.",
+  2:"Año de paciencia y alianzas: lo que sembraste crece despacio; cuida tus relaciones.",
+  3:"Año de expresión y alegría: muéstrate, crea, comunica y disfruta.",
+  4:"Año de trabajo y bases firmes: el orden y la constancia darán frutos duraderos.",
+  5:"Año de cambios y libertad: viajes, novedades y decisiones que te renuevan.",
+  6:"Año del hogar y el amor: familia, compromisos y responsabilidad afectiva.",
+  7:"Año de introspección: estudia, medita y escucha tu voz interior.",
+  8:"Año de cosecha material: logros y reconocimiento llegan si actúas con firmeza.",
+  9:"Año de cierre: suelta lo que ya terminó para dejar espacio a un nuevo ciclo."
+};
+const sumaDig=n=>String(n).split('').reduce((a,d)=>a+(+d||0),0);
+function reducir(n,maestros=true){ while(n>9&&!(maestros&&[11,22,33].includes(n))) n=sumaDig(n); return n; }
+function numNombre(nombre){
+  const s=nombre.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+  return reducir([...s].reduce((a,ch)=>a+((ch.charCodeAt(0)-97)%9)+1,0));
+}
+function signoSolar(d,m){
+  const lim=[[1,20,10],[2,19,11],[3,21,0],[4,20,1],[5,21,2],[6,21,3],[7,23,4],[8,23,5],[9,23,6],[10,23,7],[11,22,8],[12,22,9]];
+  const [mm,dd,idx]=lim[m-1]; return d>=dd?idx:(idx+11)%12;
+}
+function cartaNacimiento(d,m,y){ let s=d+m+y; while(s>22) s=sumaDig(s); return ARCANOS[s===22?0:s]; }
+
+function lecturaPersonal(nombre,fecha,q){
+  const [y,m,d]=fecha.split('-').map(Number);
+  const vida=reducir(sumaDig(''+y+m+d)), expr=numNombre(nombre);
+  const sg=signoSolar(d,m), S=L_ASTRO[sg];
+  const carta=cartaNacimiento(d,m,y), C=L_TAROT[carta.n];
+  const anyoAct=new Date().getFullYear(), anyo=reducir(sumaDig(''+d+m+anyoAct),false);
+  const pn=nombre.trim().split(/\s+/)[0];
+  const D=dia(), T=temaDe(q||'');
+  return {pn,secciones:[
+    {i:'✦',t:`Tu número de vida: ${vida} · ${NUMS[vida].t}`,x:NUMS[vida].v},
+    {i:'✒',t:`El número de tu nombre: ${expr} · ${NUMS[expr].t}`,x:NUMS[expr].e},
+    {i:ZD[sg].split(' ')[0],t:`Tu signo solar: ${ZD[sg].split(' ')[1]}`,x:`Signo de ${S.el}. Te define ${S.s}. ${S.c}`},
+    {i:carta.e,t:`Tu carta de nacimiento: ${carta.n}`,x:`${C.f} Esta carta te acompaña toda la vida y habla de ${C.s}. ${C.c}`},
+    {i:'☾',t:`Tu año personal ${anyoAct}: ${anyo}`,x:ANYO[anyo]},
+    {i:'🔮',t:`Mensaje del oráculo para ti, ${pn}`,x:`${q?pick(T.i)+' ':''}${q?'la':'La'} energía que hoy te acompaña es de ${TONOS[D.tono].n}. Unida a tu número ${vida} y a ${carta.n}, te recuerda que ${lc(C.c)}`}
+  ]};
+}
+
+function verPersonal(){ goTo('s-personal'); }
+function generarPersonal(){
+  const nombre=document.getElementById('pnom').value.trim(), fecha=document.getElementById('pfec').value;
+  const q=document.getElementById('pq').value.trim();
+  const err=document.getElementById('perr');
+  if(!nombre||!fecha){ err.textContent='Escribe tu nombre y tu fecha de nacimiento.'; return; }
+  const y=+fecha.slice(0,4); if(y<1900||y>new Date().getFullYear()){ err.textContent='Revisa la fecha de nacimiento.'; return; }
+  err.textContent='';
+  const L=fixEs(lecturaPersonal(nombre,fecha,q));
+  L.secciones.forEach(s=>s.x=fixEs({x:s.x}).x);
+  const premium=esPremium(), box=document.getElementById('pres');
+  box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:14px">La lectura de ${L.pn}</h2>`+
+    L.secciones.map((s,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)">
+      <div class="al" style="color:var(--gold)"><span>${s.i}</span> ${s.t}</div><p class="at">${s.x}</p></div>`).join('')+
+    (premium?'':`<div class="paywall"><div class="pw-t">✦ Lectura completa · Premium</div>
+      <p>Desbloquea tu número del nombre, tu signo, tu carta de nacimiento, tu año personal y el mensaje del oráculo para ti.</p>
+      <button class="bp" onclick="alert('Muy pronto podrás desbloquear la lectura completa.')">Desbloquear · próximamente</button></div>`);
+  box.style.display='flex'; sndReveal&&sndReveal();
+  setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+/* ═══ RITUALES ═══ */
+const RITUALES=[
+  {id:'luna',i:'🌑',t:'Luna nueva: siembra tus intenciones',cuando:'En luna nueva o el día de inicio de algo importante.',mat:'Papel, bolígrafo, una vela blanca.',
+   pasos:['Busca un rato tranquilo y enciende la vela.','Respira hondo tres veces y piensa en lo que quieres que crezca en tu vida.','Escribe tres intenciones en presente, como si ya fueran reales («Tengo un trabajo que me hace feliz»).','Lee tus intenciones en voz alta, dobla el papel y guárdalo hasta la próxima luna llena.','Apaga la vela sin soplar, con los dedos humedecidos o un apagavelas.']},
+  {id:'limpieza',i:'🌿',t:'Limpieza energética del hogar',cuando:'Cuando sientas la casa cargada, después de discusiones o al mudarte.',mat:'Sal gruesa, incienso o romero seco, un cuenco.',
+   pasos:['Abre todas las ventanas para que circule el aire.','Recorre la casa de dentro hacia fuera con el humo del incienso o del romero, insistiendo en las esquinas.','Pon un cuenco con sal gruesa en la entrada durante una noche.','Al día siguiente, tira la sal por el desagüe con agua corriente.']},
+  {id:'abundancia',i:'🪙',t:'Ritual de abundancia',cuando:'En luna creciente, para atraer prosperidad y oportunidades.',mat:'Una vela verde, canela en rama, una moneda.',
+   pasos:['Coloca la moneda junto a la vela verde y la canela a su alrededor.','Enciende la vela y visualiza tus metas como ya cumplidas.','Da las gracias por lo que ya tienes: la gratitud abre la puerta a más.','Guarda la moneda en tu cartera como amuleto.']},
+  {id:'proteccion',i:'🛡️',t:'Ritual de protección',cuando:'Cuando te sientas vulnerable o rodeado de malas energías.',mat:'Un vaso de agua, sal gruesa, una ramita de romero.',
+   pasos:['Llena el vaso de agua y añade un puñado de sal gruesa.','Pon la ramita de romero dentro y colócalo detrás de la puerta de entrada.','Pide en voz baja que solo entre en tu casa lo que te hace bien.','Cambia el agua cada semana; si se enturbia, cámbiala antes.']},
+  {id:'soltar',i:'🍃',t:'Ritual para soltar lo que pesa',cuando:'En luna menguante, para cerrar etapas y dejar ir.',mat:'Papel y bolígrafo.',
+   pasos:['Escribe todo lo que quieres dejar atrás: miedos, rencores, hábitos.','Léelo una última vez y di: «Te agradezco lo que me enseñaste. Ahora te dejo ir».','Rompe el papel en trozos pequeños y tíralo a la basura, fuera de casa.','Si prefieres quemarlo, hazlo en un recipiente resistente al fuego, en un lugar seguro y con agua cerca.']},
+  {id:'amor',i:'🌹',t:'Ritual de amor propio',cuando:'Un viernes (día de Venus), o cuando necesites quererte un poco más.',mat:'Pétalos de rosa, una vela rosa, un espejo.',
+   pasos:['Date una ducha o un baño con pétalos de rosa, sin prisas.','Enciende la vela rosa y mírate al espejo a los ojos.','Di en voz alta tres cosas que valoras de ti.','Termina con un gesto de cariño hacia ti: un té, música, descanso.']}
+];
+const RITUAL_TEMA={amor:'amor',trabajo:'abundancia',salud:'limpieza',decision:'luna',familia:'proteccion',general:'luna'};
+function pintarRituales(){
+  document.getElementById('rlist').innerHTML=RITUALES.map(r=>`<details class="rit" id="rit-${r.id}">
+    <summary><span class="ri">${r.i}</span><span>${r.t}</span></summary>
+    <p class="rc"><b>Cuándo:</b> ${r.cuando}</p><p class="rc"><b>Necesitas:</b> ${r.mat}</p>
+    <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol></details>`).join('');
+}
+function abrirRitual(id){
+  goTo('s-rituales');
+  setTimeout(()=>{const el=document.getElementById('rit-'+id); if(el){el.open=true; el.scrollIntoView({behavior:'smooth',block:'center'});}},350);
+}
+function ritualRecomendado(q){
+  const T=temaDe(q||''), key=Object.keys(TEMAS).find(k=>TEMAS[k]===T)||'general';
+  const r=RITUALES.find(x=>x.id===RITUAL_TEMA[key]);
+  const el=document.getElementById('arec');
+  el.innerHTML=`<button class="rec" onclick="abrirRitual('${r.id}')"><span class="ri">${r.i}</span><span><small>Ritual recomendado para ti</small><br>${r.t}</span><span>→</span></button>`;
+}
 
 /* ═══ ORACLE API ═══ */
 async function callOracle(){
@@ -1361,6 +1687,7 @@ Responde SOLO en JSON sin texto fuera del bloque JSON:
     clearInterval(pi); bar.style.width='100%'; setTimeout(()=>bar.style.width='0',480);
     btn.disabled=false; btn.innerHTML='✦ Iniciar el Ritual ✦'; orb.classList.remove('pulse');
   }
+  ritualRecomendado(q);
   showResp(ans,m);
 }
 
@@ -1406,6 +1733,9 @@ function showResp(ans,m){
   setTimeout(()=>{if(ans.conocimiento_arcano)cs[3].classList.add('on');},2240);
   setTimeout(()=>{ab.style.opacity='1';af.style.opacity='1';},2720);
 }
+
+/* Arranque de lo nuevo */
+initMic('mic','qi'); initMic('pmic','pq'); pintarRituales();
 </script>
 </body>
 </html>
