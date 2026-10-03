@@ -263,6 +263,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .pform{max-width:500px;width:100%;display:flex;flex-direction:column;gap:6px}
 .pform .lbl{display:block;color:#e6c98f;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-top:10px}
 .pform input.inp{color-scheme:dark}
+.fechas{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:10px}
+.fechas .inp{text-align:center;font-size:1.15rem;padding:13px 6px}
 .err{color:#fca5a5;min-height:1.2em;font-size:.95rem}
 .pres{display:none;flex-direction:column;gap:12px;max-width:640px;width:100%;margin-top:26px}
 .bloq{filter:blur(5px);user-select:none;pointer-events:none;opacity:.75}
@@ -462,8 +464,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   <div class="pform">
     <label class="lbl hf" for="pnom">Tu nombre completo</label>
     <input id="pnom" class="inp" autocomplete="name" placeholder="Nombre y apellidos">
-    <label class="lbl hf" for="pfec">Fecha de nacimiento</label>
-    <input id="pfec" class="inp" type="date" min="1900-01-01">
+    <label class="lbl hf" for="pdia">Fecha de nacimiento</label>
+    <div class="fechas">
+      <input id="pdia" class="inp" inputmode="numeric" maxlength="2" placeholder="Día" aria-label="Día" autocomplete="bday-day">
+      <input id="pmes" class="inp" inputmode="numeric" maxlength="2" placeholder="Mes" aria-label="Mes" autocomplete="bday-month">
+      <input id="panyo" class="inp" inputmode="numeric" maxlength="4" placeholder="Año" aria-label="Año" autocomplete="bday-year">
+    </div>
     <label class="lbl hf" for="pq">Tu pregunta (opcional)</label>
     <div class="qwrap"><textarea id="pq" class="inp" rows="3" placeholder="Escribe o dicta tu pregunta…"></textarea><button type="button" class="mic" id="pmic" aria-label="Dictar la pregunta"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="#fff"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
     <p id="perr" class="err" role="alert"></p>
@@ -1595,11 +1601,14 @@ function lecturaPersonal(nombre,fecha,q){
 
 function verPersonal(){ goTo('s-personal'); }
 function generarPersonal(){
-  const nombre=document.getElementById('pnom').value.trim(), fecha=document.getElementById('pfec').value;
+  const nombre=document.getElementById('pnom').value.trim();
+  const dd=+document.getElementById('pdia').value, mm=+document.getElementById('pmes').value, y=+document.getElementById('panyo').value;
   const q=document.getElementById('pq').value.trim();
   const err=document.getElementById('perr');
-  if(!nombre||!fecha){ err.textContent='Escribe tu nombre y tu fecha de nacimiento.'; return; }
-  const y=+fecha.slice(0,4); if(y<1900||y>new Date().getFullYear()){ err.textContent='Revisa la fecha de nacimiento.'; return; }
+  if(!nombre||!dd||!mm||!y){ err.textContent='Escribe tu nombre y tu fecha de nacimiento (día, mes y año).'; return; }
+  const f=new Date(y,mm-1,dd);
+  if(y<1900||f>new Date()||f.getDate()!==dd||f.getMonth()!==mm-1){ err.textContent='Esa fecha no existe. Revisa el día, el mes y el año.'; return; }
+  const fecha=`${y}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
   err.textContent='';
   const L=fixEs(lecturaPersonal(nombre,fecha,q));
   L.secciones.forEach(s=>s.x=fixEs({x:s.x}).x);
@@ -1735,6 +1744,12 @@ function showResp(ans,m){
 }
 
 /* Arranque de lo nuevo */
+/* Fecha: solo números y salto automático a la siguiente casilla */
+[['pdia','pmes',2],['pmes','panyo',2],['panyo',null,4]].forEach(([id,sig,len])=>{
+  const el=document.getElementById(id); if(!el) return;
+  el.addEventListener('input',()=>{ el.value=el.value.replace(/\D/g,'').slice(0,len);
+    if(sig&&el.value.length===len) document.getElementById(sig).focus(); });
+});
 initMic('mic','qi'); initMic('pmic','pq'); pintarRituales();
 </script>
 </body>
