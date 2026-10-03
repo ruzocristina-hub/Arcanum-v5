@@ -98,7 +98,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 #ov-ok.on{opacity:1;pointer-events:all}
 
 /* ── TAROT ── */
-.tgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;width:100%;max-width:560px}
+.tgrid{display:grid;grid-template-columns:repeat(11,1fr);gap:8px;width:100%;max-width:760px}
 .tc{height:100px;border-radius:7px;border:1.5px solid #7c3aed44;
   background:linear-gradient(155deg,#1e0a3c,#050014);
   display:flex;align-items:center;justify-content:center;font-size:1.7rem;
@@ -174,6 +174,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   text-transform:uppercase;pointer-events:none;z-index:2}
 .crb-eye{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font-size:3rem;opacity:0;transition:opacity .8s;pointer-events:none;z-index:2}
+.crb-eye.show{animation:materialize 1.4s ease-out forwards}
+@keyframes materialize{0%{opacity:0;transform:scale(.3);filter:blur(8px) drop-shadow(0 0 0 #fff0)}60%{opacity:1;filter:blur(1px) drop-shadow(0 0 22px #e9d5ff)}100%{opacity:1;transform:scale(1);filter:blur(0) drop-shadow(0 0 14px #c084fccc)}}
 .cprog{width:160px;height:4px;background:#1a0a2e;border-radius:2px;overflow:hidden;margin-top:10px}
 .cpf{height:100%;width:0;background:linear-gradient(90deg,var(--p),var(--p3));
   border-radius:2px;transition:width .08s linear}
@@ -209,9 +211,19 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 @keyframes pop{0%{transform:scale(.3) rotate(-20deg);opacity:0}70%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes bagShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(5deg)}}
 @keyframes smokeRise{0%{transform:translateY(0) scale(1);opacity:.5}100%{transform:translateY(-60px) scale(2.5);opacity:0}}
+/* ── CARTAS: reverso marfil y negro con estrella plateada ── */
+.tc{height:auto;aspect-ratio:5/8;border-radius:6px}
+.tc.fd{background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 160%22%3E%3Cdefs%3E%3Cg id=%22p%22%3E%0A%3Cpath d=%22M0,-37 C3.2,-29 4.2,-19 0,-9 C-4.2,-19 -3.2,-29 0,-37Z%22 fill=%22%23c8c8ce%22/%3E%0A%3Cpath d=%22M0,-37 l-3.5,-4.5 M0,-37 l3.5,-4.5 M0,-37 v-6%22 stroke=%22%23c8c8ce%22 stroke-width=%221.3%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%0A%3Cpath d=%22M1.5,-14 c7,-1 11,-7 8,-12 c-2,-3.2 -6.5,-1.6 -4.8,1.8%22 stroke=%22%23c8c8ce%22 stroke-width=%221.5%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%0A%3Cpath d=%22M-1.5,-14 c-7,-1 -11,-7 -8,-12 c2,-3.2 6.5,-1.6 4.8,1.8%22 stroke=%22%23c8c8ce%22 stroke-width=%221.5%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%0A%3Ccircle cx=%220%22 cy=%22-22%22 r=%222.3%22 fill=%22%23141316%22 stroke=%22%23141316%22 stroke-width=%22.6%22/%3E%0A%3Ccircle cx=%220%22 cy=%22-22%22 r=%221%22 fill=%22%23c8c8ce%22/%3E%0A%3C/g%3E%3C/defs%3E%3Crect x=%220%22 y=%220%22 width=%22100%22 height=%22160%22 rx=%228%22 fill=%22%23ece7df%22/%3E%3Crect x=%226%22 y=%226%22 width=%2288%22 height=%22148%22 rx=%225%22 fill=%22%23141316%22/%3E%3Cg transform=%22translate(50,80) scale(0.95)%22%3E%3Cuse href=%22%23p%22 transform=%22rotate(0)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(45)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(90)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(135)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(180)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(225)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(270)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(315)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(22.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(67.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(112.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(157.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(202.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(247.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(292.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(337.5)%22/%3E%3Ccircle r=%227.5%22 fill=%22none%22 stroke=%22%23c8c8ce%22 stroke-width=%221.2%22/%3E%3Ccircle r=%224%22 fill=%22%23c8c8ce%22/%3E%3Ccircle r=%221.8%22 fill=%22%23141316%22/%3E%3C/g%3E%3Cg transform=%22translate(18,22) scale(0.27)%22%3E%3Cuse href=%22%23p%22 transform=%22rotate(0)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(45)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(90)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(135)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(180)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(225)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(270)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(315)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(22.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(67.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(112.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(157.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(202.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(247.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(292.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(337.5)%22/%3E%3Ccircle r=%227.5%22 fill=%22none%22 stroke=%22%23c8c8ce%22 stroke-width=%221.2%22/%3E%3Ccircle r=%224%22 fill=%22%23c8c8ce%22/%3E%3Ccircle r=%221.8%22 fill=%22%23141316%22/%3E%3C/g%3E%3Cg transform=%22translate(82,22) scale(0.27)%22%3E%3Cuse href=%22%23p%22 transform=%22rotate(0)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(45)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(90)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(135)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(180)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(225)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(270)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(315)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(22.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(67.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(112.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(157.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(202.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(247.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(292.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(337.5)%22/%3E%3Ccircle r=%227.5%22 fill=%22none%22 stroke=%22%23c8c8ce%22 stroke-width=%221.2%22/%3E%3Ccircle r=%224%22 fill=%22%23c8c8ce%22/%3E%3Ccircle r=%221.8%22 fill=%22%23141316%22/%3E%3C/g%3E%3Cg transform=%22translate(18,138) scale(0.27)%22%3E%3Cuse href=%22%23p%22 transform=%22rotate(0)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(45)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(90)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(135)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(180)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(225)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(270)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(315)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(22.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(67.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(112.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(157.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(202.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(247.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(292.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(337.5)%22/%3E%3Ccircle r=%227.5%22 fill=%22none%22 stroke=%22%23c8c8ce%22 stroke-width=%221.2%22/%3E%3Ccircle r=%224%22 fill=%22%23c8c8ce%22/%3E%3Ccircle r=%221.8%22 fill=%22%23141316%22/%3E%3C/g%3E%3Cg transform=%22translate(82,138) scale(0.27)%22%3E%3Cuse href=%22%23p%22 transform=%22rotate(0)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(45)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(90)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(135)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(180)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(225)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(270)%22/%3E%3Cuse href=%22%23p%22 transform=%22rotate(315)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(22.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(67.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(112.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(157.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(202.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(247.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(292.5)%22/%3E%3Cpath d=%22M0,-20 L2,-10 L0,-6 L-2,-10Z%22 fill=%22%23c8c8ce%22 opacity=%22.75%22 transform=%22rotate(337.5)%22/%3E%3Ccircle r=%227.5%22 fill=%22none%22 stroke=%22%23c8c8ce%22 stroke-width=%221.2%22/%3E%3Ccircle r=%224%22 fill=%22%23c8c8ce%22/%3E%3Ccircle r=%221.8%22 fill=%22%23141316%22/%3E%3C/g%3E%3C/svg%3E") center/100% 100% no-repeat;border:none;box-shadow:0 4px 12px #000a}
+.tc.fd::before,.tc.fd::after{display:none}
+.tc:not(.fd){background:#141316;border:3px solid #ece7df;flex-direction:column;justify-content:flex-start;padding-top:18%}
+.tc:not(.fd) .em{font-size:1.6rem;line-height:1}
+.tc-name{font-size:.5rem;color:#f3ede2;background:none;line-height:1.15;padding:3px 2px 5px;letter-spacing:.03em}
+.tc.ok{border-color:#fde68a}
 @media(max-width:520px){
-  .tgrid{grid-template-columns:repeat(5,1fr);gap:5px}
-  .tc{height:86px;font-size:1.4rem}
+  .tgrid{grid-template-columns:repeat(6,1fr);gap:6px}
+  .tc{font-size:1.4rem}
+  .tc:not(.fd) .em{font-size:1.35rem}
+  .tc-name{font-size:.48rem}
   .cn{width:68px;height:68px}
   .cn-sym{font-size:1.4rem}
   #crb{width:160px;height:160px}
@@ -393,6 +405,10 @@ const M=[
    eT:'La Configuración Astral', eI:'★'},
 ];
 
+/* Símbolo yin-yang rojo dibujado (igual en móvil y ordenador) */
+const YY=`<svg viewBox="0 0 100 100" style="width:1em;height:1em;vertical-align:-0.12em;filter:drop-shadow(0 0 6px #dc262688)"><circle cx="50" cy="50" r="48" fill="#dc2626" stroke="#fecaca" stroke-width="3"/><path d="M50 2a48 48 0 0 1 0 96a24 24 0 0 1 0-48a24 24 0 0 0 0-48z" fill="#1a0505"/><circle cx="50" cy="26" r="8" fill="#1a0505"/><circle cx="50" cy="74" r="8" fill="#dc2626"/></svg>`;
+const iconHTML=m=>m.id==='i_ching'?YY:m.icon;
+
 /* 22 Arcanos Mayores completos */
 const ARCANOS=[
   {n:'El Loco',       e:'🃏'},{n:'El Mago',         e:'🌟'},{n:'La Sacerdotisa',e:'🌙'},
@@ -487,30 +503,32 @@ function sndBrindis(){
   }catch(e){}
 }
 
+/* Monedas de bronce: se agitan en las manos, caen con un timbre metálico y la última gira hasta pararse */
+function coinRing(c,t,f,vol,dur){
+  [[1,1],[2.76,.5],[5.40,.26],[8.93,.12]].forEach(([r,a])=>{
+    const o=c.createOscillator(), g=c.createGain();
+    o.type='sine'; o.frequency.value=f*r;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol*a,t+0.003);
+    g.gain.exponentialRampToValueAtTime(0.0008,t+dur/(r*.6+.4));
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+dur+0.05);
+  });
+  const len=Math.floor(c.sampleRate*0.012), buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0);
+  for(let j=0;j<len;j++) d[j]=(Math.random()*2-1)*Math.exp(-j/(c.sampleRate*0.0025));
+  const s=c.createBufferSource(), hp=c.createBiquadFilter(), g=c.createGain();
+  s.buffer=buf; hp.type='highpass'; hp.frequency.value=3500; g.gain.value=vol*1.6;
+  s.connect(hp); hp.connect(g); g.connect(c.destination); s.start(t);
+}
 function sndCoin(){
   if(!sndOn)return;
   try{
-    const c=ga();
-    [0,0.07,0.17,0.29,0.44,0.62,0.8].forEach((dl,i)=>{
-      const t=c.currentTime+dl;
-      const o=c.createOscillator(); const g=c.createGain();
-      o.type='sine'; o.frequency.value=1700-i*50;
-      g.gain.setValueAtTime(0.068-i*0.006,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.11);
-      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+0.11);
-    });
-    setTimeout(()=>{
-      try{
-        const c2=ga(),t=c2.currentTime;
-        const len=Math.floor(c2.sampleRate*0.036);
-        const buf=c2.createBuffer(1,len,c2.sampleRate);
-        const d=buf.getChannelData(0);
-        for(let j=0;j<len;j++) d[j]=(Math.random()*2-1)*Math.exp(-j/(c2.sampleRate*0.008));
-        const src=c2.createBufferSource(); src.buffer=buf;
-        const lp=c2.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=480;
-        const g=c2.createGain(); g.gain.value=0.26;
-        src.connect(lp); lp.connect(g); g.connect(c2.destination); src.start(t);
-      }catch(e){}
-    },840);
+    const c=ga(), t0=c.currentTime;
+    /* agitar: pequeños choques entre monedas */
+    for(let k=0;k<7;k++) coinRing(c,t0+k*0.035+Math.random()*0.02,2600+Math.random()*900,0.018,0.09);
+    /* caída de las tres monedas */
+    [0.32,0.41,0.52].forEach((dl,i)=>coinRing(c,t0+dl,1180+i*170+Math.random()*60,0.075,0.85));
+    /* la última moneda gira y se asienta */
+    let t=t0+0.62, gap=0.075;
+    for(let k=0;k<9;k++){ coinRing(c,t,1500,0.02*(1-k/10),0.12); t+=gap; gap*=0.8; }
   }catch(e){}
 }
 
@@ -588,7 +606,7 @@ function sndReveal(){
   const g=document.getElementById('mg');
   M.forEach(m=>{
     const c=document.createElement('div'); c.className='mc';
-    c.innerHTML=`<span style="font-size:1.85rem;flex-shrink:0">${m.icon}</span>
+    c.innerHTML=`<span style="font-size:1.85rem;flex-shrink:0">${iconHTML(m)}</span>
       <div>
         <div class="hf" style="font-size:.96rem;color:var(--g2)">${m.name}</div>
         <div style="font-size:.82rem;color:#a855f755;font-style:italic;margin-top:1px">${m.desc}</div>
@@ -626,7 +644,7 @@ function buildRing(col){
 function pickMethod(id){
   selM=id; ritSel=null; ritData=null;
   const m=M.find(x=>x.id===id);
-  document.getElementById('po').textContent=m.icon;
+  document.getElementById('po').innerHTML=iconHTML(m);
   document.getElementById('po').style.boxShadow=`0 0 42px ${m.color}88`;
   document.getElementById('mt').textContent=m.name;
   document.getElementById('ms').textContent=m.desc;
@@ -642,7 +660,7 @@ function pickMethod(id){
 function startRitual(){
   ritSel=null; ritData=null;
   const m=M.find(x=>x.id===selM);
-  document.getElementById('ov-title').textContent='Ritual del '+m.name;
+  document.getElementById('ov-title').textContent='Ritual '+({tarot:'del',runas:'de las',i_ching:'del',cristal:'de la',astrologia:'de la'}[m.id]||'del')+' '+m.name;
   document.getElementById('ov-hint').textContent='';
   document.getElementById('ov-stage').innerHTML='';
   document.getElementById('ov-result').textContent='';
@@ -797,7 +815,7 @@ function rIChing(){
   const cEls=[];
   [['☯','CIELO'],['☽','LUNA'],['☼','SOL']].forEach(([sym,lbl])=>{
     const cn=document.createElement('div'); cn.className='cn';
-    cn.innerHTML=`<span class="cn-sym">${sym}</span><span class="cn-txt">${lbl}</span>`;
+    cn.innerHTML=`<span class="cn-sym">${sym==='☯'?YY:sym}</span><span class="cn-txt">${lbl}</span>`;
     crow.appendChild(cn); cEls.push(cn);
   });
 
@@ -841,7 +859,7 @@ function rCristal(){
   const orb=document.createElement('div'); orb.id='crb';
   /* Smoke canvas */
   const cv=document.createElement('canvas'); cv.width=190; cv.height=190;
-  const eye=document.createElement('div'); eye.className='crb-eye'; eye.textContent='👁️';
+  const eye=document.createElement('div'); eye.className='crb-eye'; eye.textContent='';
   const lbl=document.createElement('div'); lbl.className='crb-label'; lbl.textContent='TOCA Y MANTÉN';
   orb.appendChild(cv); orb.appendChild(eye); orb.appendChild(lbl);
 
@@ -902,12 +920,13 @@ function rCristal(){
         clearInterval(timer); done=true; smokeActive=false;
         orb.classList.remove('gz'); orb.classList.add('done');
         lbl.textContent='';
-        eye.style.opacity='1';
+        const vi=Math.floor(Math.random()*L_CRISTAL.length), V=L_CRISTAL[vi];
+        eye.textContent=V.sym; eye.classList.add('show');
         pf.style.width='100%';
         hint.textContent='¡El velo se ha rasgado!';
-        ritData={type:'cristal',vision:Math.floor(Math.random()*L_CRISTAL.length)};
+        ritData={type:'cristal',vision:vi};
         ritSel='Visión en la esfera de cristal — el akasha ha respondido';
-        showOk('🔮 La esfera ha revelado su visión');
+        showOk('🔮 La esfera muestra '+V.s.split(':')[0]);
       }
     },40);
   };
@@ -1316,7 +1335,7 @@ Responde SOLO en JSON sin texto fuera del bloque JSON:
 /* ═══ RENDER ═══ */
 function showResp(ans,m){
   const col=ans.color_energia||m.color||'#a855f7';
-  document.getElementById('bico').textContent=m.icon;
+  document.getElementById('bico').innerHTML=iconHTML(m);
   document.getElementById('bnm').textContent=m.name;
   document.getElementById('asy').textContent=ans.simbolo;
   document.getElementById('asy').style.filter=`drop-shadow(0 0 18px ${col})`;
@@ -1333,7 +1352,7 @@ function showResp(ans,m){
   const a4=document.getElementById('ac4');
   if(ans.conocimiento_arcano){
     document.getElementById('ac4t').textContent=ans.conocimiento_arcano;
-    document.getElementById('a4i').textContent=m.eI||'✦';
+    document.getElementById('a4i').innerHTML=m.id==='i_ching'?YY:(m.eI||'✦');
     document.getElementById('a4t').textContent=m.eT||'Conocimiento Arcano';
     a4.classList.remove('off');
   } else a4.classList.add('off');
