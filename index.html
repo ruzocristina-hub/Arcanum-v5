@@ -366,7 +366,7 @@ const RNM=["Fehu","Uruz","Thurisaz","Ansuz","Raidho","Kenaz","Gebo","Wunjo","Hag
 const ZD =["♈ Aries","♉ Tauro","♊ Géminis","♋ Cáncer","♌ Leo","♍ Virgo","♎ Libra","♏ Escorpio","♐ Sagitario","♑ Capricornio","♒ Acuario","♓ Piscis"];
 const ZCOLORS=["#e74c3c","#8b4513","#f39c12","#3498db","#f1c40f","#27ae60","#e91e9c","#9b59b6","#e67e22","#2c3e50","#1abc9c","#8e44ad"];
 
-let selM=null, sndOn=true, actx=null, ritSel=null;
+let selM=null, sndOn=true, actx=null, ritSel=null, ritData=null;
 
 /* ═══ AUDIO ═══ */
 function ga(){
@@ -580,7 +580,7 @@ function buildRing(col){
 
 /* ── PICK METHOD ── */
 function pickMethod(id){
-  selM=id; ritSel=null;
+  selM=id; ritSel=null; ritData=null;
   const m=M.find(x=>x.id===id);
   document.getElementById('po').textContent=m.icon;
   document.getElementById('po').style.boxShadow=`0 0 42px ${m.color}88`;
@@ -596,7 +596,7 @@ function pickMethod(id){
 
 /* ── RITUAL ── */
 function startRitual(){
-  ritSel=null;
+  ritSel=null; ritData=null;
   const m=M.find(x=>x.id===selM);
   document.getElementById('ov-title').textContent='Ritual del '+m.name;
   document.getElementById('ov-hint').textContent='';
@@ -649,6 +649,7 @@ function rTarot(m){
         cards.forEach(c=>{if(!c.classList.contains('ok'))c.classList.add('nx');});
         const names=now.map(c=>c.dataset.n).join(' · ');
         hint.textContent='¡Tu tirada está lista!';
+        ritData={type:'tarot',cards:now.map(c=>c.dataset.n)};
         ritSel=names; showOk('🃏 '+names);
       } else {
         hint.textContent=`${now.length} elegida${now.length>1?'s':''} — elige ${3-now.length} más`;
@@ -724,6 +725,7 @@ function rRunas(m){
       bagDiv.style.opacity='.4'; bagDiv.style.cursor='default';
       const names=drawn.map(i=>`${RN[i]} ${RNM[i]}`).join(' · ');
       hint.textContent='¡Las runas han hablado!';
+      ritData={type:'runas',runes:drawn.slice()};
       ritSel=names; showOk('ᚱ '+names);
     } else {
       hint.textContent=`${drawn.length} extraída — toca ${3-drawn.length} veces más`;
@@ -773,6 +775,7 @@ function rIChing(){
       if(throws>=6){
         const yc=yinLines.filter(Boolean).length;
         hint.textContent='¡El hexagrama ha sido construido!';
+        ritData={type:'iching',lines:yinLines.slice()};
         ritSel=`Hexagrama: ${6-yc} yang / ${yc} yin`;
         showOk('☯ '+ritSel);
       }
@@ -858,6 +861,7 @@ function rCristal(){
         eye.style.opacity='1';
         pf.style.width='100%';
         hint.textContent='¡El velo se ha rasgado!';
+        ritData={type:'cristal',vision:Math.floor(Math.random()*L_CRISTAL.length)};
         ritSel='Visión en la esfera de cristal — el akasha ha respondido';
         showOk('🔮 La esfera ha revelado su visión');
       }
@@ -992,6 +996,7 @@ function rAstro(m){
     res.innerHTML=`${ZD[idx]} <span style="font-size:.8rem;color:#f9731699">${ZODIAC_NAMES_SHORT[idx]}</span>`;
     spinHint.textContent='';
     hint.textContent='¡Los astros han señalado tu signo!';
+    ritData={type:'astro',sign:idx};
     ritSel=`Signo ${ZD[idx]}`; showOk(`★ ${ZD[idx]} señalado`);
   };
 
@@ -1017,6 +1022,210 @@ function rAstro(m){
   },{passive:false});
 }
 
+/* ═══ ORÁCULO LOCAL — lecturas escritas (coste cero) ═══
+   Cuando activemos la lectura con IA de pago, cambiar MODO_IA a true. */
+const MODO_IA=false;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const lc=s=>s.charAt(0).toLowerCase()+s.slice(1);
+
+/* ── Tema de la pregunta ── */
+const TEMAS={
+  amor:{k:["amor","pareja","novi","relaci","enamor","coraz","casar","boda","cita","sentimiento","me quiere","ex ","celos","marido","mujer","esposo","esposa"],
+    i:["Sobre tu corazón,","En lo que preguntas sobre el amor,","En el terreno de los afectos,"],
+    t:"En el amor, la sinceridad abrirá más puertas que cualquier estrategia."},
+  trabajo:{k:["trabajo","empleo","jefe","negocio","dinero","econom","proyecto","carrera","estudi","examen","empresa","cliente","venta","sueldo","restaurante","oposici","entrevista","deuda","invert"],
+    i:["En el terreno del trabajo y el dinero,","Sobre tu camino profesional,","En lo material,"],
+    t:"En lo profesional, da pasos concretos y fáciles de medir."},
+  salud:{k:["salud","enferm","cuerpo","cansad","ánimo","animo","dormir","estrés","estres","ansiedad"],
+    i:["Sobre tu energía y tu bienestar,","En lo que respecta a tu cuerpo y tu ánimo,"],
+    t:"Escucha a tu cuerpo y no dudes en apoyarte en profesionales."},
+  decision:{k:["debo","debería","deberia","decidir","decisión","decision","elegir","o no","cambiar","mudar","irme","dejar","aceptar","qué hago","que hago"],
+    i:["Ante la decisión que te inquieta,","Sobre la elección que tienes delante,"],
+    t:"Antes de elegir, imagina cómo te sentirás dentro de un año con cada opción."},
+  familia:{k:["familia","madre","padre","mamá","papá","hij","herman","abuel","tía","tío"],
+    i:["En lo que respecta a tu familia,","Sobre los lazos de tu sangre,"],
+    t:"Una conversación sincera puede sanar más de lo que imaginas."},
+  general:{k:[],i:["En lo que preguntas,","Sobre tu pregunta,","Para lo que buscas saber,"],t:""}
+};
+function temaDe(q){
+  const t=(" "+(q||"").toLowerCase()+" ");
+  for(const key of ["amor","trabajo","salud","decision","familia"])
+    if(TEMAS[key].k.some(w=>t.includes(w))) return TEMAS[key];
+  return TEMAS.general;
+}
+const conTema=(c,T)=>T.t?c+" "+T.t:c;
+
+/* ── TAROT: 22 Arcanos Mayores ── */
+const L_TAROT={
+"El Loco":{k:"Libertad",col:"#fde68a",f:"Salta: el camino aparece bajo los pies de quien se atreve.",s:"un comienzo sin garantías, la inocencia de quien se lanza a lo desconocido",c:"Da el primer paso aunque no veas el final del camino; la experiencia llegará andando.",a:"No confundas valentía con imprudencia: mira dónde pisas.",d:"El Loco es la única carta sin un lugar fijo: es el número 0 y puede situarse al principio o al final del viaje."},
+"El Mago":{k:"Voluntad",col:"#f59e0b",f:"Todo lo que necesitas ya está sobre tu mesa.",s:"el poder de convertir las ideas en hechos con lo que ya tienes",c:"Usa tus recursos con intención y concentra tu energía en una sola meta.",a:"El talento sin ética se convierte en manipulación.",d:"Sobre la mesa del Mago aparecen los cuatro palos del tarot: copa, espada, oro y basto, los cuatro elementos a su servicio."},
+"La Sacerdotisa":{k:"Intuición",col:"#818cf8",f:"La respuesta ya habla en tu silencio.",s:"el conocimiento oculto, la intuición y lo que todavía no se ha revelado",c:"Antes de actuar, escucha. Una pausa te dará más claridad que mil argumentos.",a:"Guardar secretos demasiado tiempo también pesa.",d:"Se sienta entre dos columnas, Boaz y Jakin, que según la tradición flanqueaban la entrada del Templo de Salomón."},
+"La Emperatriz":{k:"Abundancia",col:"#f472b6",f:"Lo que cuidas con paciencia florece.",s:"la fertilidad, la creatividad y el cuidado que hace crecer las cosas",c:"Nutre lo que quieres que crezca: tiempo, cariño y constancia.",a:"Dar sin medida puede dejarte sin nada; cuida también de ti.",d:"Su número, el 3, simboliza la unión de dos fuerzas que da lugar a algo nuevo."},
+"El Emperador":{k:"Estructura",col:"#ef4444",f:"El orden es la base sobre la que se levanta lo grande.",s:"la autoridad, la estabilidad y las reglas que dan forma a la vida",c:"Pon límites claros y organiza tu plan; la disciplina será tu aliada.",a:"La rigidez excesiva rompe lo que intenta proteger.",d:"Su trono suele estar decorado con cabezas de carnero, símbolo de Aries, el signo del inicio y la acción."},
+"El Hierofante":{k:"Tradición",col:"#a78bfa",f:"Hay sabiduría en los caminos que otros ya recorrieron.",s:"la tradición, el aprendizaje y la guía de un maestro",c:"Busca consejo en alguien con experiencia; no tienes que inventarlo todo.",a:"Seguir normas sin cuestionarlas puede alejarte de tu verdad.",d:"En las barajas antiguas se le llamaba El Papa, guardián de las llaves del conocimiento."},
+"Los Amantes":{k:"Unión",col:"#ec4899",f:"Elegir con el corazón también es elegir quién eres.",s:"una elección importante, la unión y la armonía entre opuestos",c:"Decide desde tus valores, no desde el miedo a perder.",a:"No entregues tu criterio por agradar a otra persona.",d:"Antes de ser una carta de amor, Los Amantes fue una carta de elección: un joven entre dos caminos."},
+"El Carro":{k:"Determinación",col:"#f97316",f:"Avanza: tu voluntad es el camino.",s:"la victoria que llega con control, enfoque y determinación",c:"Toma las riendas y mantén el rumbo aunque haya fuerzas tirando en direcciones opuestas.",a:"Ganar a toda costa puede costarte más de lo que ganas.",d:"Las dos esfinges, una blanca y otra negra, son fuerzas opuestas que el auriga guía sin riendas, solo con su voluntad."},
+"La Fuerza":{k:"Coraje",col:"#fbbf24",f:"La verdadera fuerza no grita: abraza.",s:"el coraje sereno, la paciencia y el dominio de las propias emociones",c:"Responde con calma y firmeza; la suavidad vence donde la fuerza bruta fracasa.",a:"Reprimir lo que sientes no es lo mismo que dominarlo.",d:"Sobre la cabeza de la mujer que doma al león aparece el símbolo del infinito, igual que en El Mago."},
+"El Ermitaño":{k:"Introspección",col:"#94a3b8",f:"Tu propia luz basta para el siguiente paso.",s:"la búsqueda interior, la soledad elegida y la sabiduría que nace del silencio",c:"Date un tiempo a solas para escucharte antes de decidir.",a:"Retirarse demasiado puede convertirse en aislamiento.",d:"Su farol contiene una estrella de seis puntas, el sello de Salomón, que une lo de arriba con lo de abajo."},
+"La Rueda":{k:"Cambio",col:"#22d3ee",f:"Lo que gira, vuelve: prepárate para el giro.",s:"los ciclos, el destino y los cambios que no dependen solo de ti",c:"Fluye con el cambio en lugar de resistirte y aprovecha el momento cuando llegue.",a:"Nada es permanente, tampoco la buena racha: no te confíes.",d:"En sus esquinas aparecen un ángel, un águila, un toro y un león, asociados a los cuatro signos fijos del zodíaco."},
+"La Justicia":{k:"Equilibrio",col:"#60a5fa",f:"Cada acto encuentra su peso exacto.",s:"la verdad, la responsabilidad y las consecuencias justas de los actos",c:"Actúa con honestidad, contigo y con los demás, como querrías que actuaran contigo.",a:"Juzgar a otros con dureza suele esconder un juicio sobre uno mismo.",d:"En la baraja Rider-Waite es el arcano 11, pero en el Tarot de Marsella ocupa el lugar 8, intercambiada con La Fuerza."},
+"El Colgado":{k:"Pausa",col:"#2dd4bf",f:"Mira el mundo al revés y verás lo que nadie ve.",s:"una pausa necesaria, el sacrificio voluntario y un cambio de perspectiva",c:"No fuerces las cosas ahora; espera y mira la situación desde otro ángulo.",a:"Esperar eternamente también es una forma de no decidir.",d:"Su rostro está sereno: cuelga por elección, y alrededor de su cabeza brilla un halo de iluminación."},
+"La Muerte":{k:"Transformación",col:"#9ca3af",f:"Algo termina para que algo nuevo pueda nacer.",s:"un final necesario, la transformación profunda y el cierre de una etapa",c:"Suelta lo que ya cumplió su ciclo; despedirse también es avanzar.",a:"Aferrarte a lo que se acabó solo alarga el dolor.",d:"Esta carta casi nunca habla de muerte física: en el tarot simboliza la transformación y el renacer."},
+"La Templanza":{k:"Armonía",col:"#34d399",f:"La medida justa convierte el agua en vino.",s:"el equilibrio, la paciencia y la mezcla armoniosa de los extremos",c:"Busca el punto medio y combina con calma lo que parece opuesto.",a:"La prisa romperá la alquimia que está ocurriendo.",d:"El ángel tiene un pie en el agua y otro en la tierra: une lo emocional y lo material."},
+"El Diablo":{k:"Apego",col:"#dc2626",f:"Las cadenas que te atan pueden quitarse.",s:"los apegos, las tentaciones y aquello que te tiene atrapado sin que lo veas",c:"Identifica qué te encadena —un hábito, un miedo, una relación— y recuerda que puedes soltarlo.",a:"Lo que niegas de ti es lo que más poder tiene sobre ti.",d:"En la carta, las cadenas de las dos figuras están flojas: podrían quitárselas si quisieran."},
+"La Torre":{k:"Revelación",col:"#f43f5e",f:"Lo que estaba mal construido cae para liberarte.",s:"una sacudida inesperada, la caída de lo falso y una revelación repentina",c:"Si algo se derrumba, no lo reconstruyas igual: aprovecha para construir sobre la verdad.",a:"Ignorar las grietas no evita el derrumbe.",d:"El rayo que golpea la torre se interpreta como un destello de verdad que rompe las ilusiones."},
+"La Estrella":{k:"Esperanza",col:"#93c5fd",f:"Después de la tormenta, el cielo se abre.",s:"la esperanza, la sanación y la fe renovada en el futuro",c:"Confía y vuelve a soñar; es momento de cuidar tu ánimo y mirar hacia adelante.",a:"La esperanza necesita acción para hacerse realidad.",d:"Tras la caída de La Torre llega La Estrella: el tarot enseña que la calma sigue al caos."},
+"La Luna":{k:"Misterio",col:"#6366f1",f:"No todo lo que ves en la noche es real.",s:"la incertidumbre, los miedos ocultos y la confusión entre ilusión y realidad",c:"No tomes decisiones definitivas hasta que todo se aclare; confía en tu intuición, no en tus miedos.",a:"Hay algo que no se está mostrando con claridad: investiga antes de creer.",d:"El perro y el lobo que aúllan a la luna representan nuestra parte domesticada y nuestra parte salvaje."},
+"El Sol":{k:"Alegría",col:"#facc15",f:"La luz te encuentra: es tiempo de brillar.",s:"el éxito, la alegría, la claridad y la vitalidad",c:"Muéstrate tal como eres y celebra lo que has logrado; tu energía contagia.",a:"Brillar no significa eclipsar a los demás.",d:"Se considera la carta más luminosa de todo el tarot: claridad absoluta, sin sombras."},
+"El Juicio":{k:"Despertar",col:"#c084fc",f:"Una llamada te invita a renacer.",s:"el despertar, la renovación y la llamada a una nueva etapa",c:"Haz balance de tu camino, perdónate lo pasado y responde a lo que te llama.",a:"Juzgarte con dureza no te deja avanzar.",d:"La trompeta del ángel anuncia un renacimiento después de haber hecho balance de la vida."},
+"El Mundo":{k:"Plenitud",col:"#10b981",f:"El círculo se completa: has llegado.",s:"la culminación, el logro y la plenitud de un ciclo cerrado",c:"Reconoce lo que has conseguido: es el momento de empezar un nuevo ciclo.",a:"Cerrar un ciclo exige soltarlo; no te quedes viviendo en él.",d:"La figura central baila dentro de una guirnalda de laurel, símbolo de victoria y del ciclo completo."}
+};
+
+/* ── RUNAS: 24 del Futhark (mismo orden que RNM) ── */
+const L_RUNAS=[
+{k:"Prosperidad",col:"#fbbf24",f:"Lo que siembras con trabajo vuelve multiplicado.",s:"la riqueza que se gana y circula, los recursos y la abundancia material",c:"Administra bien lo que tienes y deja que circule: la abundancia crece al moverse.",a:"La codicia convierte la riqueza en carga.",d:"Fehu significa «ganado», la principal medida de riqueza entre los antiguos pueblos germánicos."},
+{k:"Fuerza",col:"#b45309",f:"Tu fuerza interior es mayor que el obstáculo.",s:"la fuerza vital, la salud y la energía salvaje que impulsa el cambio",c:"Confía en tu resistencia: tienes más fuerza de la que crees.",a:"La fuerza sin dirección se desperdicia.",d:"Uruz representa al uro, un toro salvaje gigante que habitó Europa hasta su extinción en el siglo XVII."},
+{k:"Protección",col:"#ef4444",f:"Antes de cruzar la puerta, mira quién la guarda.",s:"una fuerza defensiva, un obstáculo o una puerta que hay que cruzar con cuidado",c:"Piensa antes de actuar; no todos los conflictos merecen tu energía.",a:"Un impulso precipitado ahora puede volverse contra ti.",d:"Thurisaz se asocia a los gigantes y al martillo de Thor, que protegía a los dioses del caos."},
+{k:"Mensaje",col:"#60a5fa",f:"Las señales están hablando: escúchalas.",s:"la comunicación, la palabra inspirada y los mensajes que llegan",c:"Presta atención a lo que te dicen, a las señales y a las conversaciones de estos días.",a:"Las palabras dichas con rabia no se pueden recoger.",d:"Ansuz está ligada a Odín, dios de la sabiduría y la poesía, que entregó un ojo a cambio del conocimiento."},
+{k:"Viaje",col:"#38bdf8",f:"El camino se abre al que se pone en marcha.",s:"el viaje, el movimiento y el ritmo correcto de las cosas",c:"Ponte en marcha, pero a tu ritmo: el camino importa tanto como el destino.",a:"Ir demasiado rápido te hará perder el rumbo.",d:"Raidho significa «cabalgata» y simboliza tanto los viajes físicos como el viaje del alma."},
+{k:"Claridad",col:"#f97316",f:"Una luz se enciende donde antes había sombra.",s:"la antorcha que ilumina, la creatividad y el conocimiento que se revela",c:"Usa tu talento y tu creatividad: ahora puedes ver lo que antes estaba oscuro.",a:"El mismo fuego que ilumina puede quemar si no se cuida.",d:"Kenaz es la antorcha: la luz del artesano que transforma la materia con el fuego."},
+{k:"Regalo",col:"#f472b6",f:"Lo que das con el corazón regresa a ti.",s:"el regalo, el intercambio equilibrado y las relaciones de reciprocidad",c:"Da y recibe por igual; una alianza o un gesto generoso abrirá puertas.",a:"Un regalo que crea deuda no es un regalo.",d:"Gebo no tiene posición invertida: su forma de X es igual del derecho y del revés, como el intercambio justo."},
+{k:"Alegría",col:"#facc15",f:"La alegría ya ha encontrado tu puerta.",s:"la alegría, la armonía y la satisfacción de estar en el lugar correcto",c:"Disfruta de lo bueno que ya está aquí y compártelo con los tuyos.",a:"No pongas tu felicidad en manos de una sola persona o situación.",d:"Wunjo representa una banderola al viento: la alegría de quien sabe hacia dónde sopla."},
+{k:"Disrupción",col:"#94a3b8",f:"Tras el granizo, la tierra queda más fértil.",s:"una interrupción repentina que, al pasar, deja algo útil",c:"Acepta lo que no puedes controlar; esta tormenta pasará.",a:"Resistirte al cambio inevitable lo hará más duro.",d:"Hagalaz significa «granizo»: hielo que destruye la cosecha pero, al derretirse, se convierte en agua que la alimenta."},
+{k:"Necesidad",col:"#a16207",f:"La necesidad es la chispa del cambio.",s:"la necesidad, las limitaciones y la resistencia que obliga a crecer",c:"Distingue lo que necesitas de lo que deseas; la paciencia es ahora tu mayor fuerza.",a:"La queja constante consume la energía que necesitas para salir.",d:"Nauthiz evoca el fuego que se encendía frotando dos maderas: la fricción que produce la chispa."},
+{k:"Quietud",col:"#a5f3fc",f:"Detente: el hielo también protege.",s:"una pausa, un estancamiento o un momento para quedarse quieto",c:"No es tiempo de forzar; espera a que el hielo se derrita por sí solo.",a:"Una frialdad prolongada puede congelar lo que más quieres.",d:"Isa, una simple línea vertical, es la runa más sencilla del Futhark: la quietud en estado puro."},
+{k:"Cosecha",col:"#84cc16",f:"Lo que sembraste está a punto de dar fruto.",s:"la cosecha, los ciclos y la recompensa que llega a su debido tiempo",c:"Sigue cultivando con constancia: los frutos de tu esfuerzo están llegando.",a:"No se puede cosechar antes de tiempo.",d:"Jera significa «año»: representa el ciclo completo de siembra y cosecha."},
+{k:"Resistencia",col:"#15803d",f:"Las raíces profundas resisten cualquier tormenta.",s:"la resistencia, la transformación y el paso entre dos mundos",c:"Mantente firme; esta prueba te está haciendo más fuerte.",a:"Aferrarse a lo antiguo impide la transformación.",d:"Eihwaz es el tejo, uno de los árboles más longevos de Europa, que algunos identifican con Yggdrasil, el árbol del mundo."},
+{k:"Misterio",col:"#8b5cf6",f:"El destino guarda una carta que aún no ves.",s:"el misterio, el azar y lo que el destino todavía guarda en secreto",c:"Deja espacio a lo inesperado: no todo puede planearse.",a:"Apostarlo todo a la suerte es arriesgado.",d:"Perthro se ha interpretado como un cubilete de dados: el juego del destino que nadie controla del todo."},
+{k:"Protección",col:"#22c55e",f:"Estás bajo protección: confía.",s:"la protección, el instinto y la conexión con lo sagrado",c:"Confía en tu instinto y protege tus límites.",a:"Protegerte no significa cerrarte a todo.",d:"La forma de Algiz recuerda a los cuernos de un alce o a una persona con los brazos alzados al cielo."},
+{k:"Éxito",col:"#fde047",f:"El sol está de tu lado.",s:"la victoria, la energía vital y el éxito que se acerca",c:"Avanza con confianza: la luz te acompaña.",a:"El exceso de sol también quema: cuida tu energía.",d:"Sowilo es la runa del sol, que para los navegantes nórdicos era la guía más fiable sobre el mar."},
+{k:"Justicia",col:"#dc2626",f:"La causa justa encuentra su victoria.",s:"el guerrero justo, el valor y el sacrificio por una causa noble",c:"Defiende lo que es justo con valentía y honor.",a:"Luchar por orgullo no es lo mismo que luchar por justicia.",d:"Tiwaz representa a Tyr, el dios que sacrificó su mano en la boca del lobo Fenrir para proteger a los demás dioses."},
+{k:"Nacimiento",col:"#86efac",f:"Algo nuevo está naciendo.",s:"el nacimiento, el crecimiento y los nuevos comienzos",c:"Cuida lo que está empezando: necesita tiempo y ternura para crecer.",a:"No compares tu crecimiento con el de los demás.",d:"Berkano es el abedul, uno de los primeros árboles en brotar tras el invierno."},
+{k:"Avance",col:"#fb923c",f:"Juntos se llega más lejos.",s:"el movimiento, la confianza mutua y el progreso en compañía",c:"Avanza junto a quien confía en ti; las alianzas te harán llegar más lejos.",a:"Sin confianza, cualquier equipo se detiene.",d:"Ehwaz simboliza el vínculo entre jinete y caballo: dos seres que se mueven como uno."},
+{k:"Humanidad",col:"#c4b5fd",f:"La respuesta está en ti y en los tuyos.",s:"la humanidad, el yo y la relación con los demás",c:"Busca apoyo en tu gente y recuerda quién eres de verdad.",a:"Compararte con los demás te aleja de ti.",d:"Mannaz significa «ser humano»: la conciencia de uno mismo y del otro."},
+{k:"Fluir",col:"#3b82f6",f:"Fluye: el agua siempre encuentra su camino.",s:"la intuición, las emociones y la capacidad de dejarse llevar",c:"Déjate llevar por la corriente y escucha a tus emociones.",a:"Las aguas profundas pueden arrastrarte si no sabes nadar en ellas.",d:"Laguz significa «lago» o «agua», y se asocia al viaje al otro mundo, que los antiguos imaginaban a través del mar."},
+{k:"Gestación",col:"#a3e635",f:"La semilla ya está lista para brotar.",s:"la semilla, la gestación y el potencial que está a punto de florecer",c:"Termina lo que has empezado: algo nuevo está madurando dentro de ti.",a:"Abandonar justo antes del final desperdicia la siembra.",d:"Ingwaz está ligada a Ing, antiguo dios de la fertilidad y de la tierra."},
+{k:"Amanecer",col:"#fdba74",f:"Amanece: la noche ha terminado.",s:"el amanecer, el despertar y un cambio radical hacia la luz",c:"Abre los ojos al nuevo día: es momento de transformación.",a:"No mires atrás con nostalgia cuando el sol ya ha salido.",d:"Dagaz significa «día»: el instante exacto en que la noche se convierte en luz."},
+{k:"Herencia",col:"#a16207",f:"Tus raíces son tu fuerza.",s:"la herencia, el hogar y las raíces que nos sostienen",c:"Vuelve a tus raíces: tu familia y tu historia guardan la respuesta.",a:"Aferrarse al pasado puede impedirte construir tu propio hogar.",d:"Othala representa la tierra heredada: lo que pasa de generación en generación."}
+];
+
+/* ── I CHING: 8 trigramas (líneas de abajo arriba, 1 = yang) ── */
+const L_TRIG={
+"111":{n:"Cielo",sym:"☰",k:"Creación",col:"#fde68a",f:"Quien persevera mueve el cielo.",s:"la fuerza creativa, la iniciativa y la perseverancia",c:"Toma la iniciativa con constancia: el cielo premia a quien no se detiene.",a:"La terquedad no es lo mismo que la perseverancia."},
+"000":{n:"Tierra",sym:"☷",k:"Receptividad",col:"#a8a29e",f:"La tierra lo sostiene todo sin quejarse.",s:"la receptividad, la paciencia y la capacidad de sostener",c:"Escucha, acompaña y deja que las cosas maduren.",a:"La pasividad excesiva te deja a merced de otros."},
+"100":{n:"Trueno",sym:"☳",k:"Impulso",col:"#a78bfa",f:"El trueno despierta lo que dormía.",s:"el impulso repentino y la sacudida que despierta",c:"Aprovecha este impulso para empezar algo nuevo.",a:"El susto pasa: no dejes que el miedo te paralice."},
+"010":{n:"Agua",sym:"☵",k:"Riesgo",col:"#3b82f6",f:"El agua no lucha y siempre encuentra salida.",s:"el peligro, la profundidad y la necesidad de fluir sin rendirse",c:"Mantén la sinceridad y sigue adelante como el agua, que siempre encuentra su camino.",a:"No te hundas en la desconfianza."},
+"001":{n:"Montaña",sym:"☶",k:"Quietud",col:"#92400e",f:"Saber detenerse también es avanzar.",s:"la quietud, los límites y el saber parar a tiempo",c:"Detente, reflexiona y no avances hasta que sea el momento.",a:"Quedarse quieto por miedo no es serenidad."},
+"011":{n:"Viento",sym:"☴",k:"Constancia",col:"#2dd4bf",f:"El viento suave dobla el árbol más alto.",s:"la influencia suave y la constancia que penetra poco a poco",c:"Actúa con suavidad pero sin parar: la constancia gana.",a:"La indecisión dispersa tus fuerzas."},
+"101":{n:"Fuego",sym:"☲",k:"Claridad",col:"#f97316",f:"La luz necesita algo en qué apoyarse para brillar.",s:"la claridad, la pasión y la luz que ilumina la verdad",c:"Busca la verdad y apóyate en lo que te sostiene.",a:"El fuego sin control consume lo que ilumina."},
+"110":{n:"Lago",sym:"☱",k:"Alegría",col:"#22d3ee",f:"La alegría compartida se multiplica.",s:"la alegría, la comunicación y el placer compartido",c:"Comparte, conversa y disfruta: la alegría abre puertas.",a:"La alegría superficial esconde lo que no se quiere ver."}
+};
+const D_ICHING=[
+"El I Ching tiene alrededor de 3.000 años y es uno de los textos más antiguos de China.",
+"Los 64 hexagramas nacen de combinar 8 trigramas de tres líneas, uno encima de otro.",
+"El filósofo Leibniz vio en las líneas del I Ching un reflejo de su sistema binario, la base de la informática actual.",
+"Antiguamente se consultaba con tallos de milenrama; el método de las tres monedas llegó siglos después.",
+"El trigrama de abajo habla de tu mundo interior; el de arriba, de lo que se mueve a tu alrededor."
+];
+
+/* ── BOLA DE CRISTAL: visiones ── */
+const L_CRISTAL=[
+{sym:"🚪",k:"Oportunidad",col:"#c084fc",f:"Una puerta se abre: no la dejes cerrarse.",s:"una puerta entreabierta: una oportunidad que se presenta ahora y no estará abierta para siempre",c:"Si algo te llama, acércate y pregunta; la oportunidad premia a quien se mueve.",a:"Dudar demasiado puede hacer que la puerta se cierre sola."},
+{sym:"🛤️",k:"Decisión",col:"#a78bfa",f:"Dos caminos: solo uno lleva tu nombre.",s:"un camino que se bifurca: una elección que solo tú puedes hacer",c:"Elige el camino que te haga sentir en paz, no el que menos miedo te dé.",a:"Quedarte en el cruce también es una elección."},
+{sym:"🕊️",k:"Liberación",col:"#e0e7ff",f:"Lo que se suelta, vuela.",s:"un pájaro que alza el vuelo: la liberación de una carga que llevas demasiado tiempo",c:"Suelta aquello que ya no te pertenece; ligero se avanza mejor.",a:"No confundas soltar con huir de lo que te toca resolver."},
+{sym:"🔑",k:"Solución",col:"#fbbf24",f:"La llave ya está en tu mano.",s:"una llave dorada: la solución existe y está más cerca de lo que crees",c:"Revisa lo que ya sabes y los recursos que tienes: ahí está la respuesta.",a:"Buscar fuera lo que está dentro te hará dar vueltas."},
+{sym:"🕯️",k:"Esperanza",col:"#fde68a",f:"Una sola llama vence a toda la oscuridad.",s:"una vela encendida en la oscuridad: la esperanza sigue viva",c:"Cuida esa pequeña luz; con constancia se convertirá en hoguera.",a:"No dejes que el pesimismo de otros apague tu llama."},
+{sym:"🌊",k:"Fluir",col:"#38bdf8",f:"El río no empuja: fluye y llega al mar.",s:"un río que desemboca en el mar: las cosas encontrarán su cauce si no las fuerzas",c:"Deja que la situación avance a su ritmo natural.",a:"Remar contra la corriente agota sin llevarte a ningún sitio."},
+{sym:"⏳",k:"Tiempo",col:"#d6d3d1",f:"Cada grano de arena cae a su tiempo.",s:"un reloj de arena: el momento todavía no ha llegado, pero se acerca",c:"Ten paciencia y prepárate mientras esperas.",a:"Precipitarte ahora podría estropear lo que está madurando."},
+{sym:"🌱",k:"Comienzo",col:"#4ade80",f:"Lo pequeño de hoy será grande mañana.",s:"una semilla que brota: el inicio de algo que crecerá con tu cuidado",c:"Dedica un poco cada día a lo que estás empezando.",a:"Arrancar el brote para ver si crece no lo hará crecer antes."},
+{sym:"🎭",k:"Verdad",col:"#f43f5e",f:"Detrás de la máscara está la respuesta.",s:"una máscara: algo o alguien no se muestra tal como es",c:"Observa los actos más que las palabras; la verdad saldrá a la luz.",a:"Tampoco escondas tú lo que sientes."},
+{sym:"🌀",k:"Ascenso",col:"#818cf8",f:"Cada vuelta te eleva un poco más.",s:"una escalera en espiral: parece que repites el camino, pero cada vez estás más arriba",c:"Reconoce lo que has aprendido; no estás donde empezaste.",a:"No te castigues por tropezar con la misma piedra: esta vez la ves antes."},
+{sym:"🤝",k:"Unión",col:"#f472b6",f:"No caminas en soledad.",s:"dos manos entrelazadas: una alianza, un apoyo o un reencuentro",c:"Pide ayuda y ofrécela; la unión te hará llegar más lejos.",a:"Elige bien en quién confías."},
+{sym:"🗼",k:"Guía",col:"#fcd34d",f:"Hay una luz que te guía aunque haya tormenta.",s:"un faro en la tormenta: una guía, una señal o una persona que te orienta",c:"Busca referencias en quien ya ha pasado por lo mismo.",a:"No navegues a ciegas por orgullo."}
+];
+const D_CRISTAL=[
+"La cristalomancia se practicaba ya en Grecia y Roma, donde se miraba en agua, espejos y piedras pulidas.",
+"John Dee, astrólogo de la reina Isabel I de Inglaterra, usaba un espejo de obsidiana y una bola de cristal para sus visiones.",
+"Los videntes no buscan imágenes en el cristal: lo usan para aquietar la mente y dejar hablar a la intuición.",
+"Los antiguos griegos creían que el cuarzo era hielo eterno; de ahí su nombre, krystallos."
+];
+
+/* ── ASTROLOGÍA: 12 signos (mismo orden que ZD) ── */
+const L_ASTRO=[
+{el:"fuego",k:"Iniciativa",f:"El primer paso es tuyo: atrévete.",s:"la iniciativa, el valor y el impulso de empezar",c:"Lánzate a eso que llevas tiempo posponiendo.",a:"La impaciencia puede hacerte quemar etapas.",d:"Aries abre el zodíaco: el Sol entra en este signo con el equinoccio de primavera."},
+{el:"tierra",k:"Estabilidad",f:"Lo que construyes despacio dura para siempre.",s:"la calma, la constancia y el disfrute de lo tangible",c:"Avanza paso a paso y cuida tu bienestar material.",a:"La terquedad puede hacerte perder buenas oportunidades.",d:"Tauro está regido por Venus, por eso se asocia con la belleza, los sentidos y el placer."},
+{el:"aire",k:"Comunicación",f:"Una conversación puede cambiarlo todo.",s:"la curiosidad, la comunicación y la versatilidad",c:"Habla, pregunta, infórmate: las respuestas llegan a través de otras personas.",a:"Dispersarte en mil cosas te impedirá terminar ninguna.",d:"Géminis representa a Cástor y Pólux, los gemelos de la mitología griega unidos más allá de la muerte."},
+{el:"agua",k:"Hogar",f:"Tu refugio está donde te sientes en casa.",s:"la sensibilidad, el hogar y el cuidado de los tuyos",c:"Rodéate de quienes te quieren y cuida tu mundo emocional.",a:"Encerrarte en tu caparazón te aleja de lo que necesitas.",d:"Cáncer está regido por la Luna, que gobierna las mareas y, según la astrología, las emociones."},
+{el:"fuego",k:"Brillo",f:"Ha llegado tu momento de brillar.",s:"la confianza, la creatividad y el corazón generoso",c:"Muéstrate sin miedo y lidera desde el corazón.",a:"El orgullo puede cerrarte puertas que la humildad abriría.",d:"Leo es el único signo regido por el Sol, el centro de nuestro sistema."},
+{el:"tierra",k:"Orden",f:"En los detalles está la respuesta.",s:"el análisis, el orden y el deseo de mejorar",c:"Organiza, revisa y pule los detalles: ahí está la clave.",a:"El perfeccionismo puede paralizarte.",d:"Virgo suele representarse con una espiga de trigo: su estrella más brillante se llama Spica, «espiga» en latín."},
+{el:"aire",k:"Equilibrio",f:"La armonía es la respuesta.",s:"el equilibrio, la justicia y las relaciones",c:"Busca acuerdos y escucha a las dos partes antes de decidir.",a:"Por evitar el conflicto, no te olvides de lo que tú quieres.",d:"Libra es el único signo del zodíaco representado por un objeto, la balanza, y no por un ser vivo."},
+{el:"agua",k:"Transformación",f:"Lo que muere en ti te hace renacer.",s:"la intensidad, la transformación y lo oculto",c:"Mira bajo la superficie y no temas transformarte.",a:"Los celos y el rencor envenenan más a quien los guarda.",d:"Escorpio se asocia también al águila y al fénix, símbolos de su capacidad de renacer."},
+{el:"fuego",k:"Expansión",f:"Apunta alto: tu flecha llegará lejos.",s:"la aventura, el optimismo y la búsqueda de sentido",c:"Amplía horizontes: viaja, aprende, atrévete con algo nuevo.",a:"Prometer más de lo que puedes cumplir te pasará factura.",d:"Sagitario es el centauro arquero, mitad humano y mitad caballo, que apunta su flecha a las estrellas."},
+{el:"tierra",k:"Ambición",f:"La cima se alcanza paso a paso.",s:"la disciplina, la ambición y la responsabilidad",c:"Ponte metas concretas y trabaja con paciencia: el esfuerzo dará frutos.",a:"No dejes que el trabajo te robe la vida.",d:"Capricornio está regido por Saturno, el planeta del tiempo, los límites y la madurez."},
+{el:"aire",k:"Innovación",f:"Lo diferente es tu fuerza.",s:"la originalidad, la libertad y la visión de futuro",c:"Atrévete a hacerlo a tu manera: las ideas nuevas son tu motor.",a:"Tu independencia no debe convertirse en distancia.",d:"Pese a su nombre, Acuario es un signo de aire: el portador del agua reparte conocimiento a la humanidad."},
+{el:"agua",k:"Intuición",f:"Escucha lo que tu alma ya sabe.",s:"la intuición, la compasión y la conexión espiritual",c:"Confía en tu intuición y deja espacio a la creatividad y a los sueños.",a:"No te pierdas en ilusiones ni cargues con problemas ajenos.",d:"Piscis cierra el zodíaco: dos peces unidos por un cordón que nadan en direcciones opuestas."}
+];
+
+/* Contracciones del español: «de el» → «del», «a el» → «al» */
+function fixEs(o){
+  for(const k in o) if(typeof o[k]==='string') o[k]=o[k].replace(/\bde el /g,'del ').replace(/\ba el /g,'al ');
+  return o;
+}
+
+/* ── Generador de la lectura ── */
+function lecturaLocal(m,q){
+  const T=temaDe(q), intro=pick(T.i);
+  const d=ritData||{type:'cristal'};
+
+  if(d.type==='tarot' && d.cards && d.cards.length===3){
+    const [A,B,C]=d.cards.map(n=>({n,...(L_TAROT[n]||L_TAROT["La Estrella"])}));
+    const em=d.cards.map(n=>(ARCANOS.find(x=>x.n===n)||{e:'🃏'}).e).join(' ');
+    return {simbolo:em,mensaje_corto:C.f,
+      interpretacion:`${intro} el pasado te habla a través de ${A.n}: ${A.s}. En el presente, ${B.n} trae ${B.s}. Y hacia el futuro, ${C.n} anuncia ${C.s}.`,
+      guia_practica:conTema(B.c,T), advertencia:C.a, conocimiento_arcano:pick([A,B,C]).d,
+      energia:B.k, color_energia:B.col};
+  }
+
+  if(d.type==='runas' && d.runes && d.runes.length===3){
+    const [A,B,C]=d.runes.map(i=>({n:`${RN[i]} ${RNM[i]}`,...L_RUNAS[i]}));
+    return {simbolo:d.runes.map(i=>RN[i]).join(' '),mensaje_corto:C.f,
+      interpretacion:`${intro} la primera runa, ${A.n}, habla de ${A.s}. La segunda, ${B.n}, señala ${B.s}. Y la tercera, ${C.n}, revela ${C.s}.`,
+      guia_practica:conTema(B.c,T), advertencia:A.a, conocimiento_arcano:pick([A,B,C]).d,
+      energia:C.k, color_energia:C.col};
+  }
+
+  if(d.type==='iching' && d.lines && d.lines.length===6){
+    const bits=d.lines.map(yin=>yin?'0':'1');
+    const lo=L_TRIG[bits.slice(0,3).join('')], up=L_TRIG[bits.slice(3).join('')];
+    const yang=bits.filter(b=>b==='1').length;
+    const bal=yang>=5?"Predomina la energía yang: es momento de actuar."
+             :yang<=1?"Predomina la energía yin: es momento de recibir y esperar."
+             :yang===3?"El yin y el yang están en perfecto equilibrio."
+             :yang>3?"El yang inclina la balanza: la acción te favorece, pero sin prisas."
+             :"El yin inclina la balanza: escuchar te dará más que empujar.";
+    const nombre=lo.n===up.n?`${lo.n} duplicado`:`${up.n} sobre ${lo.n}`;
+    return {simbolo:up.sym+lo.sym,mensaje_corto:up.f,
+      interpretacion:`${intro} tu hexagrama es ${nombre}. En tu interior se mueve ${lo.s}; a tu alrededor, ${up.s}. ${bal}`,
+      guia_practica:conTema(lo.c,T), advertencia:up.a, conocimiento_arcano:pick(D_ICHING),
+      energia:lo.k, color_energia:lo.col};
+  }
+
+  if(d.type==='astro' && d.sign>=0){
+    const S=L_ASTRO[d.sign], nm=ZD[d.sign];
+    return {simbolo:nm.split(' ')[0],mensaje_corto:S.f,
+      interpretacion:`${intro} los astros señalan a ${nm.split(' ')[1]}, signo de ${S.el}. Su energía te habla de ${S.s}, y te invita a llevarla a tu situación con conciencia.`,
+      guia_practica:conTema(S.c,T), advertencia:S.a, conocimiento_arcano:S.d,
+      energia:S.k, color_energia:ZCOLORS[d.sign]};
+  }
+
+  const V=L_CRISTAL[(d.vision>=0?d.vision:Math.floor(Math.random()*L_CRISTAL.length))];
+  return {simbolo:V.sym,mensaje_corto:V.f,
+    interpretacion:`${intro} el humo se ha abierto y la esfera muestra ${V.s}.`,
+    guia_practica:conTema(V.c,T), advertencia:V.a, conocimiento_arcano:pick(D_CRISTAL),
+    energia:V.k, color_energia:V.col};
+}
+
+
 /* ═══ ORACLE API ═══ */
 async function callOracle(){
   const q=document.getElementById('qi').value.trim();
@@ -1034,6 +1243,10 @@ Responde SOLO en JSON sin texto fuera del bloque JSON:
 
   let ans;
   try{
+    if(!MODO_IA){
+      await new Promise(r=>setTimeout(r,1600+Math.random()*900));
+      ans=fixEs(lecturaLocal(m,q));
+    } else {
     const r=await fetch('/api/oracle',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({system:sys,user:`Método:${m.name}\nRitual:${ritSel}\nPregunta:"${q}"`})
@@ -1041,6 +1254,7 @@ Responde SOLO en JSON sin texto fuera del bloque JSON:
     if(!r.ok) throw new Error('Backend error '+r.status);
     const data=await r.json();
     ans=JSON.parse((data.text||'').replace(/```json|```/g,'').trim());
+    }
   }catch(e){
     ans={simbolo:'⚠️',mensaje_corto:'El velo está turbio…',
       interpretacion:'Las energías no permiten la visión ahora. Reformula tu pregunta con calma.',
