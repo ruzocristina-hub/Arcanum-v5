@@ -248,8 +248,13 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   #s-intro h1.grad{background:none!important;-webkit-text-fill-color:#f6ecff!important;color:#f6ecff!important;
     animation:none!important;filter:none!important;font-weight:400!important;font-size:1.85rem!important;
     letter-spacing:.02em;text-shadow:0 0 14px #a855f7aa,0 0 2px #00000080}
-  h2.tf{color:#e4c8ff!important;font-weight:700!important}
-  #amg{filter:brightness(1.25) drop-shadow(0 0 6px #0008)}
+  /* Títulos y frase del resultado: color sólido claro con brillo suave (mismo estilo que el nombre) */
+  h2.tf, #ov-title{color:#efe0ff!important;-webkit-text-fill-color:#efe0ff!important;font-weight:400!important;
+    text-shadow:0 0 12px #a855f799,0 0 2px #00000080}
+  #amg{background:none!important;-webkit-text-fill-color:#fbf3ff!important;color:#fbf3ff!important;
+    filter:none!important;font-weight:400!important;font-size:1.18rem!important;line-height:1.5!important;
+    text-shadow:0 0 12px #a855f7aa,0 0 2px #00000080}
+  #ov-result{color:#fde68a!important;font-size:1rem!important;text-shadow:0 0 8px #00000099}
   /* Texto que escribe el usuario: blanco y nítido */
   .inp{background:#1a0a3a!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
     caret-color:#fde68a;font-weight:500!important}
