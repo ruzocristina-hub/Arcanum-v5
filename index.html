@@ -438,7 +438,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
     Cinco tradiciones místicas aguardan tu consulta. Formula tu pregunta y el ritual tomará forma.
   </p>
   <button class="bp" onclick="goTo('s-metodo')">✦ Abrir el Portal ✦</button>
-  <div class="navx"><button class="prem" onclick="verPersonal()">✦ Lectura personal</button><button class="prem" onclick="verCarta()">☉ Carta astral</button><button onclick="goTo('s-rituales')">Rituales</button><button onclick="goTo('s-tienda')">Tienda</button></div>
+  <div class="navx"><button class="prem" onclick="verPersonal()">✦ Lectura personal</button><button class="prem" onclick="verCarta()">☉ Carta astral</button><button onclick="goTo('s-cursos')">Cursos</button><button onclick="goTo('s-tienda')">Tienda</button></div>
   <p style="margin-top:30px;color:#7c3aed44;font-size:.78rem;letter-spacing:.1em;text-align:center">
     Tarot · Runas · I Ching · Cristal · Astrología
   </p>
@@ -505,7 +505,6 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
       <p id="ac4t" class="at"></p>
     </div>
   </div>
-  <div id="arec" style="max-width:640px;width:100%;margin-top:14px"></div>
   <div id="abtns" style="display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;justify-content:center;opacity:0;transition:opacity .65s ease .5s" class="brow">
     <button class="bp" onclick="goTo('s-preg')">✦ Nueva Consulta</button>
     <button class="bg" onclick="goTo('s-intro')">← Inicio</button>
@@ -574,13 +573,12 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
 </div>
 
-<!-- RITUALES -->
-<div class="scr top off" id="s-rituales">
+<!-- CURSOS -->
+<div class="scr top off" id="s-cursos">
   <div class="divl"><span>✦</span></div>
-  <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Rituales que te pueden ayudar</h2>
-  <p class="sub">Pequeños rituales para acompañar lo que el oráculo te muestra. Toca uno para ver cómo hacerlo.</p>
-  <div id="rlist"></div>
-  <p class="aviso">Nunca dejes una vela o un incienso encendidos sin vigilancia.</p>
+  <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Cursos</h2>
+  <p class="sub">Aprende con Madre Oráculo. Muy pronto abriremos nuestros primeros cursos.</p>
+  <div class="shop"><div class="prod"><div class="pi">🃏</div><h3>Curso de tarot</h3><p>Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">✋</div><h3>Curso de quiromancia</h3><p>Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.</p><span class="prox">Próximamente</span></div></div>
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
 </div>
 
@@ -588,8 +586,8 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 <div class="scr top off" id="s-tienda">
   <div class="divl"><span>✦</span></div>
   <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Tienda</h2>
-  <p class="sub">Muy pronto encontrarás aquí todo lo que necesitas para tus rituales y lecturas.</p>
-  <div class="shop"><div class="prod"><div class="pi">🕯️</div><h3>Velas y cristales</h3><p>Velas para tus rituales, cuarzos y piedras energéticas.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">🎴</div><h3>Barajas y oráculos</h3><p>Barajas de tarot, runas y oráculos para tus propias lecturas.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">📜</div><h3>Guías y rituales</h3><p>Guías descargables y rituales completos paso a paso.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">✦</div><h3>Lecturas premium</h3><p>Lecturas con IA, lectura personal completa y packs de consultas.</p><span class="prox">Próximamente</span></div></div>
+  <p class="sub">Muy pronto encontrarás aquí todo lo que necesitas para tus lecturas.</p>
+  <div class="shop"><div class="prod"><div class="pi">🎴</div><h3>Barajas y oráculos</h3><p>Barajas de tarot, runas y oráculos para tus propias lecturas.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">📜</div><h3>Guías descargables</h3><p>Guías paso a paso para aprender a leer el tarot y otros oráculos.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">✦</div><h3>Lecturas premium</h3><p>Lecturas con IA, lectura personal completa y packs de consultas.</p><span class="prox">Próximamente</span></div></div>
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
 </div>
 
@@ -627,6 +625,16 @@ var PACKS=window.PACKS||{};
    Keys of UI are the Spanish originals (do not translate the keys). */
 (function(){
 const UI={
+"Cursos":"Courses",
+"Aprende con Madre Oráculo. Muy pronto abriremos nuestros primeros cursos.":"Learn with Madre Oráculo. Our first courses are opening very soon.",
+"Curso de tarot":"Tarot course",
+"Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.":"Learn the meaning of the 22 Major Arcana and how to do your own spreads.",
+"Curso de quiromancia":"Palmistry course",
+"Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.":"Discover what the lines of the hand reveal: life, heart, head and fate.",
+"Muy pronto encontrarás aquí todo lo que necesitas para tus lecturas.":"Soon you'll find everything you need for your readings here.",
+"Guías descargables":"Downloadable guides",
+"Guías paso a paso para aprender a leer el tarot y otros oráculos.":"Step-by-step guides to learn to read tarot and other oracles.",
+
 /* Portada */
 "✦ Consultar al Oráculo ✦":"✦ Ask the Oracle ✦",
 "Madre Oráculo":"Madre Oráculo",
@@ -973,7 +981,7 @@ aviso:`<p class="nota">This English translation is provided for convenience. In 
 <ul><li><b>Owner:</b> ${T.nombre}, self-employed.</li><li><b>Tax ID (NIF):</b> ${T.nif}</li><li><b>Address:</b> ${T.dir}, Canary Islands (Spain)</li><li><b>Email:</b> ${T.email}</li><li><b>Website:</b> ${T.web}</li></ul>
 <p><b>Purpose.</b> Madre Oráculo offers entertainment and self-reflection content based on symbolic traditions: tarot, runes, I Ching, crystal gazing, astrology and numerology.</p>
 <p><b>Use of the site.</b> Users agree to use the website lawfully and not to harm its operation. The owner may change the content and these terms at any time.</p>
-<p><b>Intellectual property.</b> The texts, design and code of Madre Oráculo belong to its owner. Exceptions: the image of The High Priestess belongs to the Rider-Waite-Smith deck (1909), illustrated by Pamela Colman Smith and in the public domain; astronomical calculations use the <i>astronomy-engine</i> library and the <i>city-timezones</i> city database, both under the MIT licence.</p>
+<p><b>Intellectual property.</b> The texts, design and code of Madre Oráculo belong to its owner. The illustrations are original. Exception: astronomical calculations use the <i>astronomy-engine</i> library and the <i>city-timezones</i> city database, both under the MIT licence.</p>
 <p><b>Liability.</b> The owner does not guarantee uninterrupted availability of the service and is not responsible for decisions users make based on the readings, which are for entertainment purposes (see «About the readings»).</p>
 <p><b>Governing law.</b> This website is governed by Spanish law. If you are a consumer, you may bring proceedings before the courts of your place of residence.</p>`,
 
@@ -1083,6 +1091,16 @@ var PACKS=window.PACKS||{};
    Le chiavi di UI sono gli originali spagnoli (non tradurre le chiavi). */
 (function(){
 const UI={
+"Cursos":"Corsi",
+"Aprende con Madre Oráculo. Muy pronto abriremos nuestros primeros cursos.":"Impara con Madre Oráculo. I nostri primi corsi apriranno molto presto.",
+"Curso de tarot":"Corso di tarocchi",
+"Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.":"Impara il significato dei 22 Arcani Maggiori e a fare le tue stese.",
+"Curso de quiromancia":"Corso di chiromanzia",
+"Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.":"Scopri cosa raccontano le linee della mano: vita, cuore, testa e destino.",
+"Muy pronto encontrarás aquí todo lo que necesitas para tus lecturas.":"Molto presto troverai qui tutto ciò che ti serve per le tue letture.",
+"Guías descargables":"Guide scaricabili",
+"Guías paso a paso para aprender a leer el tarot y otros oráculos.":"Guide passo passo per imparare a leggere i tarocchi e altri oracoli.",
+
 /* Portada */
 "✦ Consultar al Oráculo ✦":"✦ Consulta l’Oracolo ✦",
 "Madre Oráculo":"Madre Oráculo",
@@ -1429,7 +1447,7 @@ aviso:`<p class="nota">Questa traduzione italiana è fornita per comodità. In c
 <ul><li><b>Titolare:</b> ${T.nombre}, lavoratrice autonoma.</li><li><b>Codice fiscale (NIF):</b> ${T.nif}</li><li><b>Indirizzo:</b> ${T.dir}, Isole Canarie (Spagna)</li><li><b>Email:</b> ${T.email}</li><li><b>Sito web:</b> ${T.web}</li></ul>
 <p><b>Finalità.</b> Madre Oráculo offre contenuti di intrattenimento e di riflessione personale basati su tradizioni simboliche: tarocchi, rune, I Ching, cristallomanzia, astrologia e numerologia.</p>
 <p><b>Uso del sito.</b> Gli utenti si impegnano a utilizzare il sito web in modo lecito e a non comprometterne il funzionamento. Il titolare può modificare i contenuti e le presenti condizioni in qualsiasi momento.</p>
-<p><b>Proprietà intellettuale.</b> I testi, il design e il codice di Madre Oráculo appartengono al suo titolare. Eccezioni: l’immagine della Papessa appartiene al mazzo Rider-Waite-Smith (1909), illustrato da Pamela Colman Smith e di pubblico dominio; i calcoli astronomici utilizzano la libreria <i>astronomy-engine</i> e il database di città <i>city-timezones</i>, entrambi con licenza MIT.</p>
+<p><b>Proprietà intellettuale.</b> I testi, il design e il codice di Madre Oráculo appartengono al suo titolare. Le illustrazioni sono originali. Eccezione: i calcoli astronomici utilizzano la libreria <i>astronomy-engine</i> e il database di città <i>city-timezones</i>, entrambi con licenza MIT.</p>
 <p><b>Responsabilità.</b> Il titolare non garantisce la disponibilità ininterrotta del servizio e non è responsabile delle decisioni che gli utenti prendono sulla base delle letture, che hanno finalità di intrattenimento (vedi «Avviso sulle letture»).</p>
 <p><b>Legge applicabile.</b> Questo sito web è regolato dalla legge spagnola. Se sei un consumatore, puoi agire in giudizio davanti ai tribunali del tuo luogo di residenza.</p>`,
 
@@ -1539,6 +1557,16 @@ var PACKS=window.PACKS||{};
    As chaves de UI são os originais em espanhol (não traduzir as chaves). */
 (function(){
 const UI={
+"Cursos":"Cursos",
+"Aprende con Madre Oráculo. Muy pronto abriremos nuestros primeros cursos.":"Aprenda com a Madre Oráculo. Muito em breve abriremos os nossos primeiros cursos.",
+"Curso de tarot":"Curso de tarô",
+"Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.":"Aprenda o significado dos 22 Arcanos Maiores e a fazer as suas próprias tiragens.",
+"Curso de quiromancia":"Curso de quiromancia",
+"Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.":"Descubra o que as linhas da mão revelam: vida, coração, cabeça e destino.",
+"Muy pronto encontrarás aquí todo lo que necesitas para tus lecturas.":"Muito em breve você encontrará aqui tudo o que precisa para as suas leituras.",
+"Guías descargables":"Guias para baixar",
+"Guías paso a paso para aprender a leer el tarot y otros oráculos.":"Guias passo a passo para aprender a ler o tarô e outros oráculos.",
+
 /* Portada */
 "✦ Consultar al Oráculo ✦":"✦ Consultar o Oráculo ✦",
 "Madre Oráculo":"Madre Oráculo",
@@ -1885,7 +1913,7 @@ aviso:`<p class="nota">Esta tradução para o português é oferecida por conven
 <ul><li><b>Titular:</b> ${T.nombre}, trabalhadora autônoma.</li><li><b>Número de identificação fiscal (NIF):</b> ${T.nif}</li><li><b>Endereço:</b> ${T.dir}, Ilhas Canárias (Espanha)</li><li><b>E-mail:</b> ${T.email}</li><li><b>Site:</b> ${T.web}</li></ul>
 <p><b>Finalidade.</b> Madre Oráculo oferece conteúdo de entretenimento e autorreflexão baseado em tradições simbólicas: tarô, runas, I Ching, cristalomancia, astrologia e numerologia.</p>
 <p><b>Uso do site.</b> O usuário se compromete a usar o site de forma lícita e a não prejudicar o seu funcionamento. A titular pode alterar o conteúdo e estas condições a qualquer momento.</p>
-<p><b>Propriedade intelectual.</b> Os textos, o design e o código de Madre Oráculo pertencem à sua titular. Exceções: a imagem de A Sacerdotisa pertence ao baralho Rider-Waite-Smith (1909), ilustrado por Pamela Colman Smith e em domínio público; os cálculos astronômicos usam a biblioteca <i>astronomy-engine</i> e a base de dados de cidades <i>city-timezones</i>, ambas sob a licença MIT.</p>
+<p><b>Propriedade intelectual.</b> Os textos, o design e o código de Madre Oráculo pertencem à sua titular. As ilustrações são originais. Exceção: os cálculos astronômicos usam a biblioteca <i>astronomy-engine</i> e a base de dados de cidades <i>city-timezones</i>, ambas sob a licença MIT.</p>
 <p><b>Responsabilidade.</b> A titular não garante a disponibilidade ininterrupta do serviço e não se responsabiliza pelas decisões que os usuários tomem com base nas leituras, que têm finalidade de entretenimento (veja «Sobre as leituras»).</p>
 <p><b>Legislação aplicável.</b> Este site é regido pela legislação espanhola. Se você for consumidor, poderá recorrer aos tribunais do seu local de residência.</p>`,
 
@@ -2020,8 +2048,8 @@ let M=[
 const YY=`<svg viewBox="0 0 100 100" style="width:1em;height:1em;vertical-align:-0.12em;filter:drop-shadow(0 0 6px #dc262688)"><circle cx="50" cy="50" r="48" fill="#dc2626" stroke="#fecaca" stroke-width="3"/><path d="M50 2a48 48 0 0 1 0 96a24 24 0 0 1 0-48a24 24 0 0 0 0-48z" fill="#1a0505"/><circle cx="50" cy="26" r="8" fill="#1a0505"/><circle cx="50" cy="74" r="8" fill="#dc2626"/></svg>`;
 const LUNA_SVG=`<svg viewBox="0 0 100 100" style="width:1em;height:1em;vertical-align:-0.12em;filter:drop-shadow(0 0 6px #dc262688)"><circle cx="50" cy="50" r="48" fill="#1a0505" stroke="#fecaca" stroke-width="3"/><path d="M62 18a34 34 0 1 0 0 64a27 27 0 1 1 0-64z" fill="#dc2626"/></svg>`;
 const SOL_SVG=`<svg viewBox="0 0 100 100" style="width:1em;height:1em;vertical-align:-0.12em;filter:drop-shadow(0 0 6px #dc262688)"><circle cx="50" cy="50" r="48" fill="#dc2626" stroke="#fecaca" stroke-width="3"/><g stroke="#1a0505" stroke-width="6" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a=>`<line x1="50" y1="14" x2="50" y2="26" transform="rotate(${a} 50 50)"/>`).join('')}</g><circle cx="50" cy="50" r="17" fill="#1a0505"/></svg>`;
-/* La Sacerdotisa, baraja Rider-Waite-Smith (1909, Pamela Colman Smith) — dominio público */
-const SACERDOTISA=`<img class="ic-img" alt="La Sacerdotisa" src="data:image/jpeg;base64,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">`;
+/* La Sacerdotisa: ilustración original de Madre Oráculo (SVG propio, sin derechos de terceros) */
+const SACERDOTISA=`<img class="ic-img" alt="La Sacerdotisa" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMjAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMWUxYjVlIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMGIwYTJhIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9InJvYmUiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM2ZDhmZTgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyYjNjOWUiLz48L2xpbmVhckdyYWRpZW50PjxyYWRpYWxHcmFkaWVudCBpZD0iaGFsbyIgY3g9Ii41IiBjeT0iLjUiIHI9Ii41Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZGU2OGEiIHN0b3Atb3BhY2l0eT0iLjU1Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmRlNjhhIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjIwMCIgcng9IjgiIGZpbGw9InVybCgjYmcpIi8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjExMiIgaGVpZ2h0PSIxOTIiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiNlOWM0NmEiIHN0cm9rZS13aWR0aD0iMiIvPjxnIGZpbGw9IiNmZmY4ZTEiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjIiIHI9IjEuMiIvPjxjaXJjbGUgY3g9Ijk4IiBjeT0iMTgiIHI9IjEiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjEyIiByPSIxIi8+PGNpcmNsZSBjeD0iMTA0IiBjeT0iNzAiIHI9Ii45Ii8+PGNpcmNsZSBjeD0iMTUiIGN5PSI3OCIgcj0iLjkiLz48L2c+PHJlY3QgeD0iMTAiIHk9IjM0IiB3aWR0aD0iMTgiIGhlaWdodD0iMTUwIiBmaWxsPSIjMTQxMjJlIiBzdHJva2U9IiNlOWM0NmEiIHN0cm9rZS13aWR0aD0iMSIvPjxyZWN0IHg9IjgiIHk9IjMwIiB3aWR0aD0iMjIiIGhlaWdodD0iNiIgZmlsbD0iI2U5YzQ2YSIvPjx0ZXh0IHg9IjE5IiB5PSI2MiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiNlOWM0NmEiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkI8L3RleHQ+PHJlY3QgeD0iOTIiIHk9IjM0IiB3aWR0aD0iMTgiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNlYWQyIiBzdHJva2U9IiNlOWM0NmEiIHN0cm9rZS13aWR0aD0iMSIvPjxyZWN0IHg9IjkwIiB5PSIzMCIgd2lkdGg9IjIyIiBoZWlnaHQ9IjYiIGZpbGw9IiNlOWM0NmEiLz48dGV4dCB4PSIxMDEiIHk9IjYyIiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzE0MTIyZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SjwvdGV4dD48cmVjdCB4PSIyOCIgeT0iNDAiIHdpZHRoPSI2NCIgaGVpZ2h0PSIxMTAiIGZpbGw9IiMzYjFkNmUiIG9wYWNpdHk9Ii44NSIvPjxnIGZpbGw9IiNlOWM0NmEiIG9wYWNpdHk9Ii44Ij48cGF0aCBkPSJNMzggNTJsMS41IDMgMyAuNC0yLjIgMiAuNiAzLTIuOS0xLjUtMi45IDEuNS42LTMtMi4yLTIgMy0uNHoiLz48cGF0aCBkPSJNODIgNTJsMS41IDMgMyAuNC0yLjIgMiAuNiAzLTIuOS0xLjUtMi45IDEuNS42LTMtMi4yLTIgMy0uNHoiLz48cGF0aCBkPSJNMzggMTE4bDEuNSAzIDMgLjQtMi4yIDIgLjYgMy0yLjktMS41LTIuOSAxLjUuNi0zLTIuMi0yIDMtLjR6Ii8+PHBhdGggZD0iTTgyIDExOGwxLjUgMyAzIC40LTIuMiAyIC42IDMtMi45LTEuNS0yLjkgMS41LjYtMy0yLjItMiAzLS40eiIvPjwvZz48Y2lyY2xlIGN4PSI2MCIgY3k9IjU4IiByPSIyNiIgZmlsbD0idXJsKCNoYWxvKSIvPjxwYXRoIGQ9Ik02MCA3MCBDNDYgNzQgNDAgOTIgMzggMTIwIEwzNCAxNzYgTDg2IDE3NiBMODIgMTIwIEM4MCA5MiA3NCA3NCA2MCA3MFoiIGZpbGw9InVybCgjcm9iZSkiLz48cGF0aCBkPSJNNjAgNzQgQzU0IDkwIDUyIDEzMCA1MCAxNzYgTDcwIDE3NiBDNjggMTMwIDY2IDkwIDYwIDc0WiIgZmlsbD0iI2YzZWFkMiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNNTcgOTJoNk02MCA4OXY2IiBzdHJva2U9IiNlOWM0NmEiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTQ3IDY2IEM0OCA1MCA3MiA1MCA3MyA2NiBMNzUgODQgQzY4IDc4IDUyIDc4IDQ1IDg0WiIgZmlsbD0iI2M5ZDZmZiIvPjxlbGxpcHNlIGN4PSI2MCIgY3k9IjYzIiByeD0iNy41IiByeT0iOSIgZmlsbD0iI2Y2ZGNjMCIvPjxwYXRoIGQ9Ik01NiA2MmgyLjVNNjEuNSA2Mkg2NCIgc3Ryb2tlPSIjNWIzYTJhIiBzdHJva2Utd2lkdGg9Ii45IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNNTggNjhxMiAxIDQgMCIgc3Ryb2tlPSIjYjU2NTRmIiBzdHJva2Utd2lkdGg9Ii44IiBmaWxsPSJub25lIi8+PGNpcmNsZSBjeD0iNjAiIGN5PSI0NiIgcj0iNCIgZmlsbD0iI2ZmZjhlMSIvPjxwYXRoIGQ9Ik01MSA0MEE2IDYgMCAxIDAgNTEgNTJBNy41IDcuNSAwIDAgMSA1MSA0MFoiIGZpbGw9IiNmZmY4ZTEiLz48cGF0aCBkPSJNNjkgNDBBNiA2IDAgMSAxIDY5IDUyQTcuNSA3LjUgMCAwIDAgNjkgNDBaIiBmaWxsPSIjZmZmOGUxIi8+PHJlY3QgeD0iNjQiIHk9IjEwNCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjE2IiByeD0iMiIgZmlsbD0iI2YzZWFkMiIgc3Ryb2tlPSIjZTljNDZhIiBzdHJva2Utd2lkdGg9Ii44IiB0cmFuc2Zvcm09InJvdGF0ZSgtMTIgNzAgMTEyKSIvPjxwYXRoIGQ9Ik00MCAxODIgQzUyIDE5NiA2OCAxOTYgODAgMTgyIEM2OCAxODkgNTIgMTg5IDQwIDE4MloiIGZpbGw9IiNmZGU2OGEiLz48L3N2Zz4=">`;
 const iconHTML=m=>m.id==='i_ching'?YY:m.id==='tarot'?SACERDOTISA:m.icon;
 
 /* 22 Arcanos Mayores completos */
@@ -3311,7 +3339,7 @@ aviso:`<h3>Aviso legal</h3>
 <ul><li><b>Titular:</b> ${T.nombre}, persona trabajadora autónoma.</li><li><b>NIF:</b> ${T.nif}</li><li><b>Domicilio:</b> ${T.dir}, Canarias (España)</li><li><b>Correo electrónico:</b> ${T.email}</li><li><b>Sitio web:</b> ${T.web}</li></ul>
 <p><b>Objeto.</b> Madre Oráculo ofrece contenidos de entretenimiento y reflexión personal basados en tradiciones simbólicas: tarot, runas, I Ching, cristalomancia, astrología y numerología.</p>
 <p><b>Uso del sitio.</b> Quien usa la web se compromete a hacerlo de forma lícita y a no dañar su funcionamiento. El titular puede modificar los contenidos y estas condiciones en cualquier momento.</p>
-<p><b>Propiedad intelectual.</b> Los textos, el diseño y el código de Madre Oráculo pertenecen a su titular. Excepciones: la imagen de La Sacerdotisa pertenece a la baraja Rider-Waite-Smith (1909), ilustrada por Pamela Colman Smith y en dominio público; los cálculos astronómicos usan la librería <i>astronomy-engine</i> y la base de ciudades <i>city-timezones</i>, ambas con licencia MIT.</p>
+<p><b>Propiedad intelectual.</b> Los textos, el diseño y el código de Madre Oráculo pertenecen a su titular. Las ilustraciones son originales. Excepción: los cálculos astronómicos usan la librería <i>astronomy-engine</i> y la base de ciudades <i>city-timezones</i>, ambas con licencia MIT.</p>
 <p><b>Responsabilidad.</b> El titular no garantiza la disponibilidad continua del servicio y no se responsabiliza de las decisiones que el usuario tome a partir de las lecturas, que tienen carácter de entretenimiento (ver «Aviso sobre las lecturas»).</p>
 <p><b>Legislación aplicable.</b> Este sitio se rige por la legislación española. Si eres consumidor, podrás acudir a los tribunales de tu domicilio.</p>`,
 
@@ -3474,7 +3502,7 @@ async function setLang(l){
   document.documentElement.lang=l;
   document.documentElement.dir=(P&&P.dir)||'ltr';
   document.title='Madre Oráculo';
-  traducirDOM(); pintarMetodos(); pintarRituales();
+  traducirDOM(); pintarMetodos();
   if(selM){ const m=M.find(x=>x.id===selM); if(m){ document.getElementById('mt').textContent=m.name; document.getElementById('ms').textContent=m.desc; document.getElementById('mc').innerHTML=m.info; } }
   if(!document.getElementById('s-legal').classList.contains('off')) verLegal();
   document.getElementById('langb').textContent=l.toUpperCase()+' ▾';
@@ -3533,7 +3561,6 @@ Responde SOLO en JSON sin texto fuera del bloque JSON:
     clearInterval(pi); bar.style.width='100%'; setTimeout(()=>bar.style.width='0',480);
     btn.disabled=false; btn.innerHTML=T('✦ Iniciar el Ritual ✦'); orb.classList.remove('pulse');
   }
-  ritualRecomendado(q);
   showResp(ans,m);
 }
 
@@ -3590,7 +3617,7 @@ function showResp(ans,m){
 initIdioma();
 initCarta();
 initAviso();
-initMic('mic','qi'); initMic('pmic','pq'); pintarRituales();
+initMic('mic','qi'); initMic('pmic','pq');
 </script>
 </body>
 </html>
