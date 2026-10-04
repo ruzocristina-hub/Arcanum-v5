@@ -271,6 +271,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .paywall{text-align:center;padding:20px 18px;border:1px solid #fde68a88;border-radius:12px;background:linear-gradient(135deg,#2a1458,#1a0a3a)}
 .paywall p{color:#efe6ff;margin:6px 0 14px;line-height:1.6}
 .pw-t{font-family:'Cinzel',serif;color:#fde68a;letter-spacing:.1em}
+.pwc{display:flex;gap:10px;align-items:flex-start;text-align:left;color:#efe6ff;font-size:.95rem;line-height:1.5;margin:10px auto;max-width:440px;cursor:pointer}
+.pwc input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:#c084fc}
+.pwerr{color:#fca5a5;min-height:1.2em;margin:4px 0 8px!important}
+.pwleg{font-size:.85rem;color:#c4b5fd!important;margin-top:12px!important}
+.pwleg a{color:#fde68a;text-decoration:underline;cursor:pointer}
+#pagomsg{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:999;background:#1c0b40;border:1px solid #fde68a;color:#fff;padding:12px 18px;border-radius:12px;max-width:92vw;text-align:center;display:none;box-shadow:0 6px 30px #000a}
 #rlist{max-width:640px;width:100%;display:flex;flex-direction:column;gap:10px}
 .rit{background:#1a0a3a;border:1px solid #8b5cf666;border-radius:11px;padding:4px 16px}
 .rit summary{display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 0;font-size:1.1rem;color:#fff4e0;list-style:none}
@@ -592,6 +598,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 </div>
 
 
+<div id="pagomsg" role="status"></div>
 <!-- LEGAL -->
 <div class="scr top off" id="s-legal">
   <div class="divl"><span>✦</span></div>
@@ -625,6 +632,16 @@ var PACKS=window.PACKS||{};
    Keys of UI are the Spanish originals (do not translate the keys). */
 (function(){
 const UI={
+"Soy mayor de 18 años.":"I am over 18.",
+"Quiero recibir mi lectura de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"I want to receive my reading immediately and I accept that, once I receive it, I lose my right of withdrawal.",
+"Pagar":"Pay",
+"Pago seguro con Stripe.":"Secure payment with Stripe.",
+"Condiciones de contratación":"Terms of sale",
+"Marca las dos casillas para continuar.":"Tick both boxes to continue.",
+"Comprobando el pago…":"Checking your payment…",
+"No hemos podido confirmar el pago. Si se te ha cobrado, escríbenos a":"We couldn’t confirm your payment. If you have been charged, write to us at",
+"Pago confirmado. ¡Aquí tienes tu lectura completa!":"Payment confirmed. Here is your full reading!",
+
 "Cursos":"Courses",
 "Aprende con Madre Oráculo. Muy pronto abriremos nuestros primeros cursos.":"Learn with Madre Oráculo. Our first courses are opening very soon.",
 "Curso de tarot":"Tarot course",
@@ -1091,6 +1108,16 @@ var PACKS=window.PACKS||{};
    Le chiavi di UI sono gli originali spagnoli (non tradurre le chiavi). */
 (function(){
 const UI={
+"Soy mayor de 18 años.":"Ho più di 18 anni.",
+"Quiero recibir mi lectura de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Voglio ricevere subito la mia lettura e accetto che, ricevendola, perdo il diritto di recesso.",
+"Pagar":"Paga",
+"Pago seguro con Stripe.":"Pagamento sicuro con Stripe.",
+"Condiciones de contratación":"Condizioni di vendita",
+"Marca las dos casillas para continuar.":"Seleziona entrambe le caselle per continuare.",
+"Comprobando el pago…":"Verifica del pagamento in corso…",
+"No hemos podido confirmar el pago. Si se te ha cobrado, escríbenos a":"Non siamo riusciti a confermare il pagamento. Se ti è stato addebitato, scrivici a",
+"Pago confirmado. ¡Aquí tienes tu lectura completa!":"Pagamento confermato. Ecco la tua lettura completa!",
+
 "Cursos":"Corsi",
 "Aprende con Madre Oráculo. Muy pronto abriremos nuestros primeros cursos.":"Impara con Madre Oráculo. I nostri primi corsi apriranno molto presto.",
 "Curso de tarot":"Corso di tarocchi",
@@ -1557,6 +1584,16 @@ var PACKS=window.PACKS||{};
    As chaves de UI são os originais em espanhol (não traduzir as chaves). */
 (function(){
 const UI={
+"Soy mayor de 18 años.":"Tenho mais de 18 anos.",
+"Quiero recibir mi lectura de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Quero receber a minha leitura imediatamente e aceito que, ao recebê-la, perco o direito de arrependimento.",
+"Pagar":"Pagar",
+"Pago seguro con Stripe.":"Pagamento seguro com Stripe.",
+"Condiciones de contratación":"Condições de venda",
+"Marca las dos casillas para continuar.":"Marque as duas caixas para continuar.",
+"Comprobando el pago…":"Verificando o pagamento…",
+"No hemos podido confirmar el pago. Si se te ha cobrado, escríbenos a":"Não conseguimos confirmar o pagamento. Se você foi cobrado, escreva para",
+"Pago confirmado. ¡Aquí tienes tu lectura completa!":"Pagamento confirmado. Aqui está a sua leitura completa!",
+
 "Cursos":"Cursos",
 "Aprende con Madre Oráculo. Muy pronto abriremos nuestros primeros cursos.":"Aprenda com a Madre Oráculo. Muito em breve abriremos os nossos primeiros cursos.",
 "Curso de tarot":"Curso de tarô",
@@ -3122,11 +3159,12 @@ function generarPersonal(){
   err.textContent='';
   const L=fixEs(lecturaPersonal(nombre,fecha,q));
   L.secciones.forEach(s=>s.x=fixEs({x:s.x}).x);
-  const premium=esPremium(), box=document.getElementById('pres');
+  const kP=_norm(nombre)+'|'+fecha; _ultima.personal={k:kP,datos:{nombre,dd,mm,y,q}};
+  const premium=esPremium()||comprado('personal',kP), box=document.getElementById('pres');
   box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:14px">${TX.personalTitle(L.pn)}</h2>`+
     L.secciones.map((s,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)">
       <div class="al" style="color:var(--gold)"><span>${s.i}</span> ${s.t}</div><p class="at">${s.x}</p></div>`).join('')+
-    (premium?'':paywall(TX.pwPersonal));
+    (premium?'':paywall(TX.pwPersonal,'personal'));
   box.style.display='flex'; sndReveal&&sndReveal();
   setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
@@ -3310,12 +3348,14 @@ async function generarCarta(){
   if(c.asc!=null) cuenta[ELEM[signoDe(c.asc)%4]]++;
   const dom=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a])[0];
   s.push(sec('✦',TX.elemTitle(dom),ELEM_TXT[dom]+TX.elemCount(cuenta)));
-  const premium=esPremium(), box=document.getElementById('cres');
+  const kC=[_norm(nombre),y,mm,dd,sinHora?'-':hh+':'+mi,ciudadSel.city,ciudadSel.country].join('|');
+  _ultima.carta={k:kC,datos:{nombre,dd,mm,y,hh,mi,sinHora,ciudad:ciudadSel}};
+  const premium=esPremium()||comprado('carta',kC), box=document.getElementById('cres');
   box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:4px">${TX.chartTitle(pn)}</h2>
     <p class="sub" style="margin-bottom:6px">${dd}/${mm}/${y}${sinHora?'':` · ${String(hh).padStart(2,'0')}:${String(mi).padStart(2,'0')}`} · ${nombreCiudad(ciudadSel)}</p>`+
     ruedaHTML(c)+
     s.map((x,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)"><div class="al" style="color:var(--gold)"><span>${x.i}</span> ${x.t}</div><p class="at">${x.x}</p></div>`).join('')+
-    (premium?'':paywall(TX.pwChart));
+    (premium?'':paywall(TX.pwChart,'carta'));
   box.style.display='flex'; sndReveal&&sndReveal();
   setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
@@ -3421,8 +3461,61 @@ function mostrarApoyo(){
 const IDIOMAS={es:'Español',en:'English',it:'Italiano',pt:'Português'};
 var PACKS=window.PACKS||{};
 function T(s){ return LANG==='es'?s:((PACKS[LANG]&&PACKS[LANG].UI[s])??s); }
-const paywall=P=>`<div class="paywall"><div class="pw-t">${P.t}</div><p>${P.p}</p>
+/* ═══ PAGOS (Stripe) ═══
+   Pega aquí los enlaces de pago de Stripe (Payment Links). Mientras estén vacíos, se muestra «próximamente».
+   En Stripe, en cada enlace: «Después del pago» → «No mostrar página de confirmación; redirigir a tu web» con:
+   https://TU-WEB/?pago={CHECKOUT_SESSION_ID} */
+const PAGOS={
+  personal:{link:'',precio:'2,99 €'},
+  carta:{link:'',precio:'4,99 €'}
+};
+const paywall=(P,prod)=>{
+  const cfg=PAGOS[prod];
+  if(!cfg||!cfg.link) return `<div class="paywall"><div class="pw-t">${P.t}</div><p>${P.p}</p>
   <button class="bp" onclick="alert(${JSON.stringify(P.alert).replace(/"/g,'&quot;')})">${P.b}</button></div>`;
+  return `<div class="paywall"><div class="pw-t">${P.t}</div><p>${P.p}</p>
+  <label class="pwc"><input type="checkbox" id="pw18-${prod}"> <span>${T('Soy mayor de 18 años.')}</span></label>
+  <label class="pwc"><input type="checkbox" id="pwdes-${prod}"> <span>${T('Quiero recibir mi lectura de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.')}</span></label>
+  <p class="pwerr" id="pwerr-${prod}"></p>
+  <button class="bp" onclick="pagar('${prod}')">${T('Pagar')} ${cfg.precio}</button>
+  <p class="pwleg">${T('Pago seguro con Stripe.')} <a onclick="verLegal('condiciones')">${T('Condiciones de contratación')}</a></p></div>`;
+};
+/* Compras hechas en este dispositivo: [{p:'personal'|'carta', k:'clave de la lectura'}] */
+const _norm=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+function compras(){ try{ return JSON.parse(localStorage.getItem('arc_compras')||'[]'); }catch(e){ return []; } }
+function comprado(p,k){ return compras().some(c=>c.p===p&&c.k===k); }
+let _ultima={};
+function pagar(prod){
+  const e=document.getElementById('pwerr-'+prod);
+  if(!document.getElementById('pw18-'+prod).checked||!document.getElementById('pwdes-'+prod).checked){ e.textContent=T('Marca las dos casillas para continuar.'); return; }
+  const u=_ultima[prod]; if(!u) return;
+  try{ localStorage.setItem('arc_pend',JSON.stringify({p:prod,k:u.k,datos:u.datos,lang:LANG,t:Date.now(),acepta:{edad18:true,desistimiento:true,fecha:new Date().toISOString()}})); }catch(x){}
+  const ref='mo_'+Math.random().toString(36).slice(2,12);
+  location.href=PAGOS[prod].link+(PAGOS[prod].link.includes('?')?'&':'?')+'client_reference_id='+ref;
+}
+function avisoPago(t,ms){ const m=document.getElementById('pagomsg'); m.textContent=t; m.style.display='block'; clearTimeout(avisoPago._t); if(ms) avisoPago._t=setTimeout(()=>m.style.display='none',ms); }
+/* Al volver de Stripe: ?pago=cs_... → se comprueba en el servidor y se desbloquea la lectura */
+async function initPagos(){
+  const id=new URLSearchParams(location.search).get('pago'); if(!id) return;
+  history.replaceState(null,'',location.pathname);
+  let pend=null; try{ pend=JSON.parse(localStorage.getItem('arc_pend')||'null'); }catch(e){}
+  avisoPago(T('Comprobando el pago…'));
+  let r=null;
+  try{ r=await fetch('/api/verificar?id='+encodeURIComponent(id)).then(x=>x.json()); }catch(e){}
+  if(!r||!r.pagado||!pend||(r.producto&&r.producto!==pend.p)){
+    avisoPago(T('No hemos podido confirmar el pago. Si se te ha cobrado, escríbenos a')+' '+TITULAR.email,12000); return;
+  }
+  const c=compras(); if(!comprado(pend.p,pend.k)) c.push({p:pend.p,k:pend.k,id}); try{ localStorage.setItem('arc_compras',JSON.stringify(c)); localStorage.removeItem('arc_pend'); }catch(e){}
+  avisoPago(T('Pago confirmado. ¡Aquí tienes tu lectura completa!'),6000);
+  const d=pend.datos;
+  if(pend.p==='personal'){
+    verPersonal(); ['pnom','pdia','pmes','panyo','pq'].forEach((f,i)=>document.getElementById(f).value=[d.nombre,d.dd,d.mm,d.y,d.q||''][i]); generarPersonal();
+  }else{
+    verCarta(); document.getElementById('cnom').value=d.nombre; document.getElementById('cdia').value=d.dd; document.getElementById('cmes').value=d.mm; document.getElementById('canyo').value=d.y;
+    document.getElementById('csinhora').checked=d.sinHora; document.getElementById('chh').value=d.sinHora?'':d.hh; document.getElementById('cmi').value=d.sinHora?'':d.mi;
+    ciudadSel=d.ciudad; document.getElementById('clug').value=nombreCiudad(d.ciudad); generarCarta();
+  }
+}
 const S_ES={
   sr:'es-ES',
   ritualTitle:m=>'Ritual '+({tarot:'del',runas:'de las',i_ching:'del',cristal:'de la',astrologia:'de la'}[m.id]||'del')+' '+m.name,
@@ -3615,6 +3708,7 @@ function showResp(ans,m){
     if(sig&&el.value.length===len) document.getElementById(sig).focus(); });
 });
 initIdioma();
+initPagos();
 initCarta();
 initAviso();
 initMic('mic','qi'); initMic('pmic','pq');
