@@ -3466,7 +3466,7 @@ function T(s){ return LANG==='es'?s:((PACKS[LANG]&&PACKS[LANG].UI[s])??s); }
    En Stripe, en cada enlace: «Después del pago» → «No mostrar página de confirmación; redirigir a tu web» con:
    https://TU-WEB/?pago={CHECKOUT_SESSION_ID} */
 const PAGOS={
-  personal:{link:'',precio:'2,99 €'},
+  personal:{link:'https://buy.stripe.com/test_00w5kx90m1W08gK1X34F200',precio:'2,99 €'},
   carta:{link:'',precio:'4,99 €'}
 };
 const paywall=(P,prod)=>{
@@ -3489,19 +3489,20 @@ function pagar(prod){
   const e=document.getElementById('pwerr-'+prod);
   if(!document.getElementById('pw18-'+prod).checked||!document.getElementById('pwdes-'+prod).checked){ e.textContent=T('Marca las dos casillas para continuar.'); return; }
   const u=_ultima[prod]; if(!u) return;
-  try{ localStorage.setItem('arc_pend',JSON.stringify({p:prod,k:u.k,datos:u.datos,lang:LANG,t:Date.now(),acepta:{edad18:true,desistimiento:true,fecha:new Date().toISOString()}})); }catch(x){}
-  const ref='mo_'+Math.random().toString(36).slice(2,12);
+  const ref='mo_'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);
+  try{ localStorage.setItem('arc_pend',JSON.stringify({ref,p:prod,k:u.k,datos:u.datos,lang:LANG,t:Date.now(),acepta:{edad18:true,desistimiento:true,fecha:new Date().toISOString()}})); }catch(x){}
   location.href=PAGOS[prod].link+(PAGOS[prod].link.includes('?')?'&':'?')+'client_reference_id='+ref;
 }
 function avisoPago(t,ms){ const m=document.getElementById('pagomsg'); m.textContent=t; m.style.display='block'; clearTimeout(avisoPago._t); if(ms) avisoPago._t=setTimeout(()=>m.style.display='none',ms); }
 /* Al volver de Stripe: ?pago=cs_... → se comprueba en el servidor y se desbloquea la lectura */
 async function initPagos(){
-  const id=new URLSearchParams(location.search).get('pago'); if(!id) return;
+  const id=new URLSearchParams(location.search).get('pago'); if(!id) return;  /* ?pago=cs_... o ?pago=ok */
   history.replaceState(null,'',location.pathname);
   let pend=null; try{ pend=JSON.parse(localStorage.getItem('arc_pend')||'null'); }catch(e){}
   avisoPago(T('Comprobando el pago…'));
   let r=null;
-  try{ r=await fetch('/api/verificar?id='+encodeURIComponent(id)).then(x=>x.json()); }catch(e){}
+  const q=/^cs_/.test(id)?'id='+encodeURIComponent(id):'ref='+encodeURIComponent(pend&&pend.ref||'');
+  try{ r=await fetch('/api/verificar?'+q).then(x=>x.json()); }catch(e){}
   if(!r||!r.pagado||!pend||(r.producto&&r.producto!==pend.p)){
     avisoPago(T('No hemos podido confirmar el pago. Si se te ha cobrado, escríbenos a')+' '+TITULAR.email,12000); return;
   }
