@@ -291,6 +291,33 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .prox{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:999px;border:1px solid #fde68a88;color:#fde68a;
   font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
 
+
+/* ── CARTA ASTRAL ── */
+.horas{display:flex;align-items:center;gap:8px;max-width:220px}
+.horas .inp{text-align:center;font-size:1.15rem;padding:13px 6px}
+.horas span{color:#e6dcf7;font-size:1.3rem}
+.chk{display:flex;align-items:center;gap:8px;color:#e6dcf7;font-size:1rem;margin-top:6px;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:#a855f7}
+.lugar{position:relative}
+.clista{display:none;position:absolute;left:0;right:0;top:100%;z-index:20;margin-top:4px;background:#1a0a3a;
+  border:1px solid #8b5cf6aa;border-radius:10px;max-height:280px;overflow:auto;box-shadow:0 10px 30px #000c}
+.clista button{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #8b5cf633;
+  color:#f7eedf;font-family:'EB Garamond',serif;font-size:1.02rem;padding:11px 14px;cursor:pointer}
+.clista button:hover{background:#2a1458}
+.hint2{color:#cbb3f7;font-size:.92rem;font-style:italic;min-height:1em}
+.rueda{position:relative;width:300px;height:300px;margin:10px auto 18px;flex-shrink:0}
+.rueda .r1,.rueda .r2,.rueda .r3{position:absolute;border-radius:50%;border:1px solid #a78bfa88}
+.rueda .r1{inset:0;background:#140734;box-shadow:0 0 30px #7c3aed55}
+.rueda .r2{inset:34px}
+.rueda .r3{inset:70px;background:#0b0320}
+.zline{position:absolute;height:1px;background:#a78bfa55;transform-origin:0 50%}
+.zsig,.zpl{position:absolute;transform:translate(-50%,-50%);line-height:1;
+  font-family:'Segoe UI Symbol','Noto Sans Symbols 2','Noto Sans Symbols','DejaVu Sans',sans-serif}
+.zsig{font-size:1.05rem;filter:brightness(1.7) saturate(1.2)}
+.zpl{font-size:1.2rem;color:#fde68a;text-shadow:0 0 6px #000,0 0 2px #000}
+.rasc{position:absolute;height:2px;background:#fde68a;transform-origin:0 50%;transform:rotate(180deg)}
+.rasc-t{position:absolute;color:#fde68a;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em}
+
 /* La web ya es oscura: los navegadores (Chrome, Samsung Internet) no deben repintarla */
 @media (prefers-color-scheme:dark){:root{color-scheme:dark only}}
 
@@ -379,7 +406,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     Cinco tradiciones místicas aguardan tu consulta. Formula tu pregunta y el ritual tomará forma.
   </p>
   <button class="bp" onclick="goTo('s-metodo')">✦ Abrir el Portal ✦</button>
-  <div class="navx"><button class="prem" onclick="verPersonal()">✦ Lectura personal</button><button onclick="goTo('s-rituales')">Rituales</button><button onclick="goTo('s-tienda')">Tienda</button></div>
+  <div class="navx"><button class="prem" onclick="verPersonal()">✦ Lectura personal</button><button class="prem" onclick="verCarta()">☉ Carta astral</button><button onclick="goTo('s-rituales')">Rituales</button><button onclick="goTo('s-tienda')">Tienda</button></div>
   <p style="margin-top:30px;color:#7c3aed44;font-size:.78rem;letter-spacing:.1em;text-align:center">
     Tarot · Runas · I Ching · Cristal · Astrología
   </p>
@@ -476,6 +503,41 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     <button class="bp w" onclick="generarPersonal()">✦ Ver mi lectura personal</button>
   </div>
   <div id="pres" class="pres"></div>
+  <button class="bt" onclick="goTo('s-intro')">← Volver</button>
+</div>
+
+<!-- CARTA ASTRAL -->
+<div class="scr top off" id="s-carta">
+  <div class="divl"><span>✦</span></div>
+  <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Tu carta astral</h2>
+  <p class="sub">La posición exacta del Sol, la Luna y los planetas en el momento en que naciste. Para calcular tu Ascendente necesitas la hora y el lugar de nacimiento.</p>
+  <div class="pform">
+    <label class="lbl hf" for="cnom">Tu nombre</label>
+    <input id="cnom" class="inp" autocomplete="name" placeholder="Tu nombre">
+    <label class="lbl hf" for="cdia">Fecha de nacimiento</label>
+    <div class="fechas">
+      <input id="cdia" class="inp" inputmode="numeric" maxlength="2" placeholder="Día" aria-label="Día">
+      <input id="cmes" class="inp" inputmode="numeric" maxlength="2" placeholder="Mes" aria-label="Mes">
+      <input id="canyo" class="inp" inputmode="numeric" maxlength="4" placeholder="Año" aria-label="Año">
+    </div>
+    <label class="lbl hf" for="chh">Hora de nacimiento</label>
+    <div class="horas">
+      <input id="chh" class="inp" inputmode="numeric" maxlength="2" placeholder="Hora" aria-label="Hora">
+      <span>:</span>
+      <input id="cmi" class="inp" inputmode="numeric" maxlength="2" placeholder="Min" aria-label="Minutos">
+    </div>
+    <label class="chk"><input type="checkbox" id="csinhora"> No sé mi hora de nacimiento</label>
+    <label class="lbl hf" for="clug">Lugar de nacimiento</label>
+    <div class="lugar">
+      <input id="clug" class="inp" placeholder="Escribe tu ciudad…" autocomplete="off">
+      <div id="clista" class="clista" role="listbox"></div>
+    </div>
+    <p class="hint2">Si tu pueblo no aparece, elige la ciudad grande más cercana.</p>
+    <p id="cestado" class="hint2" role="status"></p>
+    <p id="cerr" class="err" role="alert"></p>
+    <button class="bp w" onclick="generarCarta()">✦ Calcular mi carta astral</button>
+  </div>
+  <div id="cres" class="pres"></div>
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
 </div>
 
@@ -1656,6 +1718,164 @@ function ritualRecomendado(q){
   el.innerHTML=`<button class="rec" onclick="abrirRitual('${r.id}')"><span class="ri">${r.i}</span><span><small>Ritual recomendado para ti</small><br>${r.t}</span><span>→</span></button>`;
 }
 
+/* ═══ CARTA ASTRAL ═══
+   Posiciones reales de los astros con astronomy-engine (MIT) y ciudades con zona horaria
+   de city-timezones (MIT). Se cargan solo al abrir esta sección. */
+const ASTRO_LIB='https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js';
+const CIUDADES_URL='https://cdn.jsdelivr.net/npm/city-timezones@1.3.4/data/cityMap.json';
+let _astroP=null, CIUDADES=null, ciudadSel=null;
+function cargarAstro(){
+  if(_astroP) return _astroP;
+  _astroP=Promise.all([
+    new Promise((ok,ko)=>{ if(window.Astronomy) return ok(); const s=document.createElement('script'); s.src=ASTRO_LIB; s.onload=ok; s.onerror=ko; document.head.appendChild(s); }),
+    fetch(CIUDADES_URL).then(r=>r.json()).then(d=>{ CIUDADES=d.sort((a,b)=>b.pop-a.pop); })
+  ]).catch(e=>{ _astroP=null; throw e; });
+  return _astroP;
+}
+const PAISES={Spain:'España',Mexico:'México',Argentina:'Argentina',Colombia:'Colombia',Peru:'Perú',Chile:'Chile',Venezuela:'Venezuela',
+  Ecuador:'Ecuador',Guatemala:'Guatemala',Cuba:'Cuba',Bolivia:'Bolivia','Dominican Republic':'República Dominicana',Honduras:'Honduras',
+  Paraguay:'Paraguay','El Salvador':'El Salvador',Nicaragua:'Nicaragua','Costa Rica':'Costa Rica',Panama:'Panamá',Uruguay:'Uruguay',
+  'Puerto Rico':'Puerto Rico','United States of America':'Estados Unidos','United Kingdom':'Reino Unido',France:'Francia',Germany:'Alemania',
+  Italy:'Italia',Portugal:'Portugal',Morocco:'Marruecos',India:'India',Brazil:'Brasil',Canada:'Canadá',Switzerland:'Suiza',Belgium:'Bélgica',Netherlands:'Países Bajos'};
+const sinAcentos=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+function buscarCiudad(txt){
+  const q=sinAcentos(txt); if(!CIUDADES||q.length<2) return [];
+  const a=[],b=[];
+  for(const c of CIUDADES){ const n=sinAcentos(c.city_ascii||c.city); if(n.startsWith(q)) a.push(c); else if(n.includes(q)) b.push(c); if(a.length>=8) break; }
+  return [...a,...b].slice(0,8);
+}
+function nombreCiudad(c){ return [c.city,c.province,PAISES[c.country]||c.country].filter(Boolean).filter((x,i,arr)=>arr.indexOf(x)===i).join(', '); }
+/* Hora local de nacimiento en su zona horaria → instante UTC (respeta horarios de verano históricos) */
+function localAUtc(y,m,d,h,mi,tz){
+  const off=t=>{ const p=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(new Date(t));
+    const g=k=>+p.find(x=>x.type===k).value; return Date.UTC(g('year'),g('month')-1,g('day'),g('hour'),g('minute'),g('second'))-t; };
+  const guess=Date.UTC(y,m-1,d,h,mi); let u=guess-off(guess); u=guess-off(u); return new Date(u);
+}
+const CUERPOS=[['Sol','Sun','☉'],['Luna','Moon','☽'],['Mercurio','Mercury','☿'],['Venus','Venus','♀'],['Marte','Mars','♂'],
+  ['Júpiter','Jupiter','♃'],['Saturno','Saturn','♄'],['Urano','Uranus','♅'],['Neptuno','Neptune','♆'],['Plutón','Pluto','♇']];
+function calcularCarta(fechaUtc,lat,lng,conHora){
+  const A=window.Astronomy, t=A.MakeTime(fechaUtc);
+  const pos=CUERPOS.map(([n,b,g])=>({n,g,lon:A.Ecliptic(A.GeoVector(A.Body[b],t,true)).elon}));
+  let asc=null;
+  if(conHora){
+    const lst=((A.SiderealTime(t)+lng/15)%24+24)%24, th=lst*15*Math.PI/180;
+    const eps=A.e_tilt(t).tobl*Math.PI/180, ph=lat*Math.PI/180;
+    asc=((Math.atan2(Math.cos(th),-(Math.sin(th)*Math.cos(eps)+Math.tan(ph)*Math.sin(eps)))*180/Math.PI)+360)%360;
+  }
+  return {pos,asc};
+}
+const NOMBRE_SIGNO=["Aries","Tauro","Géminis","Cáncer","Leo","Virgo","Libra","Escorpio","Sagitario","Capricornio","Acuario","Piscis"];
+const GLIFO_SIGNO=["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
+const signoDe=lon=>Math.floor(((lon%360)+360)%360/30);
+const gradosEn=lon=>`${Math.floor(((lon%360)+360)%360%30)}° de ${NOMBRE_SIGNO[signoDe(lon)]}`;
+const ESTILO=[
+  {e:"con impulso, valentía y franqueza",r:"la impaciencia"},
+  {e:"con calma, constancia y sensualidad",r:"la terquedad"},
+  {e:"con curiosidad, ingenio y ganas de comunicar",r:"la dispersión"},
+  {e:"con ternura, intuición y necesidad de protección",r:"encerrarte en ti"},
+  {e:"con generosidad, orgullo y ganas de brillar",r:"depender del aplauso"},
+  {e:"con detalle, sentido práctico y deseo de mejorar",r:"la autoexigencia"},
+  {e:"con armonía, diplomacia y amor por la belleza",r:"la indecisión"},
+  {e:"con intensidad, profundidad y magnetismo",r:"los celos y el control"},
+  {e:"con optimismo, libertad y sed de aventura",r:"prometer más de lo que puedes cumplir"},
+  {e:"con disciplina, ambición y paciencia",r:"la rigidez"},
+  {e:"con originalidad, independencia y visión de futuro",r:"el distanciamiento"},
+  {e:"con sensibilidad, imaginación y compasión",r:"evadirte de la realidad"}
+];
+const ELEM=["fuego","tierra","aire","agua"];
+const ELEM_TXT={fuego:"Predomina el fuego: eres pura acción, pasión y entusiasmo.",tierra:"Predomina la tierra: tienes sentido práctico, constancia y los pies en el suelo.",
+  aire:"Predomina el aire: vives a través de las ideas, la palabra y las relaciones.",agua:"Predomina el agua: sientes con profundidad y te guía la intuición."};
+const TXT_PLANETA={
+  Sol:(s,E)=>`Tu esencia: brillas y te realizas ${E.e}. Es tu centro, lo que viniste a desarrollar en esta vida. Tu reto: ${E.r}.`,
+  Luna:(s,E)=>`Tus emociones: sientes y te cuidas ${E.e}. Eso es lo que necesitas para sentirte en casa. Cuidado con ${E.r}.`,
+  Asc:(s,E)=>`Cómo te ven: los demás te perciben ${E.e}. Es tu primera impresión y la puerta por la que entras en el mundo.`,
+  Mercurio:(s,E)=>`Tu mente: piensas y te expresas ${E.e}.`,
+  Venus:(s,E)=>`Tu forma de amar: amas y disfrutas ${E.e}. En pareja, vigila ${E.r}.`,
+  Marte:(s,E)=>`Tu energía: actúas y defiendes lo tuyo ${E.e}.`,
+  'Júpiter':(s,E)=>`Tu suerte: la abundancia te llega cuando vives ${E.e}.`,
+  Saturno:(s,E)=>`Tus lecciones: maduras aprendiendo a vivir ${E.e}, sin caer en ${E.r}.`
+};
+/* Rueda zodiacal hecha con elementos de la página (no imagen), para que el modo oscuro del móvil no la invierta */
+function ruedaHTML(c){
+  const ref=c.asc!=null?c.asc:0, R=150;
+  const xy=(lon,r)=>{const a=(180+(lon-ref))*Math.PI/180; return [R+r*Math.cos(a), R-r*Math.sin(a)];};
+  let h=`<div class="rueda"><div class="r1"></div><div class="r2"></div>`;
+  for(let i=0;i<12;i++){
+    const a=-(180+(i*30-ref));
+    h+=`<span class="zline" style="left:${R}px;top:${R}px;width:${R-1}px;transform:rotate(${a}deg)"></span>`;
+  }
+  h+=`<div class="r3"></div>`;
+  for(let i=0;i<12;i++){
+    const [x,y]=xy(i*30+15,R-17);
+    h+=`<span class="zsig" style="left:${x}px;top:${y}px;color:${ZCOLORS[i]}">${GLIFO_SIGNO[i]}&#xFE0E;</span>`;
+  }
+  const usados=[];
+  c.pos.forEach(p=>{ let r=R-58; usados.forEach(u=>{ if(Math.abs(((p.lon-u+540)%360)-180)<7) r-=20; }); usados.push(p.lon);
+    const [x,y]=xy(p.lon,Math.max(r,30)); h+=`<span class="zpl" title="${p.n}" style="left:${x}px;top:${y}px">${p.g}&#xFE0E;</span>`; });
+  if(c.asc!=null){ h+=`<span class="rasc" style="left:${R}px;top:${R}px;width:${R}px"></span><span class="rasc-t" style="left:40px;top:${R+6}px">ASC</span>`; }
+  return h+`</div>`;
+}
+
+function verCarta(){
+  goTo('s-carta');
+  const est=document.getElementById('cestado');
+  if(!CIUDADES){ est.textContent='Preparando el mapa del cielo…';
+    cargarAstro().then(()=>{est.textContent='';}).catch(()=>{est.textContent='No se ha podido cargar el mapa del cielo. Revisa tu conexión e inténtalo de nuevo.';}); }
+}
+function initCarta(){
+  const inp=document.getElementById('clug'), lista=document.getElementById('clista');
+  if(!inp) return;
+  inp.addEventListener('input',()=>{
+    ciudadSel=null; const res=buscarCiudad(inp.value);
+    lista.innerHTML=res.map((c,i)=>`<button type="button" data-i="${i}">${nombreCiudad(c)}</button>`).join('');
+    lista.style.display=res.length?'block':'none';
+    [...lista.children].forEach((b,i)=>b.onclick=()=>{ ciudadSel=res[i]; inp.value=nombreCiudad(res[i]); lista.style.display='none'; });
+  });
+  document.getElementById('csinhora').addEventListener('change',e=>{
+    document.getElementById('chh').disabled=document.getElementById('cmi').disabled=e.target.checked; });
+  [['cdia','cmes',2],['cmes','canyo',2],['canyo',null,4],['chh','cmi',2],['cmi',null,2]].forEach(([id,sig,len])=>{
+    const el=document.getElementById(id); el.addEventListener('input',()=>{ el.value=el.value.replace(/\D/g,'').slice(0,len);
+      if(sig&&el.value.length===len) document.getElementById(sig).focus(); }); });
+}
+async function generarCarta(){
+  const err=document.getElementById('cerr'); err.textContent='';
+  const nombre=document.getElementById('cnom').value.trim();
+  const dd=+document.getElementById('cdia').value, mm=+document.getElementById('cmes').value, y=+document.getElementById('canyo').value, sinHora=document.getElementById('csinhora').checked;
+  const hh=sinHora?12:+document.getElementById('chh').value, mi=sinHora?0:+(document.getElementById('cmi').value||0);
+  if(!nombre||!dd||!mm||!y){ err.textContent='Escribe tu nombre y tu fecha de nacimiento.'; return; }
+  const f=new Date(y,mm-1,dd);
+  if(y<1900||f>new Date()||f.getDate()!==dd||f.getMonth()!==mm-1){ err.textContent='Esa fecha no existe. Revisa el día, el mes y el año.'; return; }
+  if(!sinHora&&(document.getElementById('chh').value===''||hh>23||mi>59)){ err.textContent='Escribe tu hora de nacimiento (por ejemplo 08:30) o marca «No sé mi hora».'; return; }
+  if(!ciudadSel){ err.textContent='Escribe tu lugar de nacimiento y elige tu ciudad de la lista.'; return; }
+  try{ await cargarAstro(); }catch(e){ err.textContent='No se ha podido cargar el mapa del cielo. Revisa tu conexión.'; return; }
+  const utc=localAUtc(y,mm,dd,hh,mi,ciudadSel.timezone);
+  const c=calcularCarta(utc,ciudadSel.lat,ciudadSel.lng,!sinHora);
+  const P=Object.fromEntries(c.pos.map(p=>[p.n,p]));
+  const pn=nombre.split(/\s+/)[0];
+  const sec=(i,t,x)=>({i,t,x});
+  const s=[];
+  const sS=signoDe(P.Sol.lon); s.push(sec('☉&#xFE0E;',`Tu Sol en ${NOMBRE_SIGNO[sS]} · ${Math.floor(P.Sol.lon%30)}°`,TXT_PLANETA.Sol(sS,ESTILO[sS])));
+  const sL=signoDe(P.Luna.lon); s.push(sec('☽&#xFE0E;',`Tu Luna en ${NOMBRE_SIGNO[sL]} · ${Math.floor(P.Luna.lon%30)}°`,TXT_PLANETA.Luna(sL,ESTILO[sL])+(sinHora?' (Sin la hora exacta, la Luna podría estar en el signo vecino.)':'')));
+  if(c.asc!=null){ const sA=signoDe(c.asc); s.push(sec('↑',`Tu Ascendente en ${NOMBRE_SIGNO[sA]} · ${Math.floor(c.asc%30)}°`,TXT_PLANETA.Asc(sA,ESTILO[sA]))); }
+  ['Mercurio','Venus','Marte','Júpiter','Saturno'].forEach(n=>{ const sg=signoDe(P[n].lon), g=CUERPOS.find(x=>x[0]===n)[2];
+    s.push(sec(g+'&#xFE0E;',`${n} en ${NOMBRE_SIGNO[sg]}`,TXT_PLANETA[n](sg,ESTILO[sg]))); });
+  const cuenta={fuego:0,tierra:0,aire:0,agua:0};
+  ['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno'].forEach(n=>cuenta[ELEM[signoDe(P[n].lon)%4]]++);
+  if(c.asc!=null) cuenta[ELEM[signoDe(c.asc)%4]]++;
+  const dom=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a])[0];
+  s.push(sec('✦','Tu elemento dominante: '+dom,ELEM_TXT[dom]+` (fuego ${cuenta.fuego} · tierra ${cuenta.tierra} · aire ${cuenta.aire} · agua ${cuenta.agua})`));
+  const premium=esPremium(), box=document.getElementById('cres');
+  box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:4px">La carta astral de ${pn}</h2>
+    <p class="sub" style="margin-bottom:6px">${dd}/${mm}/${y}${sinHora?'':` · ${String(hh).padStart(2,'0')}:${String(mi).padStart(2,'0')}`} · ${nombreCiudad(ciudadSel)}</p>`+
+    ruedaHTML(c)+
+    s.map((x,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)"><div class="al" style="color:var(--gold)"><span>${x.i}</span> ${x.t}</div><p class="at">${x.x}</p></div>`).join('')+
+    (premium?'':`<div class="paywall"><div class="pw-t">✦ Carta astral completa · Premium</div>
+      <p>Desbloquea tu Luna, tu Ascendente, tus planetas personales y tu elemento dominante.</p>
+      <button class="bp" onclick="alert('Muy pronto podrás desbloquear tu carta astral completa.')">Desbloquear · próximamente</button></div>`);
+  box.style.display='flex'; sndReveal&&sndReveal();
+  setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
 /* ═══ ORACLE API ═══ */
 async function callOracle(){
   const q=document.getElementById('qi').value.trim();
@@ -1750,6 +1970,7 @@ function showResp(ans,m){
   el.addEventListener('input',()=>{ el.value=el.value.replace(/\D/g,'').slice(0,len);
     if(sig&&el.value.length===len) document.getElementById(sig).focus(); });
 });
+initCarta();
 initMic('mic','qi'); initMic('pmic','pq'); pintarRituales();
 </script>
 </body>
