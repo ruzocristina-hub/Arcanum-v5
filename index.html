@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="color-scheme" content="dark only"/>
 <meta name="theme-color" content="#050014"/>
-<title>Arcanum Oráculo</title>
+<title>Madre Oráculo</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -432,7 +432,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
     </svg>
     <div class="orb" style="width:76px;height:76px;font-size:2.1rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">🔮</div>
   </div>
-  <h1 class="tf grad" style="font-size:clamp(1.6rem,5vw,2.7rem);text-align:center;line-height:1.3;margin-bottom:8px">Arcanum Oráculo</h1>
+  <h1 class="tf grad" style="font-size:clamp(1.6rem,5vw,2.7rem);text-align:center;line-height:1.3;margin-bottom:8px">Madre Oráculo</h1>
   <p class="hf" style="color:#a855f755;font-size:.8rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:20px;text-align:center">El Espejo del Destino</p>
   <p style="max-width:420px;text-align:center;color:#c4a882aa;font-size:1.06rem;line-height:1.85;margin-bottom:30px">
     Cinco tradiciones místicas aguardan tu consulta. Formula tu pregunta y el ritual tomará forma.
@@ -604,7 +604,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 
 <!-- AVISO DE PRIVACIDAD (primera visita) -->
 <div id="aviso-priv" role="dialog" aria-label="Aviso de privacidad">
-  <span>Arcanum no usa cookies de publicidad ni de análisis. Solo guarda en tu dispositivo lo necesario para tus lecturas. <a onclick="verLegal('cookies')">Más información</a></span>
+  <span>Madre Oráculo no usa cookies de publicidad ni de análisis. Solo guarda en tu dispositivo lo necesario para tus lecturas. <a onclick="verLegal('cookies')">Más información</a></span>
   <button onclick="cerrarAviso()">Entendido</button>
 </div>
 
@@ -1967,23 +1967,23 @@ async function generarCarta(){
 /* ═══ TEXTOS LEGALES (borrador para revisar por un profesional) ═══
    Rellena aquí tus datos una sola vez: aparecen en todos los textos. */
 const TITULAR={
-  nombre:'[NOMBRE Y APELLIDOS]',
-  nif:'[NIF]',
-  dir:'[DIRECCIÓN FISCAL COMPLETA]',
-  email:'[EMAIL DE CONTACTO]',
+  nombre:'Cristina Ruzo Vázquez',
+  nif:'32816863A',
+  dir:'Paseo Roque del Conde, 1, 38660 Adeje, Santa Cruz de Tenerife',
+  email:'kaurcris11@gmail.com',
   web:'arcanum-v5.vercel.app'
 };
 const ACTUALIZADO='octubre de 2026';
-const ph=t=>/^\[/.test(t)?`<mark class="ph">${t}</mark>`:t;
+const ph=t=>t.replace(/\[[^\]]+\]/g,m=>`<mark class="ph">${m}</mark>`);
 function legalHTML(){
   const T={nombre:ph(TITULAR.nombre),nif:ph(TITULAR.nif),dir:ph(TITULAR.dir),email:ph(TITULAR.email),web:TITULAR.web};
   return {
 aviso:`<h3>Aviso legal</h3>
 <p>En cumplimiento de la Ley 34/2002, de servicios de la sociedad de la información y de comercio electrónico (LSSI), se informa de los datos del titular de este sitio web:</p>
 <ul><li><b>Titular:</b> ${T.nombre}, persona trabajadora autónoma.</li><li><b>NIF:</b> ${T.nif}</li><li><b>Domicilio:</b> ${T.dir}, Canarias (España)</li><li><b>Correo electrónico:</b> ${T.email}</li><li><b>Sitio web:</b> ${T.web}</li></ul>
-<p><b>Objeto.</b> Arcanum Oráculo ofrece contenidos de entretenimiento y reflexión personal basados en tradiciones simbólicas: tarot, runas, I Ching, cristalomancia, astrología y numerología.</p>
+<p><b>Objeto.</b> Madre Oráculo ofrece contenidos de entretenimiento y reflexión personal basados en tradiciones simbólicas: tarot, runas, I Ching, cristalomancia, astrología y numerología.</p>
 <p><b>Uso del sitio.</b> Quien usa la web se compromete a hacerlo de forma lícita y a no dañar su funcionamiento. El titular puede modificar los contenidos y estas condiciones en cualquier momento.</p>
-<p><b>Propiedad intelectual.</b> Los textos, el diseño y el código de Arcanum Oráculo pertenecen a su titular. Excepciones: la imagen de La Sacerdotisa pertenece a la baraja Rider-Waite-Smith (1909), ilustrada por Pamela Colman Smith y en dominio público; los cálculos astronómicos usan la librería <i>astronomy-engine</i> y la base de ciudades <i>city-timezones</i>, ambas con licencia MIT.</p>
+<p><b>Propiedad intelectual.</b> Los textos, el diseño y el código de Madre Oráculo pertenecen a su titular. Excepciones: la imagen de La Sacerdotisa pertenece a la baraja Rider-Waite-Smith (1909), ilustrada por Pamela Colman Smith y en dominio público; los cálculos astronómicos usan la librería <i>astronomy-engine</i> y la base de ciudades <i>city-timezones</i>, ambas con licencia MIT.</p>
 <p><b>Responsabilidad.</b> El titular no garantiza la disponibilidad continua del servicio y no se responsabiliza de las decisiones que el usuario tome a partir de las lecturas, que tienen carácter de entretenimiento (ver «Aviso sobre las lecturas»).</p>
 <p><b>Legislación aplicable.</b> Este sitio se rige por la legislación española. Si eres consumidor, podrás acudir a los tribunales de tu domicilio.</p>`,
 
@@ -1993,7 +1993,7 @@ privacidad:`<h3>Política de privacidad</h3>
 <ul>
 <li><b>Tus preguntas, tu nombre y tus datos de nacimiento</b> (fecha, hora y lugar), solo cuando usas una lectura, la lectura personal o la carta astral. Hoy estos cálculos se hacen en tu propio dispositivo y no se envían a nuestros servidores.</li>
 <li><b>Memoria de lecturas del día:</b> tu dispositivo guarda qué símbolos te han salido hoy, para que las lecturas no se repitan ni se contradigan. Ver «Cookies y almacenamiento».</li>
-<li><b>Dictado por voz:</b> si usas el micrófono, el reconocimiento de voz lo realiza tu navegador. Según el navegador (por ejemplo Chrome o Safari), el audio puede enviarse a los servidores de su fabricante (Google, Apple) para convertirlo en texto, conforme a sus políticas. Arcanum no recibe ni guarda tu audio.</li>
+<li><b>Dictado por voz:</b> si usas el micrófono, el reconocimiento de voz lo realiza tu navegador. Según el navegador (por ejemplo Chrome o Safari), el audio puede enviarse a los servidores de su fabricante (Google, Apple) para convertirlo en texto, conforme a sus políticas. Madre Oráculo no recibe ni guarda tu audio.</li>
 <li><b>Cuenta y compras</b> (cuando estén disponibles): correo electrónico, compras realizadas y créditos. Los pagos los procesa Stripe; nunca vemos ni guardamos los datos de tu tarjeta.</li>
 <li><b>Lecturas con inteligencia artificial</b> (cuando estén disponibles): tu pregunta y los símbolos obtenidos se envían a un proveedor de IA para generar la respuesta. No envíes datos de salud, datos de terceros ni otra información sensible.</li>
 </ul>
@@ -2004,7 +2004,7 @@ privacidad:`<h3>Política de privacidad</h3>
 <p><b>Menores.</b> El servicio no está dirigido a menores de 14 años. Las compras solo pueden realizarlas personas mayores de 18 años.</p>`,
 
 cookies:`<h3>Cookies y almacenamiento</h3>
-<p>Arcanum Oráculo <b>no usa cookies de publicidad ni de análisis</b> y no te rastrea entre webs.</p>
+<p>Madre Oráculo <b>no usa cookies de publicidad ni de análisis</b> y no te rastrea entre webs.</p>
 <p>Para que el servicio funcione, la web guarda en tu propio dispositivo (almacenamiento local del navegador) estos datos:</p>
 <ul>
 <li><b>arc_id:</b> un identificador aleatorio que no te identifica personalmente. Sirve para calcular la energía de tus lecturas del día.</li>
@@ -2019,17 +2019,17 @@ cookies:`<h3>Cookies y almacenamiento</h3>
 condiciones:`<h3>Condiciones de contratación</h3>
 <p class="nota">Estas condiciones se aplicarán cuando se activen las compras.</p>
 <p><b>Vendedor:</b> ${T.nombre}, NIF ${T.nif}, ${T.dir}, Canarias (España). Contacto: ${T.email}.</p>
-<p><b>Productos.</b> Contenido digital de entretenimiento: lectura personal completa, carta astral completa, packs de lecturas con IA y suscripción Arcanum Premium. La descripción y el precio de cada producto se muestran antes de pagar.</p>
+<p><b>Productos.</b> Contenido digital de entretenimiento: lectura personal completa, carta astral completa, packs de lecturas con IA y suscripción Madre Oráculo Premium. La descripción y el precio de cada producto se muestran antes de pagar.</p>
 <p><b>Precios e impuestos.</b> Los precios incluyen los impuestos indirectos que correspondan según tu lugar de residencia (IGIC en Canarias, IVA en el resto de España y en la Unión Europea, o el impuesto aplicable en otros países).</p>
 <p><b>Edad.</b> Para comprar tienes que ser mayor de 18 años.</p>
 <p><b>Pago y entrega.</b> El pago se realiza con tarjeta u otros medios a través de Stripe. El contenido se entrega de forma inmediata en la web tras el pago. Recibirás la factura en tu correo electrónico.</p>
 <p><b>Derecho de desistimiento.</b> Como consumidor, tienes 14 días para desistir de una compra. Sin embargo, en el contenido digital que se entrega al momento, antes de pagar te pediremos que aceptes expresamente que el contenido se te entregue de inmediato y que reconozcas que, por ello, pierdes el derecho de desistimiento (artículo 103 m del Texto Refundido de la Ley General para la Defensa de los Consumidores y Usuarios). Los créditos que no hayas usado podrán reembolsarse si lo pides en los 14 días siguientes a la compra.</p>
-<p><b>Suscripción.</b> Arcanum Premium se renueva automáticamente cada mes o cada año, según el plan elegido, hasta que la canceles. Puedes cancelarla en cualquier momento desde tu cuenta, de forma tan sencilla como la contrataste; seguirás teniendo acceso hasta el final del periodo ya pagado.</p>
+<p><b>Suscripción.</b> Madre Oráculo Premium se renueva automáticamente cada mes o cada año, según el plan elegido, hasta que la canceles. Puedes cancelarla en cualquier momento desde tu cuenta, de forma tan sencilla como la contrataste; seguirás teniendo acceso hasta el final del periodo ya pagado.</p>
 <p><b>Reclamaciones.</b> Para cualquier incidencia escribe a ${T.email}. Te responderemos lo antes posible y, en todo caso, en el plazo que marca la ley. También puedes acudir a los servicios de consumo de tu comunidad autónoma.</p>
 <p><b>Legislación.</b> Estas condiciones se rigen por la legislación española, sin perjuicio de los derechos que te reconozca la ley de tu país de residencia como consumidor.</p>`,
 
 lecturas:`<h3>Aviso sobre las lecturas</h3>
-<p>Las lecturas de Arcanum Oráculo son una herramienta de <b>entretenimiento y reflexión personal</b>. No predicen el futuro y no sustituyen el consejo de profesionales de la salud, la psicología, el derecho o las finanzas. No tomes decisiones importantes basándote solo en ellas.</p>
+<p>Las lecturas de Madre Oráculo son una herramienta de <b>entretenimiento y reflexión personal</b>. No predicen el futuro y no sustituyen el consejo de profesionales de la salud, la psicología, el derecho o las finanzas. No tomes decisiones importantes basándote solo en ellas.</p>
 <p>Si estás pasando por un momento difícil, habla con alguien de confianza o con un profesional. En España, si tienes pensamientos de hacerte daño, llama al <b>024</b> (gratuito, a cualquier hora); en caso de emergencia, al <b>112</b>.</p>
 <p><b>Uso de inteligencia artificial.</b> Las lecturas gratuitas se componen a partir de textos redactados previamente. Las lecturas con IA, cuando estén disponibles, se generan automáticamente con inteligencia artificial y se señalarán como tales.</p>
 <p><b>Cálculos astrológicos.</b> Las posiciones de los astros se calculan con datos astronómicos reales; su interpretación es simbólica.</p>`
@@ -2063,7 +2063,7 @@ const IDIOMAS={es:'Español',en:'English'};
 const UI={en:{
 /* Portada */
 "✦ Consultar al Oráculo ✦":"✦ Ask the Oracle ✦",
-"Arcanum Oráculo":"Arcanum Oracle",
+"Madre Oráculo":"Madre Oráculo",
 "El Espejo del Destino":"The Mirror of Destiny",
 "Cinco tradiciones místicas aguardan tu consulta. Formula tu pregunta y el ritual tomará forma.":"Five mystical traditions await your question. Ask, and the ritual will take shape.",
 "✦ Abrir el Portal ✦":"✦ Open the Portal ✦",
@@ -2169,7 +2169,7 @@ const UI={en:{
 "Para dictar tu pregunta, permite el uso del micrófono en tu navegador.":"To speak your question, allow microphone access in your browser.",
 /* Legal, aviso y apoyo */
 "Información legal":"Legal information",
-"Arcanum no usa cookies de publicidad ni de análisis. Solo guarda en tu dispositivo lo necesario para tus lecturas.":"Arcanum uses no advertising or analytics cookies. It only stores on your device what your readings need.",
+"Madre Oráculo no usa cookies de publicidad ni de análisis. Solo guarda en tu dispositivo lo necesario para tus lecturas.":"Madre Oráculo uses no advertising or analytics cookies. It only stores on your device what your readings need.",
 "Más información":"Learn more",
 "Entendido":"Got it",
 "Aviso de privacidad":"Privacy notice",
@@ -2406,9 +2406,9 @@ aviso:`<p class="nota">This English translation is provided for convenience. In 
 <h3>Legal notice</h3>
 <p>In accordance with Spanish Law 34/2002 on information society services and electronic commerce (LSSI), the owner of this website is:</p>
 <ul><li><b>Owner:</b> ${T.nombre}, self-employed.</li><li><b>Tax ID (NIF):</b> ${T.nif}</li><li><b>Address:</b> ${T.dir}, Canary Islands (Spain)</li><li><b>Email:</b> ${T.email}</li><li><b>Website:</b> ${T.web}</li></ul>
-<p><b>Purpose.</b> Arcanum Oracle offers entertainment and self-reflection content based on symbolic traditions: tarot, runes, I Ching, crystal gazing, astrology and numerology.</p>
+<p><b>Purpose.</b> Madre Oráculo offers entertainment and self-reflection content based on symbolic traditions: tarot, runes, I Ching, crystal gazing, astrology and numerology.</p>
 <p><b>Use of the site.</b> Users agree to use the website lawfully and not to harm its operation. The owner may change the content and these terms at any time.</p>
-<p><b>Intellectual property.</b> The texts, design and code of Arcanum Oracle belong to its owner. Exceptions: the image of The High Priestess belongs to the Rider-Waite-Smith deck (1909), illustrated by Pamela Colman Smith and in the public domain; astronomical calculations use the <i>astronomy-engine</i> library and the <i>city-timezones</i> city database, both under the MIT licence.</p>
+<p><b>Intellectual property.</b> The texts, design and code of Madre Oráculo belong to its owner. Exceptions: the image of The High Priestess belongs to the Rider-Waite-Smith deck (1909), illustrated by Pamela Colman Smith and in the public domain; astronomical calculations use the <i>astronomy-engine</i> library and the <i>city-timezones</i> city database, both under the MIT licence.</p>
 <p><b>Liability.</b> The owner does not guarantee uninterrupted availability of the service and is not responsible for decisions users make based on the readings, which are for entertainment purposes (see «About the readings»).</p>
 <p><b>Governing law.</b> This website is governed by Spanish law. If you are a consumer, you may bring proceedings before the courts of your place of residence.</p>`,
 
@@ -2418,7 +2418,7 @@ privacidad:`<h3>Privacy policy</h3>
 <ul>
 <li><b>Your questions, your name and your birth details</b> (date, time and place), only when you use a reading, the personal reading or the birth chart. These calculations are currently made on your own device and are not sent to our servers.</li>
 <li><b>Daily reading memory:</b> your device stores which symbols you have drawn today, so readings don't repeat or contradict each other. See «Cookies and storage».</li>
-<li><b>Voice dictation:</b> if you use the microphone, speech recognition is performed by your browser. Depending on the browser (for example Chrome or Safari), the audio may be sent to its maker's servers (Google, Apple) to be converted into text, under their policies. Arcanum neither receives nor stores your audio.</li>
+<li><b>Voice dictation:</b> if you use the microphone, speech recognition is performed by your browser. Depending on the browser (for example Chrome or Safari), the audio may be sent to its maker's servers (Google, Apple) to be converted into text, under their policies. Madre Oráculo neither receives nor stores your audio.</li>
 <li><b>Account and purchases</b> (when available): email address, purchases and credits. Payments are processed by Stripe; we never see or store your card details.</li>
 <li><b>AI readings</b> (when available): your question and the symbols drawn are sent to an AI provider to generate the answer. Please don't send health data, data about other people or other sensitive information.</li>
 </ul>
@@ -2429,7 +2429,7 @@ privacidad:`<h3>Privacy policy</h3>
 <p><b>Minors.</b> The service is not intended for children under 14. Purchases may only be made by people over 18.</p>`,
 
 cookies:`<h3>Cookies and storage</h3>
-<p>Arcanum Oracle <b>does not use advertising or analytics cookies</b> and does not track you across websites.</p>
+<p>Madre Oráculo <b>does not use advertising or analytics cookies</b> and does not track you across websites.</p>
 <p>For the service to work, the website stores the following on your own device (the browser's local storage):</p>
 <ul>
 <li><b>arc_id:</b> a random identifier that does not identify you personally. It is used to calculate the energy of your daily readings.</li>
@@ -2444,17 +2444,17 @@ cookies:`<h3>Cookies and storage</h3>
 condiciones:`<h3>Terms of sale</h3>
 <p class="nota">These terms will apply once purchases are enabled.</p>
 <p><b>Seller:</b> ${T.nombre}, NIF ${T.nif}, ${T.dir}, Canary Islands (Spain). Contact: ${T.email}.</p>
-<p><b>Products.</b> Digital entertainment content: the full personal reading, the full birth chart, AI reading packs and the Arcanum Premium subscription. The description and price of each product are shown before payment.</p>
+<p><b>Products.</b> Digital entertainment content: the full personal reading, the full birth chart, AI reading packs and the Madre Oráculo Premium subscription. The description and price of each product are shown before payment.</p>
 <p><b>Prices and taxes.</b> Prices include the indirect taxes that apply according to your place of residence (IGIC in the Canary Islands, VAT in the rest of Spain and the European Union, or the applicable tax in other countries).</p>
 <p><b>Age.</b> You must be over 18 to make a purchase.</p>
 <p><b>Payment and delivery.</b> Payment is made by card or other methods through Stripe. Content is delivered immediately on the website after payment. You will receive the invoice by email.</p>
 <p><b>Right of withdrawal.</b> As a consumer, you have 14 days to withdraw from a purchase. However, for digital content delivered immediately, before paying we will ask you to expressly agree to immediate delivery and to acknowledge that you therefore lose your right of withdrawal (Article 103(m) of the Spanish consolidated Consumer Protection Act). Unused credits may be refunded if you request it within 14 days of purchase.</p>
-<p><b>Subscription.</b> Arcanum Premium renews automatically every month or every year, depending on the plan, until you cancel it. You can cancel at any time from your account, as easily as you subscribed; you will keep access until the end of the period already paid.</p>
+<p><b>Subscription.</b> Madre Oráculo Premium renews automatically every month or every year, depending on the plan, until you cancel it. You can cancel at any time from your account, as easily as you subscribed; you will keep access until the end of the period already paid.</p>
 <p><b>Complaints.</b> For any issue, write to ${T.email}. We will reply as soon as possible and in any case within the time limit set by law. You may also contact the consumer protection services in your region.</p>
 <p><b>Governing law.</b> These terms are governed by Spanish law, without prejudice to the rights granted to you as a consumer by the law of your country of residence.</p>`,
 
 lecturas:`<h3>About the readings</h3>
-<p>Arcanum Oracle readings are a tool for <b>entertainment and self-reflection</b>. They do not predict the future and are not a substitute for the advice of health, psychology, legal or financial professionals. Don't make important decisions based on them alone.</p>
+<p>Madre Oráculo readings are a tool for <b>entertainment and self-reflection</b>. They do not predict the future and are not a substitute for the advice of health, psychology, legal or financial professionals. Don't make important decisions based on them alone.</p>
 <p>If you are going through a hard time, talk to someone you trust or to a professional. If you are thinking about harming yourself, contact your local crisis line or emergency services right away (in Spain: <b>024</b>, free and available at any time; emergencies: <b>112</b>).</p>
 <p><b>Use of artificial intelligence.</b> Free readings are composed from pre-written texts. AI readings, when available, will be generated automatically by artificial intelligence and labelled as such.</p>
 <p><b>Astrological calculations.</b> The positions of the planets are calculated with real astronomical data; their interpretation is symbolic.</p>`
@@ -2491,7 +2491,7 @@ function setLang(l){
   L_ASTRO=B.L_ASTRO; TEMAS=B.TEMAS; TONOS=B.TONOS; NUMS=B.NUMS; ANYO=B.ANYO; RITUALES=B.RITUALES; ESTILO=B.ESTILO; ELEM_TXT=B.ELEM_TXT;
   TXT_PLANETA=B.TXT_PLANETA; NOMBRE_SIGNO=B.NOMBRE_SIGNO;
   document.documentElement.lang=l;
-  document.title=l==='en'?'Arcanum Oracle':'Arcanum Oráculo';
+  document.title=l==='en'?'Madre Oráculo':'Madre Oráculo';
   traducirDOM(); pintarMetodos(); pintarRituales();
   if(selM){ const m=M.find(x=>x.id===selM); if(m){ document.getElementById('mt').textContent=m.name; document.getElementById('ms').textContent=m.desc; document.getElementById('mc').innerHTML=m.info; } }
   if(!document.getElementById('s-legal').classList.contains('off')) verLegal();
