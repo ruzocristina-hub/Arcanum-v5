@@ -1,0 +1,7 @@
+{
+  // Madre Oráculo · configuración de Cloudflare (Workers con archivos estáticos)
+  "name": "arcanum-v5",
+  "compatibility_date": "2025-09-01",
+  "main": "worker.js",
+  "assets": { "directory": ".", "binding": "ASSETS" }
+}
