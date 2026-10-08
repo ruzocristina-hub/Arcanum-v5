@@ -1057,7 +1057,8 @@ cookies:`<h3>Cookies and storage</h3>
 <ul>
 <li><b>arc_id:</b> a random identifier that does not identify you personally. It is used to calculate the energy of your daily readings.</li>
 <li><b>arc_dia:</b> the symbols you have drawn today, so they don't repeat or contradict each other. It is renewed every day.</li>
-<li><b>arc_premium:</b> only used in test mode for the paid features.</li>
+<li><b>arc_compras:</b> remembers the readings you have bought on this device, so you can view them again.</li>
+<li><b>arc_pend:</b> during payment, keeps the details of the reading you are buying and your acceptance of the terms, so it can be delivered when you return from Stripe.</li>
 <li><b>arc_aviso:</b> remembers that you have seen the privacy notice.</li>
 <li><b>arc_lang:</b> remembers the language you chose.</li>
 </ul>
@@ -1799,7 +1800,8 @@ cookies:`<h3>Cookie e archiviazione</h3>
 <ul>
 <li><b>arc_id:</b> un identificativo casuale che non ti identifica personalmente. Serve a calcolare l’energia delle tue letture del giorno.</li>
 <li><b>arc_dia:</b> i simboli che hai estratto oggi, affinché non si ripetano né si contraddicano. Si rinnova ogni giorno.</li>
-<li><b>arc_premium:</b> usato solo in modalità di prova per le funzioni a pagamento.</li>
+<li><b>arc_compras:</b> ricorda le letture che hai acquistato su questo dispositivo, così puoi rivederle.</li>
+<li><b>arc_pend:</b> durante il pagamento conserva i dati della lettura che stai acquistando e la tua accettazione delle condizioni, per consegnartela al ritorno da Stripe.</li>
 <li><b>arc_aviso:</b> ricorda che hai visto l’informativa sulla privacy.</li>
 <li><b>arc_lang:</b> ricorda la lingua che hai scelto.</li>
 </ul>
@@ -2541,7 +2543,8 @@ cookies:`<h3>Cookies e armazenamento</h3>
 <ul>
 <li><b>arc_id:</b> um identificador aleatório que não identifica você pessoalmente. É usado para calcular a energia das suas leituras do dia.</li>
 <li><b>arc_dia:</b> os símbolos que você tirou hoje, para que não se repitam nem se contradigam. É renovado todos os dias.</li>
-<li><b>arc_premium:</b> usado somente no modo de teste das funções pagas.</li>
+<li><b>arc_compras:</b> lembra as leituras que você comprou neste dispositivo, para que você possa vê-las novamente.</li>
+<li><b>arc_pend:</b> durante o pagamento, guarda os dados da leitura que você está comprando e a sua aceitação das condições, para entregá-la quando você voltar do Stripe.</li>
 <li><b>arc_aviso:</b> lembra que você já viu o aviso de privacidade.</li>
 <li><b>arc_lang:</b> lembra o idioma que você escolheu.</li>
 </ul>
@@ -3907,8 +3910,9 @@ function initMic(btnId,inputId){
 /* ═══ PREMIUM (pendiente de pagos) ═══
    Mientras no haya pagos, se puede probar entera añadiendo ?prueba=1 a la dirección. */
 function esPremium(){
-  try{ if(new URLSearchParams(location.search).get('prueba')==='1') localStorage.setItem('arc_premium','1');
-       return localStorage.getItem('arc_premium')==='1'; }catch(e){ return false; }
+  /* Antes existía un modo de prueba (?prueba=1) que desbloqueaba todo: se ha quitado para que nadie pueda saltarse el pago. */
+  try{ localStorage.removeItem('arc_premium'); }catch(e){}
+  return false;
 }
 
 /* ═══ LECTURA PERSONAL: nombre + fecha de nacimiento ═══ */
@@ -4677,7 +4681,8 @@ cookies:`<h3>Cookies y almacenamiento</h3>
 <ul>
 <li><b>arc_id:</b> un identificador aleatorio que no te identifica personalmente. Sirve para calcular la energía de tus lecturas del día.</li>
 <li><b>arc_dia:</b> los símbolos que te han salido hoy, para que no se repitan ni se contradigan. Se renueva cada día.</li>
-<li><b>arc_premium:</b> solo se usa en el modo de prueba de las funciones de pago.</li>
+<li><b>arc_compras:</b> recuerda las lecturas que has comprado en este dispositivo, para que puedas volver a verlas.</li>
+<li><b>arc_pend:</b> guarda durante el pago los datos de la lectura que estás comprando y tu aceptación de las condiciones, para entregártela al volver de Stripe.</li>
 <li><b>arc_aviso:</b> recuerda que ya has visto el aviso de privacidad.</li>
 <li><b>arc_lang:</b> recuerda el idioma que has elegido.</li>
 </ul>
