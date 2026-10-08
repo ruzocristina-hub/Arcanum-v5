@@ -4743,8 +4743,8 @@ function T(s){ return LANG==='es'?s:((PACKS[LANG]&&PACKS[LANG].UI[s])??s); }
    En Stripe, en cada enlace: «Después del pago» → «No mostrar página de confirmación; redirigir a tu web» con:
    https://TU-WEB/?pago={CHECKOUT_SESSION_ID} */
 const PAGOS={
-  personal:{link:'https://buy.stripe.com/test_00w5kx90m1W08gK1X34F200',precio:'2,99 €'},
-  carta:{link:'https://buy.stripe.com/test_6oU4gt4K6bwAcx0eJP4F201',precio:'4,99 €'}
+  personal:{link:'https://buy.stripe.com/test_00w4gt3G20RWcx07hn4F206',precio:'4,99 €'},
+  carta:{link:'https://buy.stripe.com/test_14A4gt7Wiasw8gKgRX4F203',precio:'6,99 €'}
 };
 const paywall=(P,prod)=>{
   const cfg=PAGOS[prod];
