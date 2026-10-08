@@ -272,6 +272,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .paywall p{color:#efe6ff;margin:6px 0 14px;line-height:1.6}
 .pw-t{font-family:'Cinzel',serif;color:#fde68a;letter-spacing:.1em}
 .pwc{display:flex;gap:10px;align-items:flex-start;text-align:left;color:#efe6ff;font-size:.95rem;line-height:1.5;margin:10px auto;max-width:440px;cursor:pointer}
+.regchk{max-width:none;margin:14px 0 4px;color:#fde68a}
 .pwc input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:#c084fc}
 .pwerr{color:#fca5a5;min-height:1.2em;margin:4px 0 8px!important}
 .pwleg{font-size:.85rem;color:#c4b5fd!important;margin-top:12px!important}
@@ -525,7 +526,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 <div class="scr top off" id="s-personal">
   <div class="divl"><span>✦</span></div>
   <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Tu lectura personal</h2>
-  <p class="sub">Con tu nombre y tu fecha de nacimiento, el oráculo calcula tu número de vida, tu signo solar, tu carta de nacimiento y lo que te trae este año.</p>
+  <p class="sub">Con tu nombre y tu fecha de nacimiento, el oráculo revela tu número de vida, tu alma, tus lecciones kármicas, tu signo, tu animal chino, tu carta del tarot, tu etapa de vida, el amor, el trabajo, tus próximos meses y tus talismanes. Descárgala en PDF o regálasela a alguien especial.</p>
   <div class="pform">
     <label class="lbl hf" for="pnom">Tu nombre completo</label>
     <input id="pnom" class="inp" autocomplete="name" placeholder="Nombre y apellidos">
@@ -537,6 +538,14 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
     </div>
     <label class="lbl hf" for="pq">Tu pregunta (opcional)</label>
     <div class="qwrap"><textarea id="pq" class="inp" rows="3" placeholder="Escribe o dicta tu pregunta…"></textarea><button type="button" class="mic" id="pmic" aria-label="Dictar la pregunta"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="#fff"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
+    <label class="pwc regchk"><input type="checkbox" id="preg" onchange="toggleRegalo()"> <span>🎁 Es un regalo para otra persona</span></label>
+    <div id="pregbox" style="display:none">
+      <p class="hint2">Escribe arriba el nombre y la fecha de nacimiento de la persona que recibe el regalo.</p>
+      <label class="lbl hf" for="pde">De parte de</label>
+      <input id="pde" class="inp" placeholder="Tu nombre">
+      <label class="lbl hf" for="pded">Dedicatoria (opcional)</label>
+      <textarea id="pded" class="inp" rows="3" maxlength="300" placeholder="Escribe unas palabras para esa persona…"></textarea>
+    </div>
     <p id="perr" class="err" role="alert"></p>
     <button class="bp w" onclick="generarPersonal()">✦ Ver mi lectura personal</button>
   </div>
@@ -632,6 +641,14 @@ var PACKS=window.PACKS||{};
    Keys of UI are the Spanish originals (do not translate the keys). */
 (function(){
 const UI={
+"🎁 Es un regalo para otra persona":"🎁 It’s a gift for someone else",
+"Escribe arriba el nombre y la fecha de nacimiento de la persona que recibe el regalo.":"Enter above the name and date of birth of the person receiving the gift.",
+"De parte de":"From",
+"Tu nombre":"Your name",
+"Dedicatoria (opcional)":"Dedication (optional)",
+"Escribe unas palabras para esa persona…":"Write a few words for that person…",
+"Con tu nombre y tu fecha de nacimiento, el oráculo revela tu número de vida, tu alma, tus lecciones kármicas, tu signo, tu animal chino, tu carta del tarot, tu etapa de vida, el amor, el trabajo, tus próximos meses y tus talismanes. Descárgala en PDF o regálasela a alguien especial.":"With your name and date of birth, the oracle reveals your life path number, your soul, your karmic lessons, your sign, your Chinese animal, your tarot card, your life stage, love, work, your coming months and your talismans. Download it as a PDF or give it to someone special.",
+
 "Soy mayor de 18 años.":"I am over 18.",
 "Quiero recibir mi lectura de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"I want to receive my reading immediately and I accept that, once I receive it, I lose my right of withdrawal.",
 "Pagar":"Pay",
@@ -1085,7 +1102,7 @@ const S={
     {i:'🔮',t:`The oracle's message for you, ${o.pn}`,x:`${o.qi?o.qi+' the':'The'} energy with you today is one of ${o.tono}. Together with your number ${o.vida} and ${o.cn}, it reminds you: ${o.C.c}`}
   ],
   personalTitle:pn=>`${pn}’s reading`,
-  pwPersonal:{t:'✦ Full reading · Premium',p:'Unlock your name number, your sign, your birth card, your personal year and the oracle’s message for you.',b:'Unlock · coming soon',alert:'Very soon you’ll be able to unlock the full reading.'},
+  pwPersonal:{t:'✦ Full reading · Premium',p:'Unlock all 14 sections: your soul, your personality, your karmic lessons, your sign, your Chinese animal, your tarot card, your life stage, love, work, your coming months, your talismans and the oracle’s message. Includes your reading as a PDF to keep or give as a gift.',b:'Unlock · coming soon',alert:'Very soon you’ll be able to unlock the full reading.'},
   /* Carta astral */
   sun:s=>`Your Sun in ${s}`, moon:s=>`Your Moon in ${s}`, asc:s=>`Your Ascendant in ${s}`,
   planet:(n,s)=>`${PLANETA[n]} in ${s}`,
@@ -1097,8 +1114,183 @@ const S={
   updated:'Last updated: October 2026'
 };
 
+/* ═══ EXTENDED PERSONAL READING (English) ═══
+   Texts for the paid reading. Same keys in every language. */
+const PERSONAL={
+/* Extended life path number: f = strengths, r = challenge, amor = love, trab = work, mision = mission */
+ext:{
+ 1:{f:"initiative, courage, independence and an enormous ability to start from scratch",r:"learning to ask for help and to listen without feeling that you are losing control",amor:"You need a partner who admires your strength and gives you space. You love with passion and loyalty, but your challenge is not to turn every relationship into a competition: tenderness is power too.",trab:"You shine when you lead, start ventures or open new paths. Routine jobs, or ones with too many bosses, put out your fire.",mision:"To come into this world as a pioneer: of ideas, projects and ways of living that others will follow later."},
+ 2:{f:"sensitivity, diplomacy, intuition and a natural gift for bringing people together",r:"not losing yourself in other people’s needs, and not silencing what you feel just to avoid conflict",amor:"You are one of those people who truly know how to love: attentive, affectionate, devoted. Your challenge is to choose someone who cares for you just as much, and to set boundaries without guilt.",trab:"You excel in teams, mediation, caregiving, advisory roles or any task that calls for tact and patience. You are the invisible glue that holds any group together.",mision:"To build bridges: to reconcile, to accompany, and to show that gentleness is a form of strength."},
+ 3:{f:"creativity, joy, communication and a charisma that lights up any room",r:"finishing what you start and not scattering your talent in a thousand directions",amor:"You need a relationship full of laughter, conversation and freedom to express yourself. You fall in love easily; your challenge is to go deeper once the first spark fades.",trab:"Your place is in words, art, images, teaching or social media. When you create, money and opportunities find you.",mision:"To express the beauty of life and remind others that joy is sacred too."},
+ 4:{f:"perseverance, order, loyalty and the ability to turn dreams into something solid",r:"letting go of rigidity and trusting that not everything has to be under control",amor:"You love through actions more than words: you show up, you keep your promises, you protect. You seek stability and find it hard to show vulnerability, yet that is where your deepest intimacy lies.",trab:"You are the person everyone relies on. You excel in management, construction, finance, organization or any trade that demands precision.",mision:"To build firm foundations, for yourself and your loved ones, that will still be standing long after you are gone."},
+ 5:{f:"curiosity, adaptability, magnetism and a contagious thirst for life",r:"committing without feeling that you are losing your freedom, and avoiding excess",amor:"You need a relationship that feels alive, full of adventure and free of cages. Your challenge is to discover that commitment, wisely chosen, can be a journey too.",trab:"You do well in sales, travel, communication, languages or any job that changes often. Routine is your worst enemy.",mision:"To experience life in all its forms and teach others not to fear change."},
+ 6:{f:"love, responsibility, generosity and a deep sense of beauty and harmony",r:"not carrying everyone’s problems on your shoulders or trying to fix other people’s lives",amor:"Home and family are your center. You love in a protective, devoted way; your challenge is to let others take care of you too.",trab:"You excel in caring professions, education, health, hospitality, interior design or art. When you help, you feel you are where you belong.",mision:"To create a home wherever you go and to heal through love and beauty."},
+ 7:{f:"deep intuition, analytical intelligence, spirituality and a gaze that sees to the heart of things",r:"opening up to others without suspicion and stepping out of your inner world",amor:"You need someone who respects your silences and shares deep conversations with you. Trust doesn’t come easily, but when it does, your love is immense.",trab:"You shine in research, science, therapy, writing, spirituality or any field where you can go deep at your own pace.",mision:"To seek the truth behind appearances and share the wisdom you find."},
+ 8:{f:"ambition, vision, natural authority and a great capacity to create abundance",r:"balancing material success with your heart, and not measuring your worth by what you own",amor:"You look for a strong, loyal partner who walks by your side. Your challenge is to show your tender side and not bring the need for control into love as well.",trab:"You were born to lead, negotiate, build businesses and manage resources. Money comes when you act with ethics and long-term vision.",mision:"To show that power, used well, improves the lives of many people."},
+ 9:{f:"compassion, generosity, wisdom and a broad vision of life",r:"closing cycles, forgiving, and not sacrificing yourself until nothing is left",amor:"You love in a romantic, all-embracing way. Your challenge is not to idealize your partner and to accept that you, too, deserve to receive.",trab:"You find fulfillment in helping professions, art, social causes, teaching or therapy. You need to feel that your work leaves a mark.",mision:"To serve, to inspire, and to help heal wounds, your own and other people’s."},
+ 11:{f:"extraordinary intuition, inspiration, sensitivity and a light that draws others to you",r:"managing your sensitivity and nerves, and trusting your visions without doubting yourself",amor:"You seek a soul connection, almost a spiritual one. Your challenge is to accept your partner as a real person and not only as an ideal.",trab:"You excel as a guide, therapist, artist or communicator, or on any path where you inspire others. Your intuition is your best tool.",mision:"To be a channel of inspiration: to awaken others through your example and your words."},
+ 22:{f:"vision, discipline, a great capacity for work and the talent to bring big projects to life",r:"not letting pressure or the fear of failure hold back your enormous potential",amor:"You need a partner who shares your dreams and gives you stability. Your challenge is not to let work swallow up your time for love.",trab:"You can build companies, social projects or structures that last for generations. You think big and you know how to get there.",mision:"To build something that outlives you and benefits many people."},
+ 33:{f:"unconditional love, compassion, creativity and a deep desire to serve",r:"not forgetting yourself while you take care of everyone else",amor:"You love with total devotion. Your challenge is to choose balanced relationships, where care flows both ways.",trab:"You excel at teaching, healing, caregiving or creating art that moves people. Your presence alone is medicine for others.",mision:"To teach by example that love is the most powerful force there is."}
+},
+/* Soul number (vowels): what you desire most deeply */
+alma:{
+ 1:"Deep down, you long to be free and the master of your own destiny. Your soul needs challenges, achievements of its own and the feeling of blazing a trail.",
+ 2:"Your soul yearns for peace, love and companionship. What you want most is to feel in harmony with someone and to have your sensitivity understood.",
+ 3:"Your soul wants to express itself: to create, to communicate, to enjoy. You need joy, and you need the world to see what you carry inside.",
+ 4:"Deep down, you want security and stability. Your soul settles when there is order, a solid home and projects that move forward step by step.",
+ 5:"Your soul asks for freedom, adventure and new experiences. Nothing dims your light more than feeling tied down to a predictable life.",
+ 6:"Your deepest desire is to love and be loved. Your soul finds fulfillment in caring for your family and creating a beautiful, peaceful home.",
+ 7:"Your soul seeks truth and the meaning of things. You need silence, knowledge and an authentic spiritual connection.",
+ 8:"In your innermost self, you want to achieve, to prosper and to be recognized. Your soul wants material security and the power to change things.",
+ 9:"Your soul longs for a better world. You are moved by compassion and the desire to help, and you feel at peace when you give without expecting anything back.",
+ 11:"Your soul seeks illumination and inspiration. You long to connect with something greater than yourself and to share that light with others.",
+ 22:"Your soul dreams of leaving behind a lasting legacy. You want to build something great, useful and beautiful for humanity.",
+ 33:"Your soul longs to heal and to love without conditions. You feel fulfilled when your love eases other people’s pain."
+},
+/* Personality number (consonants): how others see you */
+pers:{
+ 1:"Others see you as confident, determined and strong-willed. You project leadership, though at times you seem tougher than you really are.",
+ 2:"People perceive you as kind, calm and approachable. You inspire trust, and people open up to you easily.",
+ 3:"Others see you as cheerful, friendly and talkative. Your presence brightens up any gathering.",
+ 4:"You come across as serious, responsible and dependable. Others know they can count on you.",
+ 5:"People perceive you as dynamic, attractive and full of energy. You spark curiosity wherever you go.",
+ 6:"Others see you as warm, protective and welcoming. Many turn to you for advice or comfort.",
+ 7:"You give off an air of mystery, intelligence and a certain distance. Others sense there is far more inside you than you show.",
+ 8:"People perceive you as powerful, effective and authoritative. You command respect without even trying.",
+ 9:"Others see you as generous, understanding and worldly. Your presence conveys wisdom and kindness.",
+ 11:"People perceive you as someone special and sensitive, with a magnetism that is hard to explain.",
+ 22:"You project a quiet strength and great capability. Others sense that you can achieve important things.",
+ 33:"Others see you as a luminous, nurturing presence: someone who cares and brings comfort."
+},
+/* Karmic lessons: numbers missing from the name */
+karma:{
+ 1:"learning to trust yourself and take the initiative without waiting for anyone’s permission",
+ 2:"cultivating patience, cooperation and the art of listening",
+ 3:"daring to express what you feel and to show your creativity",
+ 4:"developing discipline, order and perseverance in what you undertake",
+ 5:"opening up to change and losing your fear of the unknown",
+ 6:"taking on emotional responsibilities and learning to commit",
+ 7:"going deeper, trusting your intuition and devoting time to your inner world",
+ 8:"learning to manage money and to value your own power",
+ 9:"practicing compassion, forgiveness and the art of letting go"
+},
+/* Stages (pinnacles): the energy of each great cycle of life */
+pin:{
+ 1:"a stage for asserting yourself, gaining independence and making your own decisions",
+ 2:"a stage of relationships, patience and cooperation, where what you build with others matters most",
+ 3:"a creative and social stage, ideal for expressing yourself, communicating and enjoying life",
+ 4:"a stage of work and effort that lays solid foundations for the future",
+ 5:"a stage of change, travel and freedom, in which life asks you to adapt",
+ 6:"a stage centered on home, family and emotional responsibilities",
+ 7:"a stage of introspection, study and spiritual growth",
+ 8:"a stage of material achievement, recognition and personal power",
+ 9:"a stage of endings, generosity and wisdom, in which you let go of what no longer belongs to you",
+ 11:"a stage of inspiration and heightened intuition, in which you can become a guide for others",
+ 22:"a stage of great accomplishments, in which you can build something that lasts",
+ 33:"a stage of service and love, in which your presence heals those around you"
+},
+/* Personal month */
+mes:{
+ 1:"A month for beginnings: launch ideas, take the initiative and plant new seeds.",
+ 2:"A month of patience and alliances: nurture your relationships and let things ripen.",
+ 3:"A social, creative month: communicate, go out, create and enjoy.",
+ 4:"A month of work and order: get organized, follow through and lay firm foundations.",
+ 5:"A month of movement: changes, travel or unexpected news call for flexibility.",
+ 6:"A month of home and affection: family and love call for your attention.",
+ 7:"A month of introspection: rest, reflect and listen to your intuition.",
+ 8:"A month of results: money, achievements and important decisions move in your favor if you act.",
+ 9:"A month of closure: finish what’s pending, forgive and make room for the new."
+},
+/* Sun sign data: ruling planet, compatible signs, stone, color, day */
+signo:[
+ {planeta:"Mars",compat:"Leo, Sagittarius and Gemini",piedra:"diamond and carnelian",color:"red",dia:"Tuesday"},
+ {planeta:"Venus",compat:"Virgo, Capricorn and Cancer",piedra:"emerald and rose quartz",color:"green",dia:"Friday"},
+ {planeta:"Mercury",compat:"Libra, Aquarius and Aries",piedra:"agate and citrine",color:"yellow",dia:"Wednesday"},
+ {planeta:"the Moon",compat:"Scorpio, Pisces and Taurus",piedra:"moonstone and pearl",color:"silvery white",dia:"Monday"},
+ {planeta:"the Sun",compat:"Aries, Sagittarius and Libra",piedra:"tiger’s eye and amber",color:"gold",dia:"Sunday"},
+ {planeta:"Mercury",compat:"Taurus, Capricorn and Scorpio",piedra:"sapphire and amazonite",color:"olive green",dia:"Wednesday"},
+ {planeta:"Venus",compat:"Gemini, Aquarius and Leo",piedra:"opal and rose quartz",color:"pink",dia:"Friday"},
+ {planeta:"Pluto and Mars",compat:"Cancer, Pisces and Virgo",piedra:"topaz and obsidian",color:"deep crimson",dia:"Tuesday"},
+ {planeta:"Jupiter",compat:"Aries, Leo and Aquarius",piedra:"turquoise and amethyst",color:"purple",dia:"Thursday"},
+ {planeta:"Saturn",compat:"Taurus, Virgo and Pisces",piedra:"garnet and onyx",color:"brown and black",dia:"Saturday"},
+ {planeta:"Uranus and Saturn",compat:"Gemini, Libra and Sagittarius",piedra:"amethyst and aquamarine",color:"electric blue",dia:"Saturday"},
+ {planeta:"Neptune and Jupiter",compat:"Cancer, Scorpio and Capricorn",piedra:"aquamarine and amethyst",color:"turquoise",dia:"Thursday"}
+],
+/* Chinese zodiac, in order starting from the Rat */
+chino:[
+ {n:"the Rat",t:"quick-witted, charming and with a keen nose for opportunity. You know how to adapt and come out ahead in any situation."},
+ {n:"the Ox",t:"patient, hardworking and reliable. You move slowly but never stop, and what you build is made to last."},
+ {n:"the Tiger",t:"brave, passionate and magnetic. You are driven by adventure and fiercely defend what you believe is right."},
+ {n:"the Rabbit",t:"sensitive, elegant and diplomatic. You seek harmony and have a gift for creating peaceful surroundings."},
+ {n:"the Dragon",t:"charismatic, ambitious and full of energy. You were born under a lucky star and you love to think big."},
+ {n:"the Snake",t:"wise, intuitive and mysterious. You observe before you act, and you are rarely wrong about people."},
+ {n:"the Horse",t:"free-spirited, enthusiastic and sociable. You need movement, and your vitality is contagious to everyone around you."},
+ {n:"the Goat",t:"creative, kind and dreamy. You have a deep artistic sensitivity and a generous heart."},
+ {n:"the Monkey",t:"clever, fun and versatile. You find solutions where others only see problems."},
+ {n:"the Rooster",t:"hardworking, observant and honest. You pay attention to detail and are not afraid to speak your mind."},
+ {n:"the Dog",t:"loyal, honest and protective. Your sense of justice and your faithfulness make you deeply loved."},
+ {n:"the Pig",t:"generous, sincere and pleasure-loving. You know how to enjoy life and share what you have."}
+],
+elemChino:["Wood","Fire","Earth","Metal","Water"],
+elemChinoTxt:["brings growth, creativity and generosity","brings passion, leadership and enthusiasm","brings stability, good sense and patience","brings determination, strength and ambition","brings intuition, flexibility and wisdom"],
+/* Personal affirmation based on the life path number */
+afirm:{
+ 1:"I trust my strength and I dare to forge my own path.",
+ 2:"My sensitivity is a gift; I give and receive love in balance.",
+ 3:"I share my light without fear, and life answers me with joy.",
+ 4:"Step by step I build a solid life, and I also allow myself to rest.",
+ 5:"I embrace change with confidence: every experience helps me grow.",
+ 6:"I care for my loved ones and for myself; I deserve the love I give.",
+ 7:"I listen to my inner voice and trust what I know.",
+ 8:"I deserve abundance and I use it to do good.",
+ 9:"I release the past with gratitude and make room for the new.",
+ 11:"I trust my intuition; my light inspires those around me.",
+ 22:"My dreams are possible; I build them with calm and faith.",
+ 33:"I love without conditions, starting with myself."
+},
+/* Texts with data (templates) */
+L:{
+ tVida:(n,t)=>`Your life path number: ${n} · ${t}`,
+ xVida:(v,E)=>`${v} Your great strengths are ${E.f}. Your challenge in this life: ${E.r}.`,
+ tAlma:n=>`Your soul number: ${n}`,
+ tPers:n=>`Your personality number: ${n}`,
+ tExpr:(n,t)=>`Your name number: ${n} · ${t}`,
+ tKarma:'Your karmic lessons',
+ xKarma:list=>`Some energies are missing from your name. They are the lessons your soul came to learn in this life: ${list}.`,
+ xKarmaNone:'Your name contains every energy from 1 to 9: you have no karmic lessons pending. It’s the sign of an experienced soul who came to put into practice what it already knows.',
+ tSigno:s=>`Your sun sign: ${s}`,
+ xSigno:(S,X)=>`${/^[aeiou]/i.test(S.el)?'An':'A'} ${S.el} sign, ruled by ${X.planeta}. What defines you: ${S.s}. ${S.c} Signs you connect with especially well: ${X.compat}.`,
+ tChino:(a,e)=>`Your Chinese zodiac animal: the ${e} ${String(a).replace(/^the /i,'')}`,
+ xChino:(A,etxt,prev)=>`Based on the year you were born, you are ${A.n}: ${A.t} Your Chinese element ${etxt}.${prev?` If you were born before Chinese New Year (late January or early February), your animal would be ${prev}.`:''}`,
+ tCarta:c=>`Your birth card: ${c}`,
+ xCarta:C=>`“${C.f}” This card stays with you throughout your life and speaks of ${C.s}. Its advice for you: ${C.c} Its shadow, what to watch out for: ${C.a} ${C.d}`,
+ tEtapa:'The stage of life you are in',
+ xEtapa:(n,txt,desde,hasta,next)=>`${desde===0?'From birth':'From age '+desde}${hasta?' until age '+hasta:' onward'}, you live under the energy of the number ${n}: ${txt}.${next?` After that comes the energy of the number ${next}.`:''}`,
+ tAmor:'Love and relationships',
+ tTrab:'Work and purpose',
+ xTrab:E=>`${E.trab} Your life mission: ${E.mision}`,
+ tAnyo:y=>`Your personal year ${y}`,
+ xAnyo:(n,txt,meses)=>`You are in a personal year ${n}. ${txt} Your coming months: ${meses}`,
+ mesItem:(nombre,txt)=>`${nombre}: ${txt}`,
+ tTalis:'Your talismans',
+ xTalis:(X,num)=>`Your stones: ${X.piedra}. Your color: ${X.color}. Your lucky day: ${X.dia}. Your lucky number: ${num}. Keep them close at important moments.`,
+ tMensaje:pn=>`A message from the oracle for you, ${pn}`,
+ xMensaje:(qi,tono,vida,cn,C,af)=>`${qi?qi+' t':'T'}he energy with you today is one of ${tono}. Together with your number ${vida} and ${cn}, it reminds you: ${C.c} Your affirmation: “${af}”`,
+ /* Gift */
+ regaloPara:n=>`A gift for ${n}`,
+ regaloDe:n=>`With love, from ${n}`,
+ /* PDF */
+ pdfTitulo:pn=>`Personal reading for ${pn}`,
+ pdfNacido:f=>`Date of birth: ${f}`,
+ pdfPie:'Madre Oráculo · A reading for entertainment and personal reflection',
+ pdfBoton:'Download my reading as a PDF',
+ pdfCargando:'Preparing your PDF…',
+ pdfError:'We couldn’t create the PDF. Please check your connection and try again.'
+}
+};
+
 PACKS.en={name:'English',dir:'ltr',UI,M,NOMBRE_SIGNO,ZD,RIESGO,L_TAROT,L_RUNAS,L_TRIG,D_ICHING,L_CRISTAL,D_CRISTAL,L_ASTRO,TEMAS,TONOS,
-  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal};
+  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL};
 })();
 
 </script>
@@ -1108,6 +1300,14 @@ var PACKS=window.PACKS||{};
    Le chiavi di UI sono gli originali spagnoli (non tradurre le chiavi). */
 (function(){
 const UI={
+"🎁 Es un regalo para otra persona":"🎁 È un regalo per un’altra persona",
+"Escribe arriba el nombre y la fecha de nacimiento de la persona que recibe el regalo.":"Scrivi sopra il nome e la data di nascita della persona che riceve il regalo.",
+"De parte de":"Da parte di",
+"Tu nombre":"Il tuo nome",
+"Dedicatoria (opcional)":"Dedica (facoltativa)",
+"Escribe unas palabras para esa persona…":"Scrivi qualche parola per questa persona…",
+"Con tu nombre y tu fecha de nacimiento, el oráculo revela tu número de vida, tu alma, tus lecciones kármicas, tu signo, tu animal chino, tu carta del tarot, tu etapa de vida, el amor, el trabajo, tus próximos meses y tus talismanes. Descárgala en PDF o regálasela a alguien especial.":"Con il tuo nome e la tua data di nascita, l’oracolo rivela il tuo numero del destino, la tua anima, le tue lezioni karmiche, il tuo segno, il tuo animale cinese, la tua carta dei tarocchi, la tua fase di vita, l’amore, il lavoro, i prossimi mesi e i tuoi talismani. Scaricala in PDF o regalala a una persona speciale.",
+
 "Soy mayor de 18 años.":"Ho più di 18 anni.",
 "Quiero recibir mi lectura de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Voglio ricevere subito la mia lettura e accetto che, ricevendola, perdo il diritto di recesso.",
 "Pagar":"Paga",
@@ -1561,7 +1761,7 @@ const S={
     {i:'🔮',t:`Il messaggio dell’oracolo per te, ${o.pn}`,x:`${o.qi?o.qi+' l’':'L’'}energia che ti accompagna oggi è di ${o.tono}. Insieme al tuo numero ${o.vida} e alla carta «${o.cn}», ti ricorda: ${o.C.c.charAt(0).toLowerCase()+o.C.c.slice(1)}`}
   ],
   personalTitle:pn=>`La lettura di ${pn}`,
-  pwPersonal:{t:'✦ Lettura completa · Premium',p:'Sblocca il numero del tuo nome, il tuo segno, la tua carta di nascita, il tuo anno personale e il messaggio dell’oracolo per te.',b:'Sblocca · prossimamente',alert:'Molto presto potrai sbloccare la lettura completa.'},
+  pwPersonal:{t:'✦ Lettura completa · Premium',p:'Sblocca tutte le 14 sezioni: la tua anima, la tua personalità, le tue lezioni karmiche, il tuo segno, il tuo animale cinese, la tua carta dei tarocchi, la tua fase di vita, amore, lavoro, i prossimi mesi, i tuoi talismani e il messaggio dell’oracolo. Include la lettura in PDF da conservare o regalare.',b:'Sblocca · prossimamente',alert:'Molto presto potrai sbloccare la lettura completa.'},
   /* Tema natale */
   sun:s=>`Il tuo Sole in ${s}`, moon:s=>`La tua Luna in ${s}`, asc:s=>`Il tuo Ascendente in ${s}`,
   planet:(n,s)=>`${PLANETA[n]} in ${s}`,
@@ -1573,8 +1773,183 @@ const S={
   updated:'Ultimo aggiornamento: ottobre 2026'
 };
 
+/* ═══ LETTURA PERSONALE AMPLIATA (italiano) ═══
+   Testi per la lettura a pagamento. Stesse chiavi in tutte le lingue. */
+const PERSONAL={
+/* Numero della vita ampliato: f = punti di forza, r = sfida, amor, trab = lavoro, mision */
+ext:{
+ 1:{f:"iniziativa, coraggio, indipendenza e un’enorme capacità di ricominciare da zero",r:"imparare a chiedere aiuto e ad ascoltare senza sentire di perdere il controllo",amor:"Hai bisogno di qualcuno che ammiri la tua forza e ti lasci spazio. Ami con passione e lealtà, ma la tua sfida è non trasformare ogni relazione in una gara: anche la tenerezza è potere.",trab:"Brilli quando guidi, avvii qualcosa di tuo o apri strade nuove. I lavori di routine o con troppi capi spengono il tuo fuoco.",mision:"Venire al mondo per inaugurare: idee, progetti e modi di vivere che altri seguiranno dopo di te."},
+ 2:{f:"sensibilità, diplomazia, intuizione e un dono naturale per unire le persone",r:"non perderti nei bisogni degli altri e non tacere ciò che senti per evitare i conflitti",amor:"Sei tra le persone che sanno amare di più: attente, affettuose, generose. La tua sfida è scegliere chi si prenda cura di te allo stesso modo e mettere dei limiti senza sensi di colpa.",trab:"Ti distingui nel lavoro di squadra, nella mediazione, nella cura, nella consulenza o in qualsiasi compito che richieda tatto e pazienza. Sei la colla invisibile di ogni gruppo.",mision:"Gettare ponti: riconciliare, accompagnare e dimostrare che la dolcezza è una forma di forza."},
+ 3:{f:"creatività, allegria, comunicazione e un carisma che illumina qualsiasi luogo",r:"portare a termine ciò che inizi e non disperdere il tuo talento in mille direzioni",amor:"Hai bisogno di una relazione fatta di risate, conversazioni e libertà di esprimerti. Ti innamori facilmente; la tua sfida è andare in profondità quando la scintilla iniziale si spegne.",trab:"Il tuo posto è nella parola, nell’arte, nell’immagine, nell’insegnamento o nei social. Quando crei, il denaro e le opportunità ti trovano.",mision:"Esprimere la bellezza della vita e ricordare agli altri che anche la gioia è sacra."},
+ 4:{f:"costanza, ordine, lealtà e la capacità di trasformare i sogni in qualcosa di solido",r:"lasciar andare la rigidità e fidarti del fatto che non tutto deve essere sotto controllo",amor:"Ami con i fatti più che con le parole: ci sei, mantieni le promesse, proteggi. Cerchi stabilità e ti costa mostrarti vulnerabile, ma è proprio lì la tua intimità più grande.",trab:"Sei la persona di cui tutti si fidano. Ti distingui nella gestione, nell’edilizia, nella finanza, nell’organizzazione o in qualsiasi mestiere che richieda precisione.",mision:"Costruire basi solide, per te e per i tuoi cari, che restino in piedi anche quando tu non ci sarai più."},
+ 5:{f:"curiosità, adattabilità, magnetismo e una sete di vita contagiosa",r:"impegnarti senza sentire di perdere la tua libertà ed evitare gli eccessi",amor:"Hai bisogno di una relazione viva, avventurosa e senza gabbie. La tua sfida è scoprire che l’impegno, se scelto bene, può essere anch’esso un viaggio.",trab:"Ti trovi bene nelle vendite, nei viaggi, nella comunicazione, nelle lingue o in qualsiasi lavoro che cambi spesso. La routine è la tua peggiore nemica.",mision:"Sperimentare la vita in tutte le sue forme e insegnare agli altri a non avere paura del cambiamento."},
+ 6:{f:"amore, responsabilità, generosità e un senso innato della bellezza e dell’armonia",r:"non farti carico dei problemi di tutti e non voler sistemare la vita degli altri",amor:"La casa e la famiglia sono il tuo centro. Ami in modo protettivo e generoso; la tua sfida è lasciare che anche gli altri si prendano cura di te.",trab:"Ti distingui nelle professioni di cura, nell’educazione, nella salute, nell’ospitalità, nell’arredamento o nell’arte. Quando aiuti, ti senti al tuo posto.",mision:"Creare casa ovunque tu vada e guarire attraverso l’amore e la bellezza."},
+ 7:{f:"un’intuizione profonda, intelligenza analitica, spiritualità e uno sguardo che arriva fino in fondo",r:"aprirti agli altri senza diffidenza e uscire dal tuo mondo interiore",amor:"Hai bisogno di qualcuno che rispetti i tuoi silenzi e condivida con te conversazioni profonde. Ti costa fidarti, ma quando lo fai il tuo amore è immenso.",trab:"Brilli nella ricerca, nella scienza, nella terapia, nella scrittura, nella spiritualità o in qualsiasi campo in cui tu possa approfondire con i tuoi tempi.",mision:"Cercare la verità dietro le apparenze e condividere la saggezza che trovi."},
+ 8:{f:"ambizione, visione, autorevolezza naturale e una grande capacità di creare abbondanza",r:"bilanciare il successo materiale con il cuore e non misurare il tuo valore da ciò che possiedi",amor:"Cerchi qualcuno di forte e leale che cammini al tuo fianco. La tua sfida è mostrare il tuo lato tenero e non voler controllare anche l’amore.",trab:"Hai la stoffa per dirigere, negoziare, intraprendere e gestire risorse. Il denaro arriva quando agisci con etica e visione a lungo termine.",mision:"Dimostrare che il potere usato bene migliora la vita di molte persone."},
+ 9:{f:"compassione, generosità, saggezza e una visione ampia della vita",r:"chiudere i cicli, perdonare e non sacrificarti fino a restare senza nulla",amor:"Ami in modo universale e romantico. La tua sfida è non idealizzare chi ami e accettare che anche tu meriti di ricevere.",trab:"Ti realizzi nelle professioni d’aiuto, nell’arte, nelle cause sociali, nell’insegnamento o nelle terapie. Hai bisogno di sentire che il tuo lavoro lascia un segno.",mision:"Servire, ispirare e aiutare a rimarginare le ferite, tue e altrui."},
+ 11:{f:"un’intuizione straordinaria, ispirazione, sensibilità e una luce che attira gli altri",r:"gestire la tua sensibilità e il nervosismo, e fidarti delle tue visioni senza dubitare di te",amor:"Cerchi un legame d’anima, quasi spirituale. La tua sfida è accettare chi ami come persona reale e non solo come ideale.",trab:"Ti distingui come guida, terapeuta, artista, nella comunicazione o in qualsiasi percorso in cui ispiri gli altri. La tua intuizione è il tuo strumento migliore.",mision:"Essere un canale di ispirazione: risvegliare gli altri con il tuo esempio e le tue parole."},
+ 22:{f:"visione, disciplina, capacità di lavoro e il talento di realizzare grandi progetti",r:"non lasciare che la pressione o la paura di fallire frenino il tuo enorme potenziale",amor:"Hai bisogno di qualcuno che condivida i tuoi sogni e ti dia stabilità. La tua sfida è non lasciare che il lavoro divori il tempo per amare.",trab:"Puoi far nascere aziende, progetti sociali o strutture che durino per generazioni. Pensi in grande e sai come arrivarci.",mision:"Costruire qualcosa che vada oltre la tua stessa vita e porti beneficio a molte persone."},
+ 33:{f:"amore incondizionato, compassione, creatività e un profondo desiderio di servire",r:"non dimenticarti di te mentre ti prendi cura di tutti",amor:"Ami con una dedizione totale. La tua sfida è scegliere relazioni equilibrate, in cui la cura vada e venga.",trab:"Ti distingui insegnando, guarendo, prendendoti cura degli altri o creando un’arte che commuove. La tua presenza è già medicina per gli altri.",mision:"Insegnare con l’esempio che l’amore è la forza più potente che esista."}
+},
+/* Numero dell’anima (vocali): ciò che desideri nel profondo */
+alma:{
+ 1:"Nel profondo desideri la libertà e le redini del tuo destino. La tua anima ha bisogno di sfide, di traguardi tutti tuoi e della sensazione di aprire la strada.",
+ 2:"La tua anima anela alla pace, all’amore e alla compagnia. Ciò che desideri di più è sentirti in armonia con qualcuno e che la tua sensibilità venga compresa.",
+ 3:"La tua anima desidera esprimersi: creare, comunicare, godersi la vita. Hai bisogno di gioia e che il mondo veda ciò che porti dentro.",
+ 4:"In fondo desideri sicurezza e stabilità. La tua anima si placa quando c’è ordine, una casa solida e progetti che avanzano passo dopo passo.",
+ 5:"La tua anima chiede libertà, avventura ed esperienze nuove. Niente ti spegne di più che sentirti in gabbia in una vita prevedibile.",
+ 6:"Il tuo desiderio più profondo è amare e ricevere amore. La tua anima si realizza prendendosi cura della famiglia e creando una casa bella e serena.",
+ 7:"La tua anima cerca la verità e il senso delle cose. Hai bisogno di silenzio, di conoscenza e di un’autentica connessione spirituale.",
+ 8:"Nell’intimo desideri realizzarti, prosperare e ottenere riconoscimento. La tua anima vuole sicurezza materiale e il potere di cambiare le cose.",
+ 9:"La tua anima desidera un mondo migliore. Ti muovono la compassione e il desiderio di aiutare, e ti senti in pace quando dai senza aspettarti nulla.",
+ 11:"La tua anima cerca l’illuminazione e l’ispirazione. Desideri entrare in contatto con qualcosa di più grande di te e condividere quella luce con gli altri.",
+ 22:"La tua anima sogna di lasciare un’opera che duri nel tempo. Desideri costruire qualcosa di grande, utile e bello per l’umanità.",
+ 33:"La tua anima desidera guarire e amare senza condizioni. Ti realizzi quando il tuo amore allevia il dolore degli altri."
+},
+/* Numero della personalità (consonanti): come ti vedono gli altri */
+pers:{
+ 1:"Gli altri ti vedono come una persona sicura, decisa e di carattere. Trasmetti leadership, anche se a volte dai un’impressione di durezza che non ti appartiene davvero.",
+ 2:"Ti percepiscono come una persona gentile, tranquilla e vicina. Ispiri fiducia e la gente si apre con te facilmente.",
+ 3:"Ti vedono come una persona allegra, simpatica e comunicativa. La tua presenza anima qualsiasi incontro.",
+ 4:"Trasmetti serietà, responsabilità e solidità. Gli altri sanno di poter contare su di te.",
+ 5:"Ti percepiscono come una persona dinamica, affascinante e piena di energia. Susciti curiosità ovunque tu vada.",
+ 6:"Ti vedono come una persona calorosa, protettiva e accogliente. In molti si rivolgono a te in cerca di consiglio o di conforto.",
+ 7:"Trasmetti mistero, intelligenza e una certa distanza. Gli altri sentono che dentro di te c’è molto più di quello che mostri.",
+ 8:"Ti percepiscono come una persona potente, efficace e autorevole. Ispiri rispetto anche senza volerlo.",
+ 9:"Ti vedono come una persona generosa, comprensiva e che ha visto il mondo. La tua presenza trasmette saggezza e bontà.",
+ 11:"Ti percepiscono come una persona speciale, sensibile e con un magnetismo difficile da spiegare.",
+ 22:"Trasmetti una forza tranquilla e grandi capacità. Gli altri intuiscono che puoi realizzare cose importanti.",
+ 33:"Ti vedono come una presenza luminosa e protettiva, quasi da genitore: qualcuno che si prende cura e conforta."
+},
+/* Lezioni karmiche: numeri assenti nel nome */
+karma:{
+ 1:"imparare a fidarti di te e a prendere l’iniziativa senza aspettare il permesso di nessuno",
+ 2:"coltivare la pazienza, la collaborazione e l’ascolto",
+ 3:"osare esprimere ciò che senti e mostrare la tua creatività",
+ 4:"sviluppare disciplina, ordine e costanza in ciò che intraprendi",
+ 5:"aprirti al cambiamento e perdere la paura dell’ignoto",
+ 6:"assumerti responsabilità affettive e imparare a impegnarti",
+ 7:"andare in profondità, fidarti della tua intuizione e dedicare tempo al tuo mondo interiore",
+ 8:"imparare a gestire il denaro e a riconoscere il tuo potere personale",
+ 9:"praticare la compassione, il perdono e l’arte di lasciar andare"
+},
+/* Fasi (pinnacoli): l’energia di ogni grande ciclo della vita */
+pin:{
+ 1:"una fase per affermarti, conquistare indipendenza e prendere decisioni da te",
+ 2:"una fase di relazioni, pazienza e collaborazione, in cui ciò che costruisci con gli altri è la cosa più importante",
+ 3:"una fase creativa e sociale, ideale per esprimerti, comunicare e goderti la vita",
+ 4:"una fase di lavoro e impegno che getta fondamenta solide per il futuro",
+ 5:"una fase di cambiamenti, viaggi e libertà, in cui la vita ti chiede di adattarti",
+ 6:"una fase centrata sulla casa, sulla famiglia e sulle responsabilità affettive",
+ 7:"una fase di introspezione, studio e crescita spirituale",
+ 8:"una fase di successi materiali, riconoscimento e potere personale",
+ 9:"una fase di chiusure, generosità e saggezza, in cui lasci andare ciò che non ti appartiene più",
+ 11:"una fase di ispirazione e intuizione elevata, in cui puoi diventare una guida per gli altri",
+ 22:"una fase di grandi realizzazioni, in cui puoi costruire qualcosa che duri nel tempo",
+ 33:"una fase di servizio e amore, in cui la tua presenza guarisce chi ti circonda"
+},
+/* Mese personale */
+mes:{
+ 1:"Mese per cominciare: lancia idee, prendi l’iniziativa e pianta semi nuovi.",
+ 2:"Mese di pazienza e alleanze: cura le tue relazioni e lascia che le cose maturino.",
+ 3:"Mese sociale e creativo: comunica, esci, crea e divertiti.",
+ 4:"Mese di lavoro e ordine: organizza, porta a termine gli impegni e getta basi solide.",
+ 5:"Mese di movimento: cambiamenti, viaggi o notizie inattese ti chiedono flessibilità.",
+ 6:"Mese di casa e affetti: la famiglia e l’amore reclamano la tua attenzione.",
+ 7:"Mese di introspezione: riposa, rifletti e ascolta la tua intuizione.",
+ 8:"Mese di risultati: denaro, traguardi e decisioni importanti si muovono a tuo favore, se agisci.",
+ 9:"Mese di chiusura: completa ciò che è in sospeso, perdona e fai spazio al nuovo."
+},
+/* Dati del segno solare: pianeta governatore, segni affini, pietra, colore, giorno */
+signo:[
+ {planeta:"Marte",compat:"Leone, Sagittario e Gemelli",piedra:"il diamante e la corniola",color:"il rosso",dia:"il martedì"},
+ {planeta:"Venere",compat:"Vergine, Capricorno e Cancro",piedra:"lo smeraldo e il quarzo rosa",color:"il verde",dia:"il venerdì"},
+ {planeta:"Mercurio",compat:"Bilancia, Acquario e Ariete",piedra:"l’agata e il citrino",color:"il giallo",dia:"il mercoledì"},
+ {planeta:"la Luna",compat:"Scorpione, Pesci e Toro",piedra:"la pietra di luna e la perla",color:"il bianco argento",dia:"il lunedì"},
+ {planeta:"il Sole",compat:"Ariete, Sagittario e Bilancia",piedra:"l’occhio di tigre e l’ambra",color:"l’oro",dia:"la domenica"},
+ {planeta:"Mercurio",compat:"Toro, Capricorno e Scorpione",piedra:"lo zaffiro e l’amazzonite",color:"il verde oliva",dia:"il mercoledì"},
+ {planeta:"Venere",compat:"Gemelli, Acquario e Leone",piedra:"l’opale e il quarzo rosa",color:"il rosa",dia:"il venerdì"},
+ {planeta:"Plutone e Marte",compat:"Cancro, Pesci e Vergine",piedra:"il topazio e l’ossidiana",color:"il granata",dia:"il martedì"},
+ {planeta:"Giove",compat:"Ariete, Leone e Acquario",piedra:"il turchese e l’ametista",color:"il viola",dia:"il giovedì"},
+ {planeta:"Saturno",compat:"Toro, Vergine e Pesci",piedra:"il granato e l’onice",color:"il marrone e il nero",dia:"il sabato"},
+ {planeta:"Urano e Saturno",compat:"Gemelli, Bilancia e Sagittario",piedra:"l’ametista e l’acquamarina",color:"il blu elettrico",dia:"il sabato"},
+ {planeta:"Nettuno e Giove",compat:"Cancro, Scorpione e Capricorno",piedra:"l’acquamarina e l’ametista",color:"il turchese",dia:"il giovedì"}
+],
+/* Zodiaco cinese, in ordine a partire dal Topo */
+chino:[
+ {n:"il Topo",t:"ingegnoso, affascinante e con un gran fiuto per le opportunità. Sai adattarti e cavartela in qualsiasi situazione."},
+ {n:"il Bue",t:"paziente, laborioso e affidabile. Avanzi piano ma senza mai fermarti, e ciò che costruisci è per sempre."},
+ {n:"la Tigre",t:"coraggiosa, appassionata e magnetica. Ti muove l’avventura e difendi con forza ciò che ritieni giusto."},
+ {n:"il Coniglio",t:"sensibile, elegante e diplomatico. Cerchi l’armonia e hai il dono di creare atmosfere di pace."},
+ {n:"il Drago",t:"carismatico, ambizioso e pieno di energia. Hai una buona stella dalla tua parte e ti piace pensare in grande."},
+ {n:"il Serpente",t:"saggio, intuitivo e misterioso. Osservi prima di agire e raramente sbagli nel giudicare le persone."},
+ {n:"il Cavallo",t:"libero, entusiasta e socievole. Hai bisogno di movimento e trasmetti la tua vitalità a chi ti sta intorno."},
+ {n:"la Capra",t:"creativa, gentile e sognatrice. Hai una grande sensibilità artistica e un cuore generoso."},
+ {n:"la Scimmia",t:"intelligente, divertente e versatile. Trovi soluzioni dove gli altri vedono solo problemi."},
+ {n:"il Gallo",t:"laborioso, attento e sincero. Curi i dettagli e non hai paura di dire ciò che pensi."},
+ {n:"il Cane",t:"leale, onesto e protettivo. Il tuo senso della giustizia e la tua fedeltà ti rendono una persona molto amata."},
+ {n:"il Maiale",t:"generoso, sincero e amante dei piaceri. Sai goderti la vita e condividere ciò che hai."}
+],
+elemChino:["Legno","Fuoco","Terra","Metallo","Acqua"],
+elemChinoTxt:["ti dona crescita, creatività e generosità","ti dona passione, leadership ed entusiasmo","ti dona stabilità, buon senso e pazienza","ti dona determinazione, forza e ambizione","ti dona intuizione, flessibilità e saggezza"],
+/* Affermazione personale secondo il numero della vita */
+afirm:{
+ 1:"Mi fido della mia forza e oso aprire la mia strada.",
+ 2:"La mia sensibilità è un dono; do e ricevo amore in equilibrio.",
+ 3:"Esprimo la mia luce senza paura e la vita mi risponde con gioia.",
+ 4:"Costruisco passo dopo passo una vita solida, e mi concedo anche di riposare.",
+ 5:"Accolgo il cambiamento con fiducia: ogni esperienza mi fa crescere.",
+ 6:"Mi prendo cura dei miei cari e anche di me; merito l’amore che do.",
+ 7:"Ascolto la mia voce interiore e mi fido di ciò che so.",
+ 8:"Merito l’abbondanza e la uso per fare del bene.",
+ 9:"Lascio andare il passato con gratitudine e faccio spazio al nuovo.",
+ 11:"Mi fido della mia intuizione; la mia luce ispira chi mi circonda.",
+ 22:"I miei sogni sono possibili; li costruisco con calma e con fede.",
+ 33:"Amo senza condizioni, a cominciare da me."
+},
+/* Testi con dati (modelli) */
+L:{
+ tVida:(n,t)=>`Il tuo numero della vita: ${n} · ${t}`,
+ xVida:(v,E)=>`${v} I tuoi grandi punti di forza sono ${E.f}. La tua sfida in questa vita: ${E.r}.`,
+ tAlma:n=>`Il tuo numero dell’anima: ${n}`,
+ tPers:n=>`Il tuo numero della personalità: ${n}`,
+ tExpr:(n,t)=>`Il numero del tuo nome: ${n} · ${t}`,
+ tKarma:'Le tue lezioni karmiche',
+ xKarma:list=>`Nel tuo nome mancano alcune energie. Sono le lezioni che la tua anima è venuta a imparare in questa vita: ${list}.`,
+ xKarmaNone:'Il tuo nome contiene tutte le energie dall’1 al 9: non hai lezioni karmiche in sospeso. È il segno di un’anima esperta, venuta a mettere in pratica ciò che già sa.',
+ tSigno:s=>`Il tuo segno solare: ${s}`,
+ xSigno:(S,X)=>`Segno di ${S.el}. Il tuo astro guida: ${X.planeta}. Ti definisce ${S.s}. ${S.c} I segni con cui entri particolarmente in sintonia: ${X.compat}.`,
+ tChino:(a,e)=>`Il tuo animale nello zodiaco cinese: ${a} di ${e}`,
+ xChino:(A,etxt,prev)=>`In base al tuo anno di nascita, sei ${A.n}: ${A.t} Il tuo elemento cinese ${etxt}.${prev?` Se la tua data di nascita cade prima del Capodanno cinese (fine gennaio o inizio febbraio), il tuo animale sarebbe ${prev}.`:''}`,
+ tCarta:c=>`La tua carta di nascita: ${c}`,
+ xCarta:C=>`«${C.f}» Questa carta ti accompagna per tutta la vita e parla di ${C.s}. Il suo consiglio per te: ${C.c} La sua ombra, ciò a cui fare attenzione: ${C.a} ${C.d}`,
+ tEtapa:'La fase della vita in cui ti trovi',
+ xEtapa:(n,txt,desde,hasta,next)=>{const v=x=>/^(8|11$)/.test(String(x)),d=x=>(v(x)?'dell’':'del ')+x,a=x=>(v(x)?'agli ':'ai ')+x;return `${desde===0?'Dalla nascita'+(hasta?' fino '+a(hasta)+' anni':''):(v(desde)?'Dagli ':'Dai ')+desde+(hasta?' '+a(hasta)+' anni':' anni in poi')} vivi sotto l’energia ${d(n)}: ${txt}.${next?` Poi arriverà l’energia ${d(next)}.`:''}`;},
+ tAmor:'Amore e relazioni',
+ tTrab:'Lavoro e scopo',
+ xTrab:E=>`${E.trab} La tua missione di vita: ${E.mision}`,
+ tAnyo:y=>`Il tuo anno personale ${y}`,
+ xAnyo:(n,txt,meses)=>`Stai vivendo un anno personale ${n}. ${txt} I tuoi prossimi mesi: ${meses}`,
+ mesItem:(nombre,txt)=>`${nombre}: ${txt}`,
+ tTalis:'I tuoi talismani',
+ xTalis:(X,num)=>`Le tue pietre: ${X.piedra}. Il tuo colore: ${X.color}. Il tuo giorno fortunato: ${X.dia}. Il tuo numero fortunato: ${num}. Portali con te nei momenti importanti.`,
+ tMensaje:pn=>`Messaggio dell’oracolo per te, ${pn}`,
+ xMensaje:(qi,tono,vida,cn,C,af)=>`${qi?qi+' l':'L'}’energia che oggi ti accompagna parla di ${tono}. Insieme al tuo numero ${vida} e alla tua carta, «${cn}», ti ricorda che ${C.c.charAt(0).toLowerCase()+C.c.slice(1)} La tua affermazione: «${af}»`,
+ /* Regalo */
+ regaloPara:n=>`Un regalo per ${n}`,
+ regaloDe:n=>`Con affetto, da parte di ${n}`,
+ /* PDF */
+ pdfTitulo:pn=>`Lettura personale di ${pn}`,
+ pdfNacido:f=>`Data di nascita: ${f}`,
+ pdfPie:'Madre Oráculo · Lettura di intrattenimento e riflessione personale',
+ pdfBoton:'Scarica la mia lettura in PDF',
+ pdfCargando:'Sto preparando il tuo PDF…',
+ pdfError:'Non è stato possibile creare il PDF. Controlla la connessione e riprova.'
+}
+};
+
 PACKS.it={name:'Italiano',dir:'ltr',UI,M,NOMBRE_SIGNO,ZD,RIESGO,L_TAROT,L_RUNAS,L_TRIG,D_ICHING,L_CRISTAL,D_CRISTAL,L_ASTRO,TEMAS,TONOS,
-  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal};
+  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL};
 })();
 
 </script>
@@ -1584,6 +1959,14 @@ var PACKS=window.PACKS||{};
    As chaves de UI são os originais em espanhol (não traduzir as chaves). */
 (function(){
 const UI={
+"🎁 Es un regalo para otra persona":"🎁 É um presente para outra pessoa",
+"Escribe arriba el nombre y la fecha de nacimiento de la persona que recibe el regalo.":"Escreva acima o nome e a data de nascimento da pessoa que vai receber o presente.",
+"De parte de":"De",
+"Tu nombre":"Seu nome",
+"Dedicatoria (opcional)":"Dedicatória (opcional)",
+"Escribe unas palabras para esa persona…":"Escreva algumas palavras para essa pessoa…",
+"Con tu nombre y tu fecha de nacimiento, el oráculo revela tu número de vida, tu alma, tus lecciones kármicas, tu signo, tu animal chino, tu carta del tarot, tu etapa de vida, el amor, el trabajo, tus próximos meses y tus talismanes. Descárgala en PDF o regálasela a alguien especial.":"Com o seu nome e a sua data de nascimento, o oráculo revela o seu número do caminho de vida, a sua alma, as suas lições cármicas, o seu signo, o seu animal chinês, a sua carta do tarô, a sua fase de vida, o amor, o trabalho, os seus próximos meses e os seus talismãs. Baixe em PDF ou dê de presente a alguém especial.",
+
 "Soy mayor de 18 años.":"Tenho mais de 18 anos.",
 "Quiero recibir mi lectura de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Quero receber a minha leitura imediatamente e aceito que, ao recebê-la, perco o direito de arrependimento.",
 "Pagar":"Pagar",
@@ -2039,7 +2422,7 @@ const S={
     {i:'🔮',t:`A mensagem do oráculo para você, ${o.pn}`,x:`${o.qi?o.qi+' a':'A'} energia que acompanha você hoje é de ${o.tono}. Junto com o seu número ${o.vida} e ${art(o.cn)}, ela lembra a você: ${o.C.c}`}
   ],
   personalTitle:pn=>`A leitura de ${pn}`,
-  pwPersonal:{t:'✦ Leitura completa · Premium',p:'Desbloqueie o número do seu nome, o seu signo, a sua carta de nascimento, o seu ano pessoal e a mensagem do oráculo para você.',b:'Desbloquear · em breve',alert:'Muito em breve você poderá desbloquear a leitura completa.'},
+  pwPersonal:{t:'✦ Leitura completa · Premium',p:'Desbloqueie as 14 seções: a sua alma, a sua personalidade, as suas lições cármicas, o seu signo, o seu animal chinês, a sua carta do tarô, a sua fase de vida, amor, trabalho, os seus próximos meses, os seus talismãs e a mensagem do oráculo. Inclui a sua leitura em PDF para guardar ou presentear.',b:'Desbloquear · em breve',alert:'Muito em breve você poderá desbloquear a leitura completa.'},
   /* Mapa astral */
   sun:s=>`O seu Sol em ${s}`, moon:s=>`A sua Lua em ${s}`, asc:s=>`O seu Ascendente em ${s}`,
   planet:(n,s)=>`${PLANETA[n]} em ${s}`,
@@ -2051,8 +2434,183 @@ const S={
   updated:'Última atualização: outubro de 2026'
 };
 
+/* ═══ LEITURA PESSOAL AMPLIADA (português do Brasil) ═══
+   Textos para a leitura paga. Mesmas chaves em todos os idiomas. */
+const PERSONAL={
+/* Número de vida ampliado: f = forças, r = desafio, amor, trab = trabalho, mision */
+ext:{
+ 1:{f:"iniciativa, coragem, independência e uma enorme capacidade de começar do zero",r:"aprender a pedir ajuda e a escutar sem sentir que está perdendo o controle",amor:"Você precisa de alguém que admire a sua força e lhe dê espaço. Você ama com paixão e lealdade, mas o seu desafio é não transformar cada relacionamento em uma competição: a ternura também é poder.",trab:"Você brilha quando lidera, empreende ou abre caminhos novos. Trabalhos rotineiros ou com chefes demais apagam o seu fogo.",mision:"Vir a este mundo para inaugurar: ideias, projetos e formas de viver que outras pessoas seguirão depois."},
+ 2:{f:"sensibilidade, diplomacia, intuição e um dom natural para unir as pessoas",r:"não se perder nas necessidades dos outros nem calar o que sente para evitar conflitos",amor:"Você está entre as pessoas que mais sabem amar: atenciosas, carinhosas, dedicadas. O seu desafio é escolher quem cuide de você da mesma forma e impor limites sem culpa.",trab:"Você se destaca em equipes, mediação, cuidado, consultoria ou qualquer tarefa que exija tato e paciência. Você é a cola invisível de qualquer grupo.",mision:"Construir pontes: reconciliar, acompanhar e mostrar que a suavidade é uma forma de força."},
+ 3:{f:"criatividade, alegria, comunicação e um carisma que ilumina qualquer lugar",r:"terminar o que começa e não dispersar o seu talento em mil direções",amor:"Você precisa de um relacionamento com risadas, conversa e liberdade para se expressar. Você se apaixona com facilidade; o seu desafio é aprofundar quando passa a faísca do começo.",trab:"O seu lugar está na palavra, na arte, na imagem, no ensino ou nas redes sociais. Quando você cria, o dinheiro e as oportunidades encontram você.",mision:"Expressar a beleza da vida e lembrar aos outros que a alegria também é sagrada."},
+ 4:{f:"constância, ordem, lealdade e a capacidade de transformar sonhos em algo sólido",r:"soltar a rigidez e confiar que nem tudo precisa estar sob controle",amor:"Você ama mais com atitudes do que com palavras: está presente, cumpre, protege. Você busca estabilidade e tem dificuldade de se mostrar vulnerável, mas é aí que mora a sua maior intimidade.",trab:"Você é a pessoa em quem todos confiam. Você se destaca em gestão, construção, finanças, organização ou qualquer ofício que exija precisão.",mision:"Construir bases firmes, para você e para os seus, que continuem de pé quando você já não estiver aqui."},
+ 5:{f:"curiosidade, adaptabilidade, magnetismo e uma sede de viver contagiante",r:"comprometer-se sem sentir que perde a liberdade e evitar os excessos",amor:"Você precisa de um relacionamento vivo, com aventura e sem gaiolas. O seu desafio é descobrir que o compromisso, quando bem escolhido, também pode ser uma viagem.",trab:"Você se sai bem em vendas, viagens, comunicação, idiomas ou qualquer trabalho que mude com frequência. A rotina é a sua pior inimiga.",mision:"Experimentar a vida em todas as suas formas e ensinar os outros a não ter medo da mudança."},
+ 6:{f:"amor, responsabilidade, generosidade e um senso de beleza e harmonia",r:"não carregar os problemas de todo mundo nem querer consertar a vida dos outros",amor:"O lar e a família são o seu centro. Você ama de forma protetora e dedicada; o seu desafio é deixar que também cuidem de você.",trab:"Você se destaca em profissões de cuidado, educação, saúde, hotelaria, decoração ou arte. Quando ajuda, você se sente no seu lugar.",mision:"Criar um lar aonde quer que vá e curar por meio do amor e da beleza."},
+ 7:{f:"intuição profunda, inteligência analítica, espiritualidade e um olhar que chega ao fundo das coisas",r:"abrir-se aos outros sem desconfiança e sair do seu mundo interior",amor:"Você precisa de alguém que respeite o seu silêncio e compartilhe conversas profundas. Confiar é difícil para você, mas, quando confia, o seu amor é imenso.",trab:"Você brilha em pesquisa, ciência, terapia, escrita, espiritualidade ou qualquer área em que possa se aprofundar no seu ritmo.",mision:"Buscar a verdade por trás das aparências e compartilhar a sabedoria que encontrar."},
+ 8:{f:"ambição, visão, autoridade natural e uma grande capacidade de criar abundância",r:"equilibrar o sucesso material com o coração e não medir o seu valor pelo que você tem",amor:"Você busca alguém forte e leal, que caminhe ao seu lado. O seu desafio é mostrar o seu lado terno e não levar o controle também para o amor.",trab:"Você nasceu para dirigir, negociar, empreender e administrar recursos. O dinheiro chega quando você age com ética e visão de longo prazo.",mision:"Mostrar que o poder bem usado melhora a vida de muitas pessoas."},
+ 9:{f:"compaixão, generosidade, sabedoria e uma visão ampla da vida",r:"encerrar ciclos, perdoar e não se sacrificar até ficar sem nada",amor:"Você ama de forma universal e romântica. O seu desafio é não idealizar a pessoa amada e aceitar que você também merece receber.",trab:"Você se realiza em profissões de ajuda, arte, causas sociais, ensino ou terapias. Você precisa sentir que o seu trabalho deixa uma marca.",mision:"Servir, inspirar e ajudar a fechar feridas, suas e dos outros."},
+ 11:{f:"uma intuição extraordinária, inspiração, sensibilidade e uma luz que atrai as pessoas",r:"lidar com a sua sensibilidade e o nervosismo, e confiar nas suas visões sem duvidar de si",amor:"Você busca uma conexão de alma, quase espiritual. O seu desafio é aceitar a pessoa amada como alguém real, e não apenas como um ideal.",trab:"Você se destaca como guia, terapeuta, artista, comunicador ou em qualquer caminho em que inspire os outros. A sua intuição é a sua melhor ferramenta.",mision:"Ser um canal de inspiração: despertar os outros com o seu exemplo e as suas palavras."},
+ 22:{f:"visão, disciplina, capacidade de trabalho e o talento de tornar reais grandes projetos",r:"não deixar que a pressão ou o medo de falhar freiem o seu enorme potencial",amor:"Você precisa de alguém que compartilhe os seus sonhos e lhe dê estabilidade. O seu desafio é não deixar que o trabalho devore o tempo de amar.",trab:"Você pode erguer empresas, projetos sociais ou estruturas que durem gerações. Você pensa grande e sabe como chegar lá.",mision:"Construir algo que transcenda a sua própria vida e beneficie muitas pessoas."},
+ 33:{f:"amor incondicional, compaixão, criatividade e um profundo desejo de servir",r:"não se esquecer de si enquanto cuida de todo mundo",amor:"Você ama com uma entrega total. O seu desafio é escolher relacionamentos equilibrados, em que o cuidado seja de mão dupla.",trab:"Você se destaca ensinando, curando, cuidando ou criando uma arte que comove. A sua presença já é remédio para os outros.",mision:"Ensinar pelo exemplo que o amor é a força mais poderosa que existe."}
+},
+/* Número da alma (vogais): o que você deseja no mais profundo */
+alma:{
+ 1:"No mais profundo, você deseja ser livre e ter o próprio destino nas mãos. A sua alma precisa de desafios, conquistas próprias e da sensação de abrir caminho.",
+ 2:"A sua alma anseia por paz, amor e companhia. O que você mais deseja é sentir-se em harmonia com alguém e ter a sua sensibilidade compreendida.",
+ 3:"A sua alma deseja se expressar: criar, comunicar, aproveitar. Você precisa de alegria e de que o mundo veja o que você traz por dentro.",
+ 4:"No fundo, você deseja segurança e estabilidade. A sua alma se acalma quando há ordem, um lar firme e projetos que avançam passo a passo.",
+ 5:"A sua alma pede liberdade, aventura e experiências novas. Nada apaga mais você do que ficar amarrado a uma vida previsível.",
+ 6:"O seu desejo mais profundo é amar e receber amor. A sua alma se realiza cuidando da sua família e criando um lar bonito e em paz.",
+ 7:"A sua alma busca a verdade e o sentido das coisas. Você precisa de silêncio, conhecimento e uma conexão espiritual autêntica.",
+ 8:"No mais íntimo, você deseja realizar, prosperar e ter reconhecimento. A sua alma quer segurança material e poder para mudar as coisas.",
+ 9:"A sua alma deseja um mundo melhor. A compaixão e a vontade de ajudar movem você, e você sente paz quando dá sem esperar nada em troca.",
+ 11:"A sua alma busca a iluminação e a inspiração. Você deseja se conectar com algo maior e compartilhar essa luz com os outros.",
+ 22:"A sua alma sonha em deixar uma obra que perdure. Você deseja construir algo grande, útil e belo para a humanidade.",
+ 33:"A sua alma deseja curar e amar sem condições. Você se realiza quando o seu amor alivia a dor de outras pessoas."
+},
+/* Número de personalidade (consoantes): como os outros veem você */
+pers:{
+ 1:"Os outros veem você como uma pessoa segura, decidida e de personalidade forte. Você transmite liderança, embora às vezes pareça mais dura do que é.",
+ 2:"Percebem você como uma pessoa gentil, tranquila e próxima. Você inspira confiança, e as pessoas se abrem com você com facilidade.",
+ 3:"Veem você como uma pessoa alegre, simpática e comunicativa. A sua presença anima qualquer encontro.",
+ 4:"Você transmite seriedade, responsabilidade e solidez. Os outros sabem que podem contar com você.",
+ 5:"Percebem você como uma pessoa dinâmica, atraente e cheia de energia. Você desperta curiosidade aonde quer que vá.",
+ 6:"Veem você como uma pessoa calorosa, protetora e acolhedora. Muitos procuram você em busca de conselho ou consolo.",
+ 7:"Você transmite mistério, inteligência e certa distância. Os outros sentem que há muito mais dentro de você do que você mostra.",
+ 8:"Percebem você como uma pessoa poderosa, eficiente e com autoridade. Você inspira respeito mesmo sem querer.",
+ 9:"Veem você como uma pessoa generosa, compreensiva e vivida. A sua presença transmite sabedoria e bondade.",
+ 11:"Percebem você como uma pessoa especial, sensível e com um magnetismo difícil de explicar.",
+ 22:"Você transmite uma força tranquila e uma grande capacidade. Os outros intuem que você pode realizar coisas importantes.",
+ 33:"Veem você como uma presença luminosa e acolhedora, alguém que cuida e conforta."
+},
+/* Lições cármicas: números ausentes no nome */
+karma:{
+ 1:"aprender a confiar em si e a tomar a iniciativa sem esperar a permissão de ninguém",
+ 2:"cultivar a paciência, a cooperação e a escuta",
+ 3:"ter coragem de expressar o que sente e de mostrar a sua criatividade",
+ 4:"desenvolver disciplina, ordem e constância naquilo que empreende",
+ 5:"abrir-se à mudança e perder o medo do desconhecido",
+ 6:"assumir responsabilidades afetivas e aprender a se comprometer",
+ 7:"aprofundar-se, confiar na sua intuição e dedicar tempo ao seu mundo interior",
+ 8:"aprender a administrar o dinheiro e a valorizar o seu próprio poder",
+ 9:"praticar a compaixão, o perdão e a arte de deixar ir"
+},
+/* Etapas (pináculos): a energia de cada grande ciclo da vida */
+pin:{
+ 1:"uma etapa para se afirmar, conquistar independência e tomar decisões por conta própria",
+ 2:"uma etapa de relacionamentos, paciência e cooperação, em que o que você constrói com os outros é o mais importante",
+ 3:"uma etapa criativa e social, ideal para se expressar, comunicar e aproveitar",
+ 4:"uma etapa de trabalho e esforço que deixa alicerces sólidos para o futuro",
+ 5:"uma etapa de mudanças, viagens e liberdade, em que a vida pede que você se adapte",
+ 6:"uma etapa centrada no lar, na família e nas responsabilidades afetivas",
+ 7:"uma etapa de introspecção, estudo e crescimento espiritual",
+ 8:"uma etapa de conquistas materiais, reconhecimento e poder pessoal",
+ 9:"uma etapa de encerramentos, generosidade e sabedoria, em que você solta o que já não lhe pertence",
+ 11:"uma etapa de inspiração e intuição elevada, em que você pode se tornar guia para os outros",
+ 22:"uma etapa de grandes realizações, em que você pode construir algo que perdure",
+ 33:"uma etapa de serviço e amor, em que a sua presença cura quem está ao seu redor"
+},
+/* Mês pessoal */
+mes:{
+ 1:"Mês para começar: lance ideias, tome a iniciativa e plante sementes novas.",
+ 2:"Mês de paciência e alianças: cuide dos seus relacionamentos e deixe as coisas amadurecerem.",
+ 3:"Mês social e criativo: comunique-se, saia, crie e aproveite.",
+ 4:"Mês de trabalho e ordem: organize, cumpra e estabeleça bases firmes.",
+ 5:"Mês de movimento: mudanças, viagens ou notícias inesperadas pedem flexibilidade.",
+ 6:"Mês de lar e afetos: a família e o amor pedem a sua atenção.",
+ 7:"Mês de introspecção: descanse, reflita e escute a sua intuição.",
+ 8:"Mês de resultados: dinheiro, conquistas e decisões importantes se movem a seu favor se você agir.",
+ 9:"Mês de encerramento: termine o que está pendente, perdoe e abra espaço para o novo."
+},
+/* Dados do signo solar: astro regente, signos afins, pedras, cor, dia */
+signo:[
+ {planeta:"Marte",compat:"Leão, Sagitário e Gêmeos",piedra:"diamante e cornalina",color:"vermelho",dia:"terça-feira"},
+ {planeta:"Vênus",compat:"Virgem, Capricórnio e Câncer",piedra:"esmeralda e quartzo rosa",color:"verde",dia:"sexta-feira"},
+ {planeta:"Mercúrio",compat:"Libra, Aquário e Áries",piedra:"ágata e citrino",color:"amarelo",dia:"quarta-feira"},
+ {planeta:"Lua",compat:"Escorpião, Peixes e Touro",piedra:"pedra da lua e pérola",color:"branco prateado",dia:"segunda-feira"},
+ {planeta:"Sol",compat:"Áries, Sagitário e Libra",piedra:"olho de tigre e âmbar",color:"dourado",dia:"domingo"},
+ {planeta:"Mercúrio",compat:"Touro, Capricórnio e Escorpião",piedra:"safira e amazonita",color:"verde-oliva",dia:"quarta-feira"},
+ {planeta:"Vênus",compat:"Gêmeos, Aquário e Leão",piedra:"opala e quartzo rosa",color:"rosa",dia:"sexta-feira"},
+ {planeta:"Plutão e Marte",compat:"Câncer, Peixes e Virgem",piedra:"topázio e obsidiana",color:"grená",dia:"terça-feira"},
+ {planeta:"Júpiter",compat:"Áries, Leão e Aquário",piedra:"turquesa e ametista",color:"roxo",dia:"quinta-feira"},
+ {planeta:"Saturno",compat:"Touro, Virgem e Peixes",piedra:"granada e ônix",color:"marrom e preto",dia:"sábado"},
+ {planeta:"Urano e Saturno",compat:"Gêmeos, Libra e Sagitário",piedra:"ametista e água-marinha",color:"azul-elétrico",dia:"sábado"},
+ {planeta:"Netuno e Júpiter",compat:"Câncer, Escorpião e Capricórnio",piedra:"água-marinha e ametista",color:"turquesa",dia:"quinta-feira"}
+],
+/* Zodíaco chinês, em ordem a partir do Rato */
+chino:[
+ {n:"o Rato",t:"engenhoso, encantador e com ótimo faro para oportunidades. Você sabe se adaptar e seguir em frente em qualquer situação."},
+ {n:"o Boi",t:"paciente, trabalhador e confiável. Você avança devagar, mas sem parar, e o que constrói é para sempre."},
+ {n:"o Tigre",t:"corajoso, apaixonado e magnético. A aventura move você, e você defende com força o que considera justo."},
+ {n:"o Coelho",t:"sensível, elegante e diplomático. Você busca a harmonia e tem o dom de criar ambientes de paz."},
+ {n:"o Dragão",t:"carismático, ambicioso e cheio de energia. Você nasceu com boa estrela e gosta de pensar grande."},
+ {n:"a Serpente",t:"sábia, intuitiva e misteriosa. Você observa antes de agir e raramente se engana ao julgar as pessoas."},
+ {n:"o Cavalo",t:"livre, entusiasmado e sociável. Você precisa de movimento e contagia com a sua vitalidade quem está ao seu redor."},
+ {n:"a Cabra",t:"criativa, gentil e sonhadora. Você tem uma grande sensibilidade artística e um coração generoso."},
+ {n:"o Macaco",t:"inteligente, divertido e versátil. Você encontra soluções onde os outros só veem problemas."},
+ {n:"o Galo",t:"trabalhador, observador e sincero. Você cuida dos detalhes e não tem medo de dizer o que pensa."},
+ {n:"o Cão",t:"leal, honesto e protetor. O seu senso de justiça e a sua fidelidade fazem de você alguém muito querido."},
+ {n:"o Porco",t:"generoso, sincero e amante dos prazeres. Você sabe aproveitar a vida e compartilhar o que tem."}
+],
+elemChino:["Madeira","Fogo","Terra","Metal","Água"],
+elemChinoTxt:["traz crescimento, criatividade e generosidade","traz paixão, liderança e entusiasmo","traz estabilidade, sensatez e paciência","traz determinação, força e ambição","traz intuição, flexibilidade e sabedoria"],
+/* Afirmação pessoal segundo o número de vida */
+afirm:{
+ 1:"Confio na minha força e tenho coragem de abrir o meu próprio caminho.",
+ 2:"A minha sensibilidade é um dom; dou e recebo amor em equilíbrio.",
+ 3:"Expresso a minha luz sem medo, e a vida me responde com alegria.",
+ 4:"Construo passo a passo uma vida sólida, e também me permito descansar.",
+ 5:"Abraço a mudança com confiança: cada experiência me faz crescer.",
+ 6:"Cuido dos meus e também de mim; mereço o amor que dou.",
+ 7:"Escuto a minha voz interior e confio no que sei.",
+ 8:"Mereço a abundância e a uso para fazer o bem.",
+ 9:"Solto o passado com gratidão e abro espaço para o novo.",
+ 11:"Confio na minha intuição; a minha luz inspira quem está ao meu redor.",
+ 22:"Os meus sonhos são possíveis; eu os construo com calma e com fé.",
+ 33:"Amo sem condições, a começar por mim."
+},
+/* Textos com dados (modelos) */
+L:{
+ tVida:(n,t)=>`O seu número de vida: ${n} · ${t}`,
+ xVida:(v,E)=>`${v} As suas grandes forças são ${E.f}. O seu desafio nesta vida: ${E.r}.`,
+ tAlma:n=>`O seu número da alma: ${n}`,
+ tPers:n=>`O seu número de personalidade: ${n}`,
+ tExpr:(n,t)=>`O número do seu nome: ${n} · ${t}`,
+ tKarma:'As suas lições cármicas',
+ xKarma:list=>`Algumas energias estão ausentes no seu nome. São as lições que a sua alma veio aprender nesta vida: ${list}.`,
+ xKarmaNone:'O seu nome contém todas as energias do 1 ao 9: você não tem lições cármicas pendentes. É sinal de uma alma experiente, que veio colocar em prática o que já sabe.',
+ tSigno:s=>`O seu signo solar: ${s}`,
+ xSigno:(S,X)=>`Signo de ${S.el}. Astro regente: ${X.planeta}. O que define você: ${S.s}. ${S.c} Signos com os quais você se conecta especialmente: ${X.compat}.`,
+ tChino:(a,e)=>`O seu animal no zodíaco chinês: ${a} de ${e}`,
+ xChino:(A,etxt,prev)=>`Pelo ano em que você nasceu, você é ${A.n}: ${A.t} O seu elemento chinês ${etxt}.${prev?` Se você nasceu antes do Ano-Novo chinês (fim de janeiro ou início de fevereiro), o seu animal seria ${prev}.`:''}`,
+ tCarta:c=>`A sua carta de nascimento: ${c}`,
+ xCarta:C=>`«${C.f}» Esta carta acompanha você por toda a vida. O tema dela: ${C.s}. O conselho dela para você: ${C.c} A sombra dela, aquilo com que você deve ter cuidado: ${C.a} ${C.d}`,
+ tEtapa:'A etapa da vida em que você está',
+ xEtapa:(n,txt,desde,hasta,next)=>`${desde===0?'Desde o seu nascimento'+(hasta?' até os '+hasta+' anos':''):(hasta?'Dos '+desde+' aos '+hasta+' anos':'A partir dos '+desde+' anos')}, você vive sob a energia do ${n}: ${txt}.${next?` Depois virá a energia do ${next}.`:''}`,
+ tAmor:'Amor e relacionamentos',
+ tTrab:'Trabalho e propósito',
+ xTrab:E=>`${E.trab} A sua missão de vida: ${E.mision}`,
+ tAnyo:y=>`O seu ano pessoal ${y}`,
+ xAnyo:(n,txt,meses)=>`Você está em um ano pessoal ${n}. ${txt} Os seus próximos meses: ${meses}`,
+ mesItem:(nombre,txt)=>`${nombre}: ${txt}`,
+ tTalis:'Os seus talismãs',
+ xTalis:(X,num)=>`As suas pedras: ${X.piedra}. A sua cor: ${X.color}. O seu dia de sorte: ${X.dia}. O seu número da sorte: ${num}. Leve-os com você nos momentos importantes.`,
+ tMensaje:pn=>`Mensagem do oráculo para você, ${pn}`,
+ xMensaje:(qi,tono,vida,cn,C,af)=>`${qi?qi+' a':'A'} energia que acompanha você hoje é de ${tono}. Somada ao seu número ${vida} e à carta ${cn}, ela traz este lembrete: ${C.c} A sua afirmação: «${af}»`,
+ /* Presente */
+ regaloPara:n=>`Um presente para ${n}`,
+ regaloDe:n=>`Com carinho, da parte de ${n}`,
+ /* PDF */
+ pdfTitulo:pn=>`Leitura pessoal de ${pn}`,
+ pdfNacido:f=>`Data de nascimento: ${f}`,
+ pdfPie:'Madre Oráculo · Leitura de entretenimento e reflexão pessoal',
+ pdfBoton:'Baixar a minha leitura em PDF',
+ pdfCargando:'Preparando o seu PDF…',
+ pdfError:'Não foi possível criar o PDF. Verifique a sua conexão e tente novamente.'
+}
+};
+
 PACKS.pt={name:'Português (Brasil)',dir:'ltr',UI,M,NOMBRE_SIGNO,ZD,RIESGO,L_TAROT,L_RUNAS,L_TRIG,D_ICHING,L_CRISTAL,D_CRISTAL,L_ASTRO,TEMAS,TONOS,
-  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal};
+  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL};
 })();
 
 </script>
@@ -2939,7 +3497,7 @@ let L_ASTRO=[
 /* Contracciones del español: «de el» → «del», «a el» → «al» */
 function fixEs(o){
   if(typeof LANG!=='undefined'&&LANG!=='es') return o;
-  for(const k in o) if(typeof o[k]==='string') o[k]=o[k].replace(/\bde el /g,'del ').replace(/\ba el /g,'al ');
+  for(const k in o) if(typeof o[k]==='string') o[k]=o[k].replace(/(^|[\s(«])de el /g,'$1del ').replace(/(^|[\s(«])a el /g,'$1al ');
   return o;
 }
 
@@ -3133,16 +3691,318 @@ function signoSolar(d,m){
 }
 function cartaNacimiento(d,m,y){ let s=d+m+y; while(s>22) s=sumaDig(s); return ARCANOS[s===22?0:s]; }
 
+/* ═══ LECTURA PERSONAL AMPLIADA (español) ═══
+   Textos para la lectura de pago. Mismas claves en todos los idiomas. */
+const PERSONAL_ES={
+/* Número de vida ampliado: f = fortalezas, r = reto, amor, trab = trabajo, mision */
+ext:{
+ 1:{f:"iniciativa, valentía, independencia y una enorme capacidad para empezar de cero",r:"aprender a pedir ayuda y a escuchar sin sentir que pierdes el control",amor:"Necesitas una pareja que admire tu fuerza y te deje espacio. Amas con pasión y lealtad, pero tu reto es no convertir cada relación en una competición: la ternura también es poder.",trab:"Brillas cuando lideras, emprendes o abres caminos nuevos. Los trabajos rutinarios o con demasiados jefes apagan tu fuego.",mision:"Venir a este mundo a inaugurar: ideas, proyectos, formas de vivir que otros seguirán después."},
+ 2:{f:"sensibilidad, diplomacia, intuición y un don natural para unir a las personas",r:"no perderte en las necesidades de los demás ni callar lo que sientes para evitar conflictos",amor:"Eres de las personas que más saben amar: atentas, cariñosas, entregadas. Tu reto es elegir a quien te cuide igual y poner límites sin culpa.",trab:"Destacas en equipos, mediación, cuidado, asesoría o cualquier tarea que requiera tacto y paciencia. Eres el pegamento invisible de cualquier grupo.",mision:"Tender puentes: reconciliar, acompañar y demostrar que la suavidad es una forma de fuerza."},
+ 3:{f:"creatividad, alegría, comunicación y un carisma que ilumina cualquier lugar",r:"terminar lo que empiezas y no dispersar tu talento en mil direcciones",amor:"Necesitas una relación con risas, conversación y libertad para expresarte. Te enamoras con facilidad; tu reto es profundizar cuando pasa la chispa del principio.",trab:"Tu sitio está en la palabra, el arte, la imagen, la enseñanza o las redes. Cuando creas, el dinero y las oportunidades te encuentran.",mision:"Expresar la belleza de la vida y recordar a los demás que la alegría también es sagrada."},
+ 4:{f:"constancia, orden, lealtad y la capacidad de convertir los sueños en algo sólido",r:"soltar la rigidez y confiar en que no todo tiene que estar bajo control",amor:"Amas con hechos más que con palabras: estás, cumples, proteges. Buscas estabilidad y te cuesta mostrarte vulnerable, pero ahí está tu mayor intimidad.",trab:"Eres la persona en la que todos confían. Destacas en gestión, construcción, finanzas, organización o cualquier oficio que exija precisión.",mision:"Construir bases firmes, para ti y para los tuyos, que sigan en pie cuando tú ya no estés."},
+ 5:{f:"curiosidad, adaptabilidad, magnetismo y una sed de vida que contagia",r:"comprometerte sin sentir que pierdes tu libertad y evitar los excesos",amor:"Necesitas una relación viva, con aventura y sin jaulas. Tu reto es descubrir que el compromiso, bien elegido, también puede ser un viaje.",trab:"Te va bien en ventas, viajes, comunicación, idiomas o cualquier trabajo que cambie a menudo. La rutina es tu peor enemiga.",mision:"Experimentar la vida en todas sus formas y enseñar a otros a no tener miedo al cambio."},
+ 6:{f:"amor, responsabilidad, generosidad y un sentido de la belleza y la armonía",r:"no cargar con los problemas de todos ni querer arreglar la vida de los demás",amor:"El hogar y la familia son tu centro. Amas de forma protectora y entregada; tu reto es dejar que también te cuiden a ti.",trab:"Destacas en profesiones de cuidado, educación, salud, hostelería, decoración o arte. Cuando ayudas, te sientes en tu sitio.",mision:"Crear hogar allá donde vayas y sanar a través del amor y la belleza."},
+ 7:{f:"intuición profunda, inteligencia analítica, espiritualidad y una mirada que llega al fondo",r:"abrirte a los demás sin desconfiar y salir de tu mundo interior",amor:"Necesitas a alguien que respete tu silencio y comparta conversaciones profundas. Te cuesta confiar, pero cuando lo haces, tu amor es inmenso.",trab:"Brillas en investigación, ciencia, terapia, escritura, espiritualidad o cualquier campo donde puedas profundizar a tu ritmo.",mision:"Buscar la verdad detrás de las apariencias y compartir la sabiduría que encuentres."},
+ 8:{f:"ambición, visión, autoridad natural y una gran capacidad para crear abundancia",r:"equilibrar el éxito material con el corazón y no medir tu valor por lo que tienes",amor:"Buscas una pareja fuerte y leal, que camine a tu lado. Tu reto es mostrar tu lado tierno y no llevar el control también al amor.",trab:"Naciste para dirigir, negociar, emprender y gestionar recursos. El dinero llega cuando actúas con ética y visión a largo plazo.",mision:"Demostrar que el poder bien usado mejora la vida de muchas personas."},
+ 9:{f:"compasión, generosidad, sabiduría y una visión amplia de la vida",r:"cerrar ciclos, perdonar y no sacrificarte hasta quedarte sin nada",amor:"Amas de forma universal y romántica. Tu reto es no idealizar a la pareja y aceptar que tú también mereces recibir.",trab:"Te realizas en profesiones de ayuda, arte, causas sociales, enseñanza o terapias. Necesitas sentir que tu trabajo deja huella.",mision:"Servir, inspirar y ayudar a cerrar heridas, propias y ajenas."},
+ 11:{f:"una intuición extraordinaria, inspiración, sensibilidad y una luz que atrae a los demás",r:"gestionar tu sensibilidad y los nervios, y confiar en tus visiones sin dudar de ti",amor:"Buscas una conexión del alma, casi espiritual. Tu reto es aceptar a la pareja como persona real y no solo como ideal.",trab:"Destacas como guía, terapeuta, artista, comunicador o en cualquier camino donde inspires a otros. Tu intuición es tu mejor herramienta.",mision:"Ser un canal de inspiración: despertar a otros con tu ejemplo y tus palabras."},
+ 22:{f:"visión, disciplina, capacidad de trabajo y el talento de hacer realidad grandes proyectos",r:"no dejar que la presión o el miedo a fallar frenen tu enorme potencial",amor:"Necesitas una pareja que comparta tus sueños y te dé estabilidad. Tu reto es no dejar que el trabajo devore el tiempo para amar.",trab:"Puedes levantar empresas, proyectos sociales o estructuras que duren generaciones. Piensas en grande y sabes cómo llegar.",mision:"Construir algo que trascienda tu propia vida y beneficie a muchas personas."},
+ 33:{f:"amor incondicional, compasión, creatividad y un profundo deseo de servir",r:"no olvidarte de ti mientras cuidas a todo el mundo",amor:"Amas con una entrega total. Tu reto es elegir relaciones equilibradas, donde el cuidado sea de ida y vuelta.",trab:"Destacas enseñando, sanando, cuidando o creando arte que conmueve. Tu presencia ya es medicina para otros.",mision:"Enseñar con el ejemplo que el amor es la fuerza más poderosa que existe."}
+},
+/* Número del alma (vocales): lo que deseas en lo más profundo */
+alma:{
+ 1:"En lo más profundo deseas ser libre y dueño o dueña de tu destino. Tu alma necesita retos, logros propios y la sensación de abrir camino.",
+ 2:"Tu alma anhela paz, amor y compañía. Lo que más deseas es sentirte en armonía con alguien y que tu sensibilidad sea comprendida.",
+ 3:"Tu alma desea expresarse: crear, comunicar, disfrutar. Necesitas alegría y que el mundo vea lo que llevas dentro.",
+ 4:"En el fondo deseas seguridad y estabilidad. Tu alma se calma cuando hay orden, un hogar firme y proyectos que avanzan paso a paso.",
+ 5:"Tu alma pide libertad, aventura y experiencias nuevas. Nada te apaga más que sentirte atado o atada a una vida previsible.",
+ 6:"Tu deseo más profundo es amar y ser amado o amada. Tu alma se realiza cuidando de tu familia y creando un hogar bonito y en paz.",
+ 7:"Tu alma busca la verdad y el sentido de las cosas. Necesitas silencio, conocimiento y una conexión espiritual auténtica.",
+ 8:"En lo más íntimo deseas lograr, prosperar y ser reconocido o reconocida. Tu alma quiere seguridad material y poder para cambiar las cosas.",
+ 9:"Tu alma desea un mundo mejor. Te mueve la compasión y el deseo de ayudar, y te sientes en paz cuando das sin esperar.",
+ 11:"Tu alma busca la iluminación y la inspiración. Deseas conectar con algo más grande que tú y compartir esa luz con los demás.",
+ 22:"Tu alma sueña con dejar una obra que perdure. Deseas construir algo grande, útil y bello para la humanidad.",
+ 33:"Tu alma desea sanar y amar sin condiciones. Te realizas cuando tu amor alivia el dolor de otras personas."
+},
+/* Número de personalidad (consonantes): cómo te ven los demás */
+pers:{
+ 1:"Los demás te ven como una persona segura, decidida y con carácter. Transmites liderazgo, aunque a veces pareces más dura de lo que eres.",
+ 2:"Te perciben como alguien amable, tranquilo y cercano. Inspiras confianza y la gente se abre contigo con facilidad.",
+ 3:"Te ven como una persona alegre, simpática y comunicativa. Tu presencia anima cualquier reunión.",
+ 4:"Transmites seriedad, responsabilidad y solidez. Los demás saben que pueden contar contigo.",
+ 5:"Te perciben como alguien dinámico, atractivo y lleno de energía. Despiertas curiosidad allá donde vas.",
+ 6:"Te ven como una persona cálida, protectora y acogedora. Muchos acuden a ti en busca de consejo o consuelo.",
+ 7:"Transmites misterio, inteligencia y cierta distancia. Los demás sienten que hay mucho más dentro de ti de lo que muestras.",
+ 8:"Te perciben como alguien poderoso, eficaz y con autoridad. Inspiras respeto incluso sin proponértelo.",
+ 9:"Te ven como una persona generosa, comprensiva y con mundo. Tu presencia transmite sabiduría y bondad.",
+ 11:"Te perciben como alguien especial, sensible y con un magnetismo difícil de explicar.",
+ 22:"Transmites una fuerza tranquila y una gran capacidad. Los demás intuyen que puedes lograr cosas importantes.",
+ 33:"Te ven como una presencia luminosa y maternal o paternal, alguien que cuida y que reconforta."
+},
+/* Lecciones kármicas: números ausentes en el nombre */
+karma:{
+ 1:"aprender a confiar en ti y a tomar la iniciativa sin esperar el permiso de nadie",
+ 2:"cultivar la paciencia, la cooperación y la escucha",
+ 3:"atreverte a expresar lo que sientes y a mostrar tu creatividad",
+ 4:"desarrollar disciplina, orden y constancia en lo que emprendes",
+ 5:"abrirte al cambio y perder el miedo a lo desconocido",
+ 6:"asumir responsabilidades afectivas y aprender a comprometerte",
+ 7:"profundizar, confiar en tu intuición y dedicar tiempo a tu mundo interior",
+ 8:"aprender a gestionar el dinero y a valorar tu propio poder",
+ 9:"practicar la compasión, el perdón y el arte de soltar"
+},
+/* Etapas (pináculos): la energía de cada gran ciclo de la vida */
+pin:{
+ 1:"una etapa para afirmarte, ganar independencia y tomar decisiones por ti",
+ 2:"una etapa de relaciones, paciencia y cooperación, donde lo que construyes con otros es lo más importante",
+ 3:"una etapa creativa y social, ideal para expresarte, comunicar y disfrutar",
+ 4:"una etapa de trabajo y esfuerzo que deja cimientos sólidos para el futuro",
+ 5:"una etapa de cambios, viajes y libertad, en la que la vida te pide adaptarte",
+ 6:"una etapa centrada en el hogar, la familia y las responsabilidades afectivas",
+ 7:"una etapa de introspección, estudio y crecimiento espiritual",
+ 8:"una etapa de logros materiales, reconocimiento y poder personal",
+ 9:"una etapa de cierres, generosidad y sabiduría, en la que sueltas lo que ya no te pertenece",
+ 11:"una etapa de inspiración e intuición elevada, en la que puedes convertirte en guía para otros",
+ 22:"una etapa de grandes realizaciones, en la que puedes construir algo que perdure",
+ 33:"una etapa de servicio y amor, en la que tu presencia sana a quienes te rodean"
+},
+/* Mes personal */
+mes:{
+ 1:"Mes para empezar: lanza ideas, toma la iniciativa y planta semillas nuevas.",
+ 2:"Mes de paciencia y alianzas: cuida tus relaciones y deja que las cosas maduren.",
+ 3:"Mes social y creativo: comunica, sal, crea y disfruta.",
+ 4:"Mes de trabajo y orden: organiza, cumple y pon bases firmes.",
+ 5:"Mes de movimiento: cambios, viajes o noticias inesperadas te piden flexibilidad.",
+ 6:"Mes de hogar y afectos: la familia y el amor reclaman tu atención.",
+ 7:"Mes de introspección: descansa, reflexiona y escucha tu intuición.",
+ 8:"Mes de resultados: dinero, logros y decisiones importantes se mueven a tu favor si actúas.",
+ 9:"Mes de cierre: termina lo pendiente, perdona y haz espacio para lo nuevo."
+},
+/* Datos del signo solar: planeta regente, signos afines, piedra, color, día */
+signo:[
+ {planeta:"Marte",compat:"Leo, Sagitario y Géminis",piedra:"el diamante y la cornalina",color:"el rojo",dia:"el martes"},
+ {planeta:"Venus",compat:"Virgo, Capricornio y Cáncer",piedra:"la esmeralda y el cuarzo rosa",color:"el verde",dia:"el viernes"},
+ {planeta:"Mercurio",compat:"Libra, Acuario y Aries",piedra:"el ágata y el citrino",color:"el amarillo",dia:"el miércoles"},
+ {planeta:"la Luna",compat:"Escorpio, Piscis y Tauro",piedra:"la piedra de luna y la perla",color:"el blanco plateado",dia:"el lunes"},
+ {planeta:"el Sol",compat:"Aries, Sagitario y Libra",piedra:"el ojo de tigre y el ámbar",color:"el dorado",dia:"el domingo"},
+ {planeta:"Mercurio",compat:"Tauro, Capricornio y Escorpio",piedra:"el zafiro y la amazonita",color:"el verde oliva",dia:"el miércoles"},
+ {planeta:"Venus",compat:"Géminis, Acuario y Leo",piedra:"el ópalo y el cuarzo rosa",color:"el rosa",dia:"el viernes"},
+ {planeta:"Plutón y Marte",compat:"Cáncer, Piscis y Virgo",piedra:"el topacio y la obsidiana",color:"el granate",dia:"el martes"},
+ {planeta:"Júpiter",compat:"Aries, Leo y Acuario",piedra:"la turquesa y la amatista",color:"el morado",dia:"el jueves"},
+ {planeta:"Saturno",compat:"Tauro, Virgo y Piscis",piedra:"el granate y el ónix",color:"el marrón y el negro",dia:"el sábado"},
+ {planeta:"Urano y Saturno",compat:"Géminis, Libra y Sagitario",piedra:"la amatista y la aguamarina",color:"el azul eléctrico",dia:"el sábado"},
+ {planeta:"Neptuno y Júpiter",compat:"Cáncer, Escorpio y Capricornio",piedra:"la aguamarina y la amatista",color:"el turquesa",dia:"el jueves"}
+],
+/* Zodiaco chino, en orden desde la Rata */
+chino:[
+ {n:"la Rata",t:"ingeniosa, encantadora y con un gran olfato para las oportunidades. Sabes adaptarte y salir adelante en cualquier situación."},
+ {n:"el Buey",t:"paciente, trabajador y de fiar. Avanzas despacio pero sin detenerte, y lo que construyes es para siempre."},
+ {n:"el Tigre",t:"valiente, apasionado y magnético. Te mueve la aventura y defiendes con fuerza lo que crees justo."},
+ {n:"el Conejo",t:"sensible, elegante y diplomático. Buscas la armonía y tienes un don para crear ambientes de paz."},
+ {n:"el Dragón",t:"carismático, ambicioso y lleno de energía. Naciste con buena estrella y te gusta pensar en grande."},
+ {n:"la Serpiente",t:"sabia, intuitiva y misteriosa. Observas antes de actuar y rara vez te equivocas al juzgar a las personas."},
+ {n:"el Caballo",t:"libre, entusiasta y sociable. Necesitas movimiento y contagias tu vitalidad a quienes te rodean."},
+ {n:"la Cabra",t:"creativa, amable y soñadora. Tienes una gran sensibilidad artística y un corazón generoso."},
+ {n:"el Mono",t:"inteligente, divertido y versátil. Encuentras soluciones donde otros solo ven problemas."},
+ {n:"el Gallo",t:"trabajador, observador y sincero. Cuidas los detalles y no temes decir lo que piensas."},
+ {n:"el Perro",t:"leal, honesto y protector. Tu sentido de la justicia y tu fidelidad te hacen alguien muy querido."},
+ {n:"el Cerdo",t:"generoso, sincero y disfrutón. Sabes gozar de la vida y compartir lo que tienes."}
+],
+elemChino:["Madera","Fuego","Tierra","Metal","Agua"],
+elemChinoTxt:["la Madera, que aporta crecimiento, creatividad y generosidad","el Fuego, que aporta pasión, liderazgo y entusiasmo","la Tierra, que aporta estabilidad, sensatez y paciencia","el Metal, que aporta determinación, fuerza y ambición","el Agua, que aporta intuición, flexibilidad y sabiduría"],
+/* Afirmación personal según el número de vida */
+afirm:{
+ 1:"Confío en mi fuerza y me atrevo a abrir mi propio camino.",
+ 2:"Mi sensibilidad es un don; doy y recibo amor en equilibrio.",
+ 3:"Expreso mi luz sin miedo y la vida me responde con alegría.",
+ 4:"Construyo paso a paso una vida sólida, y también me permito descansar.",
+ 5:"Abrazo el cambio con confianza: cada experiencia me hace crecer.",
+ 6:"Cuido de los míos y también de mí; merezco el amor que doy.",
+ 7:"Escucho mi voz interior y confío en lo que sé.",
+ 8:"Merezco la abundancia y la uso para hacer el bien.",
+ 9:"Suelto el pasado con gratitud y abro espacio a lo nuevo.",
+ 11:"Confío en mi intuición; mi luz inspira a quienes me rodean.",
+ 22:"Mis sueños son posibles; los construyo con calma y con fe.",
+ 33:"Amo sin condiciones, empezando por mí."
+},
+/* Textos con datos (plantillas) */
+L:{
+ tVida:(n,t)=>`Tu número de vida: ${n} · ${t}`,
+ xVida:(v,E)=>`${v} Tus grandes fortalezas son ${E.f}. Tu reto en esta vida: ${E.r}.`,
+ tAlma:n=>`Tu número del alma: ${n}`,
+ tPers:n=>`Tu número de personalidad: ${n}`,
+ tExpr:(n,t)=>`El número de tu nombre: ${n} · ${t}`,
+ tKarma:'Tus lecciones kármicas',
+ xKarma:list=>`En tu nombre faltan algunas energías. Son las lecciones que tu alma vino a aprender en esta vida: ${list}.`,
+ xKarmaNone:'Tu nombre contiene todas las energías del 1 al 9: no tienes lecciones kármicas pendientes. Es señal de un alma con experiencia, que vino a poner en práctica lo que ya sabe.',
+ tSigno:s=>`Tu signo solar: ${s}`,
+ xSigno:(S,X)=>`Signo de ${S.el}, regido por ${X.planeta}. Te define ${S.s}. ${S.c} Signos con los que conectas especialmente: ${X.compat}.`,
+ tChino:(a,e)=>`Tu animal en el zodiaco chino: ${a} de ${e}`,
+ xChino:(A,etxt,prev)=>`Según el año en que naciste, eres ${A.n}: ${A.t} Tu elemento chino es ${etxt}.${prev?` Si naciste antes del Año Nuevo chino (finales de enero o principios de febrero), tu animal sería ${prev}.`:''}`,
+ tCarta:c=>`Tu carta de nacimiento: ${c}`,
+ xCarta:C=>`«${C.f}» Esta carta te acompaña toda la vida y habla de ${C.s}. Su consejo para ti: ${C.c} Su sombra, lo que debes vigilar: ${C.a} ${C.d}`,
+ tEtapa:'La etapa de vida en la que estás',
+ xEtapa:(n,txt,desde,hasta,next)=>`Desde ${desde===0?'tu nacimiento':'los '+desde+' años'}${hasta?' hasta los '+hasta:''} vives bajo la energía del ${n}: ${txt}.${next?` Después llegará la energía del ${next}.`:''}`,
+ tAmor:'Amor y relaciones',
+ tTrab:'Trabajo y propósito',
+ xTrab:E=>`${E.trab} Tu misión de vida: ${E.mision}`,
+ tAnyo:y=>`Tu año personal ${y}`,
+ xAnyo:(n,txt,meses)=>`Estás en un año personal ${n}. ${txt} Tus próximos meses: ${meses}`,
+ mesItem:(nombre,txt)=>`${nombre}: ${txt}`,
+ tTalis:'Tus talismanes',
+ xTalis:(X,num)=>`Tu piedra: ${X.piedra}. Tu color: ${X.color}. Tu día de la suerte: ${X.dia}. Tu número de la suerte: ${num}. Llévalos contigo en los momentos importantes.`,
+ tMensaje:pn=>`Mensaje del oráculo para ti, ${pn}`,
+ xMensaje:(qi,tono,vida,cn,C,af)=>`${qi?qi+' l':'L'}a energía que hoy te acompaña es de ${tono}. Unida a tu número ${vida} y a ${cn}, te recuerda que ${C.c.charAt(0).toLowerCase()+C.c.slice(1)} Tu afirmación: «${af}»`,
+ /* Regalo */
+ regaloPara:n=>`Un regalo para ${n}`,
+ regaloDe:n=>`Con cariño, de parte de ${n}`,
+ /* PDF */
+ pdfTitulo:pn=>`Lectura personal de ${pn}`,
+ pdfNacido:f=>`Fecha de nacimiento: ${f}`,
+ pdfPie:'Madre Oráculo · Lectura de entretenimiento y reflexión personal',
+ pdfBoton:'Descargar mi lectura en PDF',
+ pdfCargando:'Preparando tu PDF…',
+ pdfError:'No se ha podido crear el PDF. Revisa tu conexión e inténtalo de nuevo.'
+}
+};
+
+let PER=PERSONAL_ES;
+/* Valores numerológicos de un nombre (tabla pitagórica). Devuelve null si no hay letras latinas. */
+function letrasNombre(nombre){
+  const t=nombre.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+  return t?[...t].map(ch=>({v:((ch.charCodeAt(0)-97)%9)+1,voc:'aeiou'.includes(ch)})):null;
+}
+const hashTxt=s=>{let h=7; for(const c of s) h=(h*31+c.codePointAt(0))>>>0; return h;};
 function lecturaPersonal(nombre,fecha,q){
+  const P=PER, Lx=P.L;
   const [y,m,d]=fecha.split('-').map(Number);
   const vida=reducir(sumaDig(''+y+m+d)), expr=numNombre(nombre);
-  const sg=signoSolar(d,m), S=L_ASTRO[sg];
+  const le=letrasNombre(nombre);
+  const alma=le&&le.some(x=>x.voc)?reducir(le.filter(x=>x.voc).reduce((a,x)=>a+x.v,0)):reducir(expr+vida);
+  const pers=le&&le.some(x=>!x.voc)?reducir(le.filter(x=>!x.voc).reduce((a,x)=>a+x.v,0)):reducir(expr+alma);
+  const faltan=le?[1,2,3,4,5,6,7,8,9].filter(n=>!le.some(x=>x.v===n)):null;
+  const sg=signoSolar(d,m), S=L_ASTRO[sg], X=P.signo[sg];
   const carta=cartaNacimiento(d,m,y), C=L_TAROT[carta.n], cn=nomCarta(carta.n);
-  const anyoAct=new Date().getFullYear(), anyo=reducir(sumaDig(''+d+m+anyoAct),false);
+  const hoy=new Date(), anyoAct=hoy.getFullYear();
+  const anyoP=yy=>reducir(sumaDig(''+d+m+yy),false), anyo=anyoP(anyoAct);
   const pn=nombre.trim().split(/\s+/)[0];
-  const D=dia(), TM=temaDe(q||'');
-  return {pn,secciones:TX.personal({vida,expr,nv:NUMS[vida],ne:NUMS[expr],zi:ZD[sg].split(' ')[0],zn:ZD[sg].split(' ').slice(1).join(' '),S:L_ASTRO[sg],
-    ce:carta.e,cn,C,anyoAct,anyo,ya:ANYO[anyo],pn,qi:q?pick(TM.i):'',tono:TONOS[D.tono].n})};
+  const D=dia(), TM=temaDe(q||''), h=hashTxt(nombre+fecha);
+  const E=P.ext[vida];
+  /* Zodiaco chino */
+  const ai=((y-4)%12+12)%12, ei=Math.floor((((y-4)%10)+10)%10/2);
+  const antes=m===1||(m===2&&d<20), prev=antes?P.chino[(ai+11)%12].n:'';
+  /* Etapas de la vida (pináculos) */
+  const r1=n=>reducir(sumaDig(''+n)), lp=vida>9?sumaDig(vida):vida;
+  const pm=r1(m), pd=r1(d), py=r1(y);
+  const PIN=[reducir(pm+pd),reducir(pd+py)]; PIN.push(reducir(PIN[0]+PIN[1])); PIN.push(reducir(pm+py));
+  const fin1=36-lp, lim=[0,fin1,fin1+9,fin1+18];
+  let edad=anyoAct-y-((hoy.getMonth()+1<m||(hoy.getMonth()+1===m&&hoy.getDate()<d))?1:0);
+  let ip=3; for(let i=0;i<3;i++) if(edad<lim[i+1]){ ip=i; break; }
+  /* Próximos meses */
+  const mesNom=(yy,mi)=>{ const t=new Intl.DateTimeFormat(LANG,{month:'long'}).format(new Date(yy,mi,1)); return t.charAt(0).toUpperCase()+t.slice(1); };
+  const meses=[0,1,2].map(k=>{ const dt=new Date(anyoAct,hoy.getMonth()+k,1), yy=dt.getFullYear(), mi=dt.getMonth();
+    return Lx.mesItem(mesNom(yy,mi),P.mes[reducir(anyoP(yy)+mi+1,false)]); }).join(' · ');
+  const sec=(i,t,x)=>({i,t,x});
+  return {pn,secciones:[
+    sec('✦',Lx.tVida(vida,NUMS[vida].t),Lx.xVida(NUMS[vida].v,E)),
+    sec('♡',Lx.tAlma(alma),P.alma[alma]),
+    sec('◐',Lx.tPers(pers),P.pers[pers]),
+    sec('✒',Lx.tExpr(expr,NUMS[expr].t),NUMS[expr].e),
+    ...(faltan?[sec('⚖',Lx.tKarma,faltan.length?Lx.xKarma(faltan.map(n=>P.karma[n]).join('; ')):Lx.xKarmaNone)]:[]),
+    sec(ZD[sg].split(' ')[0],Lx.tSigno(ZD[sg].split(' ').slice(1).join(' ')),Lx.xSigno(S,X)),
+    sec('☯',Lx.tChino(P.chino[ai].n,P.elemChino[ei]),Lx.xChino(P.chino[ai],P.elemChinoTxt[ei],prev)),
+    sec(carta.e,Lx.tCarta(cn),Lx.xCarta(C)),
+    sec('⛰',Lx.tEtapa,Lx.xEtapa(PIN[ip],P.pin[PIN[ip]],lim[ip],ip<3?lim[ip+1]:'',ip<3?PIN[ip+1]:'')),
+    sec('♥',Lx.tAmor,E.amor),
+    sec('✧',Lx.tTrab,Lx.xTrab(E)),
+    sec('☾',Lx.tAnyo(anyoAct),Lx.xAnyo(anyo,ANYO[anyo],meses)),
+    sec('💎',Lx.tTalis,Lx.xTalis(X,vida)),
+    sec('🔮',Lx.tMensaje(pn),Lx.xMensaje(q?TM.i[h%TM.i.length]:'',TONOS[D.tono].n,vida,cn,C,P.afirm[vida]))
+  ]};
+}
+
+
+/* ═══ PDF de la lectura (generador propio, sin librerías externas) ═══ */
+let _lecturaPDF=null;
+function toggleRegalo(){ document.getElementById('pregbox').style.display=document.getElementById('preg').checked?'block':'none'; }
+const PDF_W={"Times-Roman":[250,333,408,500,500,833,778,180,333,333,500,564,250,333,250,278,500,500,500,500,500,500,500,500,500,500,278,278,564,564,564,444,921,722,667,667,722,611,556,722,722,333,389,722,611,889,722,722,556,722,667,556,611,722,722,944,722,722,611,333,278,333,469,500,333,444,500,444,500,444,333,500,500,278,278,500,278,778,500,500,500,500,333,389,278,500,500,722,500,500,444,480,200,480,541,761,500,444,333,500,444,1000,500,500,333,1000,556,333,889,444,611,444,444,333,333,444,444,350,500,1000,333,980,389,333,722,444,444,722,250,333,500,500,500,500,200,500,333,760,276,500,564,333,760,333,400,564,300,300,333,500,453,250,333,300,310,500,750,750,750,444,722,722,722,722,722,722,889,667,611,611,611,611,333,333,333,333,722,722,722,722,722,722,722,564,722,722,722,722,722,722,556,500,444,444,444,444,444,444,667,444,444,444,444,444,278,278,278,278,500,500,500,500,500,500,500,564,500,500,500,500,500,500,500,500],"Times-Bold":[250,333,555,500,500,1000,833,278,333,333,500,570,250,333,250,278,500,500,500,500,500,500,500,500,500,500,333,333,570,570,570,500,930,722,667,722,722,667,611,778,778,389,500,778,667,944,722,778,611,778,722,556,667,722,722,1000,722,722,667,333,278,333,581,500,333,500,556,444,556,444,333,500,556,278,333,556,278,833,556,500,556,556,444,389,333,556,500,722,500,500,444,394,220,394,520,761,500,500,333,500,500,1000,500,500,333,1000,556,333,1000,500,667,500,500,333,333,500,500,350,500,1000,333,1000,389,333,722,500,444,722,250,333,500,500,500,500,220,500,333,747,300,500,570,333,747,333,400,570,300,300,333,556,540,250,333,300,330,500,750,750,750,500,722,722,722,722,722,722,1000,722,667,667,667,667,389,389,389,389,722,722,778,778,778,778,778,570,778,722,722,722,722,722,611,556,500,500,500,500,500,500,722,444,444,444,444,444,278,278,278,278,500,556,500,500,500,500,500,570,500,556,556,556,556,500,556,500],"Times-Italic":[250,333,420,500,500,833,778,214,333,333,500,675,250,333,250,278,500,500,500,500,500,500,500,500,500,500,333,333,675,675,675,500,920,611,611,667,722,611,611,722,722,333,444,667,556,833,667,722,611,722,611,500,556,722,611,833,611,556,556,389,278,389,422,500,333,500,500,444,500,444,278,500,500,278,278,444,278,722,500,500,500,500,389,389,278,500,444,667,444,444,389,400,275,400,541,761,500,500,333,500,556,889,500,500,333,1000,500,333,944,500,556,500,500,333,333,556,556,350,500,889,333,980,389,333,667,500,389,556,250,389,500,500,500,500,275,500,333,760,276,500,675,333,760,333,400,675,300,300,333,500,523,250,333,300,310,500,750,750,750,500,611,611,611,611,611,611,889,667,611,611,611,611,333,333,333,333,722,667,722,722,722,722,722,675,722,722,722,722,722,556,611,500,500,500,500,500,500,500,667,444,444,444,444,444,278,278,278,278,500,500,500,500,500,500,500,675,500,500,500,500,500,444,500,444]};
+const CP1252={8364:128,8218:130,402:131,8222:132,8230:133,8224:134,8225:135,710:136,8240:137,352:138,8249:139,338:140,381:142,8216:145,8217:146,8220:147,8221:148,8226:149,8211:150,8212:151,732:152,8482:153,353:154,8250:155,339:156,382:158,376:159};
+function pdfTxt(s){ /* a bytes cp1252; lo que no existe se elimina */
+  let o=''; for(const ch of String(s).normalize('NFC')){ const c=ch.codePointAt(0);
+    if(c>=32&&c<=126) o+=ch; else if(c>=160&&c<=255) o+=String.fromCharCode(c); else if(CP1252[c]) o+=String.fromCharCode(CP1252[c]); else if(c===10) o+=' '; }
+  return o.replace(/\s+/g,' ');
+}
+function crearPDF(){
+  const W=595.28,H=841.89,F={R:'Times-Roman',B:'Times-Bold',I:'Times-Italic'},pages=[];
+  let c=null;
+  const col=h=>[1,3,5].map(i=>(parseInt(h.substr(i,2),16)/255).toFixed(3)).join(' ');
+  const esc=t=>t.replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+  const api={W,H,
+    page(){ c=[]; pages.push(c); return api; },
+    rect(x,y,w,h,fill){ c.push(`${col(fill)} rg ${x.toFixed(2)} ${(H-y-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f`); return api; },
+    stroke(x,y,w,h,color,lw){ c.push(`${col(color)} RG ${lw} w ${x.toFixed(2)} ${(H-y-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re S`); return api; },
+    line(x1,y1,x2,y2,color,lw){ c.push(`${col(color)} RG ${lw} w ${x1.toFixed(2)} ${(H-y1).toFixed(2)} m ${x2.toFixed(2)} ${(H-y2).toFixed(2)} l S`); return api; },
+    diamond(x,y,r,color){ c.push(`${col(color)} rg ${x} ${H-y+r} m ${x+r} ${H-y} l ${x} ${H-y-r} l ${x-r} ${H-y} l f`); return api; },
+    width(t,f,sz){ const w=PDF_W[F[f]]; let s=0; for(const ch of pdfTxt(t)){ const k=ch.charCodeAt(0)-32; s+=(w[k]||500); } return s*sz/1000; },
+    text(x,y,t,f,sz,color,align){ t=pdfTxt(t); const w=api.width(t,f,sz); if(align==='c') x-=w/2; else if(align==='r') x-=w;
+      c.push(`BT /${f} ${sz} Tf ${col(color)} rg ${x.toFixed(2)} ${(H-y).toFixed(2)} Td (${esc(t)}) Tj ET`); return api; },
+    wrap(t,f,sz,maxW){ const out=[]; let ln=''; for(const w of pdfTxt(t).split(' ')){ const tst=ln?ln+' '+w:w; if(api.width(tst,f,sz)>maxW&&ln){ out.push(ln); ln=w; } else ln=tst; } if(ln) out.push(ln); return out; },
+    blob(){
+      const objs=[]; const add=s=>{ objs.push(s); return objs.length; };
+      const cat=add(''), pgs=add(''), fR=add('<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>'),
+        fB=add('<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold /Encoding /WinAnsiEncoding >>'), fI=add('<< /Type /Font /Subtype /Type1 /BaseFont /Times-Italic /Encoding /WinAnsiEncoding >>');
+      const kids=pages.map(p=>{ const body=p.join('\n'); const cs=add(`<< /Length ${body.length} >>\nstream\n${body}\nendstream`);
+        return add(`<< /Type /Page /Parent ${pgs} 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /R ${fR} 0 R /B ${fB} 0 R /I ${fI} 0 R >> >> /Contents ${cs} 0 R >>`); });
+      objs[cat-1]=`<< /Type /Catalog /Pages ${pgs} 0 R >>`;
+      objs[pgs-1]=`<< /Type /Pages /Kids [${kids.map(k=>k+' 0 R').join(' ')}] /Count ${kids.length} >>`;
+      let out='%PDF-1.4\n%\xe2\xe3\xcf\xd3\n'; const off=[];
+      objs.forEach((o,i)=>{ off.push(out.length); out+=`${i+1} 0 obj\n${o}\nendobj\n`; });
+      const xr=out.length; out+=`xref\n0 ${objs.length+1}\n0000000000 65535 f \n`+off.map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('');
+      out+=`trailer\n<< /Size ${objs.length+1} /Root ${cat} 0 R >>\nstartxref\n${xr}\n%%EOF`;
+      const u=new Uint8Array(out.length); for(let i=0;i<out.length;i++) u[i]=out.charCodeAt(i)&255;
+      return new Blob([u],{type:'application/pdf'});
+    }};
+  return api;
+}
+/* Maqueta de la lectura en PDF */
+function pdfLectura(D){
+  const p=crearPDF(), M=56, CW=p.W-2*M, ORO='#b8902f', MOR='#2a1458', TXT='#2b2340', FONDO='#fbf7ee', Lx=PER.L;
+  let y=0, n=0;
+  const nueva=()=>{ p.page(); n++; p.rect(0,0,p.W,p.H,FONDO).stroke(22,22,p.W-44,p.H-44,ORO,1.2).stroke(27,27,p.W-54,p.H-54,ORO,0.4);
+    p.text(p.W/2,p.H-38,Lx.pdfPie+'  ·  '+n,'I',8.5,'#7a6a8a','c'); y=70; };
+  const cabe=h=>{ if(y+h>p.H-66) nueva(); };
+  nueva();
+  /* Portada */
+  p.text(p.W/2,y+10,'MADRE ORÁCULO','B',12,ORO,'c'); y+=26;
+  p.line(p.W/2-60,y,p.W/2+60,y,ORO,0.8); p.diamond(p.W/2,y,3.5,ORO); y+=34;
+  p.wrap(Lx.pdfTitulo(D.nombre),'B',24,CW).forEach(l=>{ p.text(p.W/2,y,l,'B',24,MOR,'c'); y+=30; });
+  p.text(p.W/2,y,Lx.pdfNacido(D.fecha),'I',12,'#6b5a80','c'); y+=28;
+  if(D.regalo){
+    p.rect(M+30,y,CW-60,0.1,FONDO); y+=6;
+    p.text(p.W/2,y,Lx.regaloPara(D.nombre),'B',15,ORO,'c'); y+=20;
+    if(D.regalo.ded){ p.wrap('«'+D.regalo.ded+'»','I',13,CW-80).forEach(l=>{ p.text(p.W/2,y,l,'I',13,TXT,'c'); y+=18; }); y+=4; }
+    if(D.regalo.de){ p.text(p.W/2,y,Lx.regaloDe(D.regalo.de),'I',12,'#6b5a80','c'); y+=22; }
+  }
+  y+=8; p.line(M+80,y,p.W-M-80,y,ORO,0.6); y+=30;
+  /* Secciones */
+  D.L.secciones.forEach(s=>{
+    const tl=p.wrap(s.t.toUpperCase(),'B',11.5,CW-18), bl=p.wrap(s.x,'R',11.5,CW);
+    cabe(tl.length*15+Math.min(bl.length,3)*16+10);
+    p.diamond(M+4,y-4,4,ORO); tl.forEach((l,i)=>{ p.text(M+16,y,l,'B',11.5,MOR); y+=15; }); y+=4;
+    bl.forEach(l=>{ cabe(16); p.text(M,y,l,'R',11.5,TXT); y+=16; });
+    y+=14;
+  });
+  cabe(40); p.line(M+80,y,p.W-M-80,y,ORO,0.6);
+  return p.blob();
+}
+async function descargarPDF(){
+  const b=document.getElementById('pdfbtn'), txt=b.innerHTML;
+  try{ b.disabled=true; b.textContent=PER.L.pdfCargando;
+    const blob=pdfLectura(_lecturaPDF), url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download='Madre-Oraculo-'+_lecturaPDF.nombre.replace(/[^\p{L}\p{N}]+/gu,'-')+'.pdf';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){ alert(PER.L.pdfError); }
+  b.disabled=false; b.innerHTML=txt;
 }
 
 function verPersonal(){ goTo('s-personal'); }
@@ -3150,8 +4010,9 @@ function generarPersonal(){
   const nombre=document.getElementById('pnom').value.trim();
   const dd=+document.getElementById('pdia').value, mm=+document.getElementById('pmes').value, y=+document.getElementById('panyo').value;
   const q=document.getElementById('pq').value.trim();
+  const regalo=document.getElementById('preg').checked, de=document.getElementById('pde').value.trim(), ded=document.getElementById('pded').value.trim();
   const err=document.getElementById('perr');
-  if(preguntaDeRiesgo(q)){ mostrarApoyo(); return; }
+  if(preguntaDeRiesgo(q)||preguntaDeRiesgo(ded)){ mostrarApoyo(); return; }
   if(!nombre||!dd||!mm||!y){ err.textContent=T('Escribe tu nombre y tu fecha de nacimiento (día, mes y año).'); return; }
   const f=new Date(y,mm-1,dd);
   if(y<1900||f>new Date()||f.getDate()!==dd||f.getMonth()!==mm-1){ err.textContent=T('Esa fecha no existe. Revisa el día, el mes y el año.'); return; }
@@ -3159,12 +4020,13 @@ function generarPersonal(){
   err.textContent='';
   const L=fixEs(lecturaPersonal(nombre,fecha,q));
   L.secciones.forEach(s=>s.x=fixEs({x:s.x}).x);
-  const kP=_norm(nombre)+'|'+fecha; _ultima.personal={k:kP,datos:{nombre,dd,mm,y,q}};
+  const kP=_norm(nombre)+'|'+fecha; _ultima.personal={k:kP,datos:{nombre,dd,mm,y,q,regalo,de,ded}};
+  _lecturaPDF={L,nombre,fecha:`${dd}/${mm}/${y}`,regalo:regalo?{de,ded}:null};
   const premium=esPremium()||comprado('personal',kP), box=document.getElementById('pres');
   box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:14px">${TX.personalTitle(L.pn)}</h2>`+
     L.secciones.map((s,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)">
       <div class="al" style="color:var(--gold)"><span>${s.i}</span> ${s.t}</div><p class="at">${s.x}</p></div>`).join('')+
-    (premium?'':paywall(TX.pwPersonal,'personal'));
+    (premium?`<button class="bp w" id="pdfbtn" onclick="descargarPDF()">⬇ ${PER.L.pdfBoton}</button>`:paywall(TX.pwPersonal,'personal'));
   box.style.display='flex'; sndReveal&&sndReveal();
   setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
@@ -3510,7 +4372,8 @@ async function initPagos(){
   avisoPago(T('Pago confirmado. ¡Aquí tienes tu lectura completa!'),6000);
   const d=pend.datos;
   if(pend.p==='personal'){
-    verPersonal(); ['pnom','pdia','pmes','panyo','pq'].forEach((f,i)=>document.getElementById(f).value=[d.nombre,d.dd,d.mm,d.y,d.q||''][i]); generarPersonal();
+    verPersonal(); ['pnom','pdia','pmes','panyo','pq','pde','pded'].forEach((f,i)=>document.getElementById(f).value=[d.nombre,d.dd,d.mm,d.y,d.q||'',d.de||'',d.ded||''][i]);
+    document.getElementById('preg').checked=!!d.regalo; toggleRegalo(); generarPersonal();
   }else{
     verCarta(); document.getElementById('cnom').value=d.nombre; document.getElementById('cdia').value=d.dd; document.getElementById('cmes').value=d.mm; document.getElementById('canyo').value=d.y;
     document.getElementById('csinhora').checked=d.sinHora; document.getElementById('chh').value=d.sinHora?'':d.hh; document.getElementById('cmi').value=d.sinHora?'':d.mi;
@@ -3546,7 +4409,7 @@ const S_ES={
     {i:'🔮',t:`Mensaje del oráculo para ti, ${o.pn}`,x:`${o.qi?o.qi+' la':'La'} energía que hoy te acompaña es de ${o.tono}. Unida a tu número ${o.vida} y a ${o.cn}, te recuerda que ${lc(o.C.c)}`}
   ],
   personalTitle:pn=>`La lectura de ${pn}`,
-  pwPersonal:{t:'✦ Lectura completa · Premium',p:'Desbloquea tu número del nombre, tu signo, tu carta de nacimiento, tu año personal y el mensaje del oráculo para ti.',b:'Desbloquear · próximamente',alert:'Muy pronto podrás desbloquear la lectura completa.'},
+  pwPersonal:{t:'✦ Lectura completa · Premium',p:'Desbloquea las 14 secciones: tu alma, tu personalidad, tus lecciones kármicas, tu signo, tu animal chino, tu carta del tarot, tu etapa de vida, amor, trabajo, tus próximos meses, tus talismanes y el mensaje del oráculo. Incluye tu lectura en PDF para guardar o regalar.',b:'Desbloquear · próximamente',alert:'Muy pronto podrás desbloquear la lectura completa.'},
   sun:s=>`Tu Sol en ${s}`, moon:s=>`Tu Luna en ${s}`, asc:s=>`Tu Ascendente en ${s}`,
   planet:(n,s)=>`${n} en ${s}`,
   moonNoTime:' (Sin la hora exacta, la Luna podría estar en el signo vecino.)',
@@ -3591,7 +4454,7 @@ async function setLang(l){
   const B=l==='es'?ES_BANCOS:{...P,M:ES_BANCOS.M.map(m=>({...m,...P.M[m.id]}))};
   M=B.M; ZD=B.ZD; L_TAROT=B.L_TAROT; L_RUNAS=B.L_RUNAS; L_TRIG=B.L_TRIG; D_ICHING=B.D_ICHING; L_CRISTAL=B.L_CRISTAL; D_CRISTAL=B.D_CRISTAL;
   L_ASTRO=B.L_ASTRO; TEMAS=B.TEMAS; TONOS=B.TONOS; NUMS=B.NUMS; ANYO=B.ANYO; RITUALES=B.RITUALES; ESTILO=B.ESTILO; ELEM_TXT=B.ELEM_TXT;
-  TXT_PLANETA=B.TXT_PLANETA; NOMBRE_SIGNO=B.NOMBRE_SIGNO;
+  TXT_PLANETA=B.TXT_PLANETA; NOMBRE_SIGNO=B.NOMBRE_SIGNO; PER=l==='es'?PERSONAL_ES:P.PERSONAL;
   TX=l==='es'?S_ES:P.S;
   document.documentElement.lang=l;
   document.documentElement.dir=(P&&P.dir)||'ltr';
