@@ -20,7 +20,7 @@ export async function onRequestGet({ request, env }) {
   let producto = null;
   if (s.payment_link && s.payment_link === env.PLINK_PERSONAL) producto = 'personal';
   else if (s.payment_link && s.payment_link === env.PLINK_CARTA) producto = 'carta';
-  else if (s.amount_subtotal === 299) producto = 'personal';
-  else if (s.amount_subtotal === 499) producto = 'carta';
+  else if (s.amount_subtotal === 499) producto = 'personal';
+  else if (s.amount_subtotal === 699) producto = 'carta';
   return json({ pagado: s.payment_status === 'paid' && s.status === 'complete', producto });
 }
