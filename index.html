@@ -322,6 +322,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   font-family:'Segoe UI Symbol','Noto Sans Symbols 2','Noto Sans Symbols','DejaVu Sans',sans-serif}
 .zsig{font-size:1.05rem;filter:brightness(1.7) saturate(1.2)}
 .zpl{font-size:1.2rem;color:#fde68a;text-shadow:0 0 6px #000,0 0 2px #000}
+.zcasa{position:absolute;transform:translate(-50%,-50%);font-size:.6rem;color:#c4b5fd;font-family:'Cinzel',serif;opacity:.85}
+.zasp{position:absolute;height:1px;transform-origin:0 50%;opacity:.75}
+.zasp.suave{background:#60a5fa}.zasp.tenso{background:#f87171}
 .rasc{position:absolute;height:2px;background:#fde68a;transform-origin:0 50%;transform:rotate(180deg)}
 .rasc-t{position:absolute;color:#fde68a;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em}
 
@@ -557,7 +560,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 <div class="scr top off" id="s-carta">
   <div class="divl"><span>✦</span></div>
   <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Tu carta astral</h2>
-  <p class="sub">La posición exacta del Sol, la Luna y los planetas en el momento en que naciste. Para calcular tu Ascendente necesitas la hora y el lugar de nacimiento.</p>
+  <p class="sub">Tu cielo exacto en el momento en que naciste: tus Tres Grandes, cada planeta en su signo y su casa, tu Ascendente y su regente, tu Medio Cielo, tu Nodo Norte, los aspectos entre tus planetas, tus elementos y tus planetas retrógrados. Para el Ascendente y las casas necesitas la hora y el lugar de nacimiento. Descárgala en PDF o regálasela a alguien especial.</p>
   <div class="pform">
     <label class="lbl hf" for="cnom">Tu nombre</label>
     <input id="cnom" class="inp" autocomplete="name" placeholder="Tu nombre">
@@ -580,6 +583,14 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
       <div id="clista" class="clista" role="listbox"></div>
     </div>
     <p class="hint2">Si tu pueblo no aparece, elige la ciudad grande más cercana.</p>
+    <label class="pwc regchk"><input type="checkbox" id="cpreg" onchange="toggleRegalo('c')"> <span>🎁 Es un regalo para otra persona</span></label>
+    <div id="cpregbox" style="display:none">
+      <p class="hint2">Escribe arriba el nombre y los datos de nacimiento de la persona que recibe el regalo.</p>
+      <label class="lbl hf" for="cpde">De parte de</label>
+      <input id="cpde" class="inp" placeholder="Tu nombre">
+      <label class="lbl hf" for="cpded">Dedicatoria (opcional)</label>
+      <textarea id="cpded" class="inp" rows="3" maxlength="300" placeholder="Escribe unas palabras para esa persona…"></textarea>
+    </div>
     <p id="cestado" class="hint2" role="status"></p>
     <p id="cerr" class="err" role="alert"></p>
     <button class="bp w" onclick="generarCarta()">✦ Calcular mi carta astral</button>
@@ -641,6 +652,11 @@ var PACKS=window.PACKS||{};
    Keys of UI are the Spanish originals (do not translate the keys). */
 (function(){
 const UI={
+"Escribe arriba el nombre y los datos de nacimiento de la persona que recibe el regalo.":"Enter above the name and birth details of the person receiving the gift.",
+"Ascendente":"Ascendant",
+"Medio Cielo":"Midheaven",
+"Tu cielo exacto en el momento en que naciste: tus Tres Grandes, cada planeta en su signo y su casa, tu Ascendente y su regente, tu Medio Cielo, tu Nodo Norte, los aspectos entre tus planetas, tus elementos y tus planetas retrógrados. Para el Ascendente y las casas necesitas la hora y el lugar de nacimiento. Descárgala en PDF o regálasela a alguien especial.":"Your exact sky at the moment you were born: your Big Three, every planet in its sign and house, your Ascendant and its ruler, your Midheaven, your North Node, the aspects between your planets, your elements and your retrograde planets. For the Ascendant and houses you need your birth time and place. Download it as a PDF or give it to someone special.",
+
 "🎁 Es un regalo para otra persona":"🎁 It’s a gift for someone else",
 "Escribe arriba el nombre y la fecha de nacimiento de la persona que recibe el regalo.":"Enter above the name and date of birth of the person receiving the gift.",
 "De parte de":"From",
@@ -1110,7 +1126,7 @@ const S={
   elemTitle:e=>`Your dominant element: ${ELEM_NOM[['fuego','tierra','aire','agua'].indexOf(e)]}`,
   elemCount:c=>` (fire ${c.fuego} · earth ${c.tierra} · air ${c.aire} · water ${c.agua})`,
   chartTitle:pn=>`${pn}’s birth chart`,
-  pwChart:{t:'✦ Full birth chart · Premium',p:'Unlock your Moon, your Ascendant, your personal planets and your dominant element.',b:'Unlock · coming soon',alert:'Very soon you’ll be able to unlock your full birth chart.'},
+  pwChart:{t:'✦ Full birth chart · Premium',p:'Unlock your full report: every planet in its sign and house, your Ascendant and its ruler, your Midheaven, your North Node, your aspects, your elements and modalities and your retrogrades. Includes your chart as a PDF with the wheel of your sky, to keep or give as a gift.',b:'Unlock · coming soon',alert:'Very soon you’ll be able to unlock your full birth chart.'},
   updated:'Last updated: October 2026'
 };
 
@@ -1289,8 +1305,86 @@ L:{
 }
 };
 
+/* ═══ EXPANDED BIRTH CHART (English) ═══ */
+const CARTA={
+/* Life areas of the 12 houses */
+casa:["your identity, your body and the way you present yourself to the world","money, your resources and what you value","communication, learning, siblings and your immediate surroundings","home, family, your roots and your private world","creativity, romance, pleasure and children","daily work, health and your routines","partnership, business partners and one-to-one relationships","life-changing crises, deep intimacy and shared resources","travel, higher education, philosophy and your search for meaning","your career, your public image and your goals","friendships, groups and your dreams for the future","your inner world, the unconscious and spirituality"],
+/* Keywords for each planet and point */
+kw:{Sol:"your identity",Luna:"your emotions",Mercurio:"your mind",Venus:"the way you love",Marte:"your energy and desire","Júpiter":"your growth and good fortune",Saturno:"your responsibilities and limits",Urano:"your need for freedom",Neptuno:"your intuition and dreams","Plutón":"your power to transform",Asc:"the way you show yourself",MC:"your calling"},
+/* Title of each planet in the report */
+tit:{Sol:"Your Sun: your essence",Luna:"Your Moon: your emotional world",Mercurio:"Mercury: your mind and how you communicate",Venus:"Venus: love, pleasure and what attracts you",Marte:"Mars: your energy, your desire and how you fight","Júpiter":"Jupiter: where luck smiles on you",Saturno:"Saturn: your great teacher",Urano:"Uranus: your spark of change",Neptuno:"Neptune: your dreams and your intuition","Plutón":"Pluto: your power to transform"},
+/* Generational planets (sign) */
+gen:{
+ Urano:E=>`Uranus marks your generation: your urge to innovate, break the mould and seek freedom comes through ${E.e}.`,
+ Neptuno:E=>`Neptune colours the dreams of your generation: you live your intuition and spirituality ${E.e}.`,
+ "Plutón":E=>`Pluto points to the great transformation of your generation: your power to be reborn works ${E.e}.`
+},
+/* Midheaven by sign: calling */
+mc:["Your calling asks you to lead, start things and blaze trails. You shine when you’re your own boss or when it’s up to you to take the first step.","Your calling rests on building something stable and tangible: finance, beauty, nature, food, or any craft where quality and consistency show.","Your calling lies in words and ideas: communicating, writing, teaching, selling or bringing people together.","Your calling is about caring: home, family, food, hospitality, or any work that makes others feel at home.","Your calling is to shine: art, performance, creativity or leadership with heart. You need work where you can be seen.","Your calling is to serve with excellence: health, analysis, organisation, or any work where the details make the difference.","Your calling is to create harmony: design, aesthetics, law, mediation, or any work done in partnership or as a team.","Your calling reaches into the depths: psychology, research, finance, healing, or anything that transforms people.","Your calling is to broaden horizons: travel, teaching, philosophy, languages, or any field that lets you inspire and discover.","Your calling is to build a solid career and rise high. Discipline, management and responsibility lead you to positions of authority.","Your calling is to innovate: technology, social causes, science, or any project that looks to the future.","Your calling is to inspire and heal: art, music, spirituality, helping others, or any work with soul."],
+/* North Node by sign: soul purpose */
+nodo:["Your soul is here to learn independence, to trust yourself and to take the first step even when no one comes with you.","Your soul is here to learn to build calm and security, to enjoy simple things and to let go of drama.","Your soul is here to learn to listen, to ask questions and to open up to other points of view, without assuming you already know it all.","Your soul is here to learn to tend your emotional world and create a home, beyond success and image.","Your soul is here to learn to shine with your own light, to create and to let yourself be seen without fearing the group’s judgement.","Your soul is here to learn to bring order, to care for your body and to ground your dreams in concrete steps.","Your soul is here to learn to share, to collaborate and to consider others, instead of doing everything alone.","Your soul is here to learn to release attachment to material things and to dare to embrace deep transformation.","Your soul is here to learn to seek a broader meaning, to travel, to study and to trust life.","Your soul is here to learn to take on responsibility, to build your own path and to mature without fear.","Your soul is here to learn to think of the collective, to join with others and to commit to your ideals for the future.","Your soul is here to learn to trust, to surrender to intuition and to develop compassion and spirituality."],
+/* Aspect types */
+asp:{
+ conj:{n:"conjunction",t:"merge and act as a single force"},
+ sext:{n:"sextile",t:"work together and offer you opportunities that are easy to seize"},
+ cuad:{n:"square",t:"clash, creating a tension that, handled well, pushes you to grow"},
+ trig:{n:"trine",t:"flow in harmony; this is one of your natural talents"},
+ opos:{n:"opposition",t:"face each other from opposite ends and ask you to find balance"}
+},
+/* Modalities */
+mod:{
+ cardinal:"Cardinal energy dominates: you’re a person of initiative who starts projects and gets things moving.",
+ fijo:"Fixed energy dominates: you’re steady, loyal and persevering; once you decide on something, you see it through.",
+ mutable:"Mutable energy dominates: you’re flexible, adaptable and versatile; you move easily between different situations."
+},
+modNom:{cardinal:"cardinal",fijo:"fixed",mutable:"mutable"},
+/* Retrograde planets */
+retro:{
+ Mercurio:"Mercury retrograde: you think a lot before you speak, and your mind is deep and original. Reviewing and going over things is how you learn.",
+ Venus:"Venus retrograde: you experience love in a very personal way and sometimes find it hard to value yourself. Your challenge is to love yourself just as you are.",
+ Marte:"Mars retrograde: your energy turns inward; you act best after reflecting, and your strength is more strategic than impulsive.",
+ "Júpiter":"Jupiter retrograde: your growth is inner; you find abundance in your own philosophy of life more than in the outside world.",
+ Saturno:"Saturn retrograde: you’re very demanding of yourself. Your great lesson is to become your own authority without judging yourself so harshly.",
+ Urano:"Uranus retrograde: your rebellion is inner; you transform your life from within before showing it to the world.",
+ Neptuno:"Neptune retrograde: your intuition runs very deep, and you need moments of solitude to connect with it.",
+ "Plutón":"Pluto retrograde: you go through transformations privately and have a great capacity for rebirth."
+},
+/* Texts with data */
+L:{
+ tGrandes:"Your Big Three",
+ xGrandes:(sol,luna,asc)=>`Your Sun in ${sol} is your essence; your Moon in ${luna}, what you feel and need; ${asc?`your Ascendant in ${asc}, the way the world sees you.`:'without your exact birth time, we can’t calculate your Ascendant.'} These three pieces are the foundation of your chart and explain much of your personality.`,
+ tPlaneta:(tit,sig,casa)=>`${tit} · in ${sig}${casa?` · ${casa}${[,'st','nd','rd'][casa]||'th'} house`:''}`,
+ xCasa:(kw,area)=>` In your chart, the main stage for ${kw} is ${area}.`,
+ tAsc:sig=>`Your Ascendant in ${sig}`,
+ tRegente:"The ruler of your chart",
+ xRegente:(pl,sig,casa,area)=>`Your Ascendant is ruled by ${pl}, which makes this planet the “captain” of your chart. It sits in ${sig}${casa?`, in your ${casa}${[,'st','nd','rd'][casa]||'th'} house`:''}${area?`, so much of your life energy flows toward ${area}`:''}.`,
+ tMC:sig=>`Your Midheaven in ${sig}: calling and destiny`,
+ tNodo:sig=>`Your North Node in ${sig}: your soul’s purpose`,
+ xNodo:(txt,area)=>`${txt}${area?` The area of life where you’ll grow the most: ${area}.`:''}`,
+ tAspectos:"The main aspects in your chart",
+ xAspIntro:"Aspects are the conversations between your planets. These are the strongest in your chart:",
+ aspItem:(p1,tipo,p2,kw1,kw2,txt)=>`${p1}–${p2} ${tipo}: ${kw1} and ${kw2} ${txt}.`,
+ xAspNone:"Your planets don’t form very tight aspects: this is a chart of independent energies, giving you the freedom to develop each area in your own way.",
+ tElem:"Your balance of elements and modalities",
+ xElem:(elemTxt,cuenta,modTxt,mcuenta)=>`${elemTxt} (${cuenta}) ${modTxt} (${mcuenta})`,
+ mcuenta:c=>`cardinal ${c.cardinal} · fixed ${c.fijo} · mutable ${c.mutable}`,
+ tRetro:"Your retrograde planets",
+ xRetroNone:"You have no personal planets in retrograde: your energy is expressed directly and outwardly.",
+ sinHora:"Without your exact birth time, the Ascendant, houses and Midheaven can’t be calculated. If you can find your birth time (it appears on your birth certificate), your chart will be much more precise.",
+ tSintesis:"Your chart’s final message",
+ xSintesis:(sol,luna,dom,pn)=>`${pn}, your chart speaks of someone with the heart of ${sol} and the soul of ${luna}, where ${dom} dominates. Remember that a birth chart isn’t a written destiny: it’s a map of your talents and your challenges. You decide how to travel it.`,
+ regaloPara:n=>`A gift for ${n}`,
+ regaloDe:n=>`With love, from ${n}`,
+ pdfTitulo:pn=>`${pn}’s birth chart`,
+ pdfNacido:(f,lug)=>`Born: ${f} · ${lug}`,
+ pdfPie:"Madre Oráculo · Birth chart for entertainment and personal reflection",
+ pdfBoton:"Download my birth chart as a PDF",
+ elemNom:{fuego:"fire",tierra:"earth",aire:"air",agua:"water"}
+}
+};
+
 PACKS.en={name:'English',dir:'ltr',UI,M,NOMBRE_SIGNO,ZD,RIESGO,L_TAROT,L_RUNAS,L_TRIG,D_ICHING,L_CRISTAL,D_CRISTAL,L_ASTRO,TEMAS,TONOS,
-  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL};
+  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL,CARTA,PLANETA};
 })();
 
 </script>
@@ -1300,6 +1394,11 @@ var PACKS=window.PACKS||{};
    Le chiavi di UI sono gli originali spagnoli (non tradurre le chiavi). */
 (function(){
 const UI={
+"Escribe arriba el nombre y los datos de nacimiento de la persona que recibe el regalo.":"Scrivi sopra il nome e i dati di nascita della persona che riceve il regalo.",
+"Ascendente":"Ascendente",
+"Medio Cielo":"Medio Cielo",
+"Tu cielo exacto en el momento en que naciste: tus Tres Grandes, cada planeta en su signo y su casa, tu Ascendente y su regente, tu Medio Cielo, tu Nodo Norte, los aspectos entre tus planetas, tus elementos y tus planetas retrógrados. Para el Ascendente y las casas necesitas la hora y el lugar de nacimiento. Descárgala en PDF o regálasela a alguien especial.":"Il tuo cielo esatto nel momento in cui sei nato o nata: i tuoi Tre Grandi, ogni pianeta nel suo segno e nella sua casa, il tuo Ascendente e il suo governatore, il Medio Cielo, il Nodo Nord, gli aspetti tra i pianeti, gli elementi e i pianeti retrogradi. Per l’Ascendente e le case servono l’ora e il luogo di nascita. Scaricalo in PDF o regalalo a una persona speciale.",
+
 "🎁 Es un regalo para otra persona":"🎁 È un regalo per un’altra persona",
 "Escribe arriba el nombre y la fecha de nacimiento de la persona que recibe el regalo.":"Scrivi sopra il nome e la data di nascita della persona che riceve il regalo.",
 "De parte de":"Da parte di",
@@ -1769,7 +1868,7 @@ const S={
   elemTitle:e=>`Il tuo elemento dominante: ${ELEM_NOM[['fuego','tierra','aire','agua'].indexOf(e)]}`,
   elemCount:c=>` (fuoco ${c.fuego} · terra ${c.tierra} · aria ${c.aire} · acqua ${c.agua})`,
   chartTitle:pn=>`Il tema natale di ${pn}`,
-  pwChart:{t:'✦ Tema natale completo · Premium',p:'Sblocca la tua Luna, il tuo Ascendente, i tuoi pianeti personali e il tuo elemento dominante.',b:'Sblocca · prossimamente',alert:'Molto presto potrai sbloccare il tuo tema natale completo.'},
+  pwChart:{t:'✦ Tema natale completo · Premium',p:'Sblocca il tuo rapporto completo: ogni pianeta nel suo segno e nella sua casa, l’Ascendente e il suo governatore, il Medio Cielo, il Nodo Nord, gli aspetti, gli elementi e le modalità e i retrogradi. Include il tuo tema natale in PDF con la ruota del tuo cielo, da conservare o regalare.',b:'Sblocca · prossimamente',alert:'Molto presto potrai sbloccare il tuo tema natale completo.'},
   updated:'Ultimo aggiornamento: ottobre 2026'
 };
 
@@ -1948,8 +2047,86 @@ L:{
 }
 };
 
+/* ═══ CARTA ASTRAL AMPLIADA (italiano) ═══ */
+const CARTA={
+/* Áreas de vida de las 12 casas */
+casa:["la tua identità, il tuo corpo e il modo in cui ti presenti al mondo","il denaro, le tue risorse e ciò a cui dai valore","la comunicazione, l’apprendimento, fratelli e sorelle e l’ambiente che ti circonda","la casa, la famiglia, le tue radici e il tuo mondo intimo","la creatività, il romanticismo, il piacere e i figli","il lavoro quotidiano, la salute e le tue routine","la coppia, i soci e le relazioni a tu per tu","le crisi che trasformano, l’intimità profonda e le risorse condivise","i viaggi, gli studi superiori, la filosofia e la tua ricerca di senso","la tua carriera, la tua immagine pubblica e i tuoi obiettivi","le amicizie, i gruppi e i tuoi sogni per il futuro","il tuo mondo interiore, l’inconscio e la spiritualità"],
+/* Palabras clave de cada planeta y punto */
+kw:{Sol:"la tua identità",Luna:"le tue emozioni",Mercurio:"la tua mente",Venus:"il tuo modo di amare",Marte:"la tua energia e il tuo desiderio","Júpiter":"la tua espansione e la tua fortuna",Saturno:"le tue responsabilità e i tuoi limiti",Urano:"il tuo bisogno di libertà",Neptuno:"la tua intuizione e i tuoi sogni","Plutón":"il tuo potere di trasformazione",Asc:"il tuo modo di mostrarti",MC:"la tua vocazione"},
+/* Título de cada planeta en el informe */
+tit:{Sol:"Il tuo Sole: la tua essenza",Luna:"La tua Luna: il tuo mondo emotivo",Mercurio:"Mercurio: la tua mente e il tuo modo di comunicare",Venus:"Venere: l’amore, il piacere e ciò che ti attrae",Marte:"Marte: la tua energia, il tuo desiderio e il tuo modo di lottare","Júpiter":"Giove: dove ti sorride la fortuna",Saturno:"Saturno: il tuo grande maestro",Urano:"Urano: la tua scintilla di cambiamento",Neptuno:"Nettuno: i tuoi sogni e la tua intuizione","Plutón":"Plutone: il tuo potere di trasformazione"},
+/* Planetas generacionales (signo) */
+gen:{
+ Urano:E=>`Urano segna la tua generazione: il tuo modo di innovare, rompere gli schemi e cercare la libertà si esprime ${E.e}.`,
+ Neptuno:E=>`Nettuno colora i sogni della tua generazione: la tua intuizione e la tua spiritualità si vivono ${E.e}.`,
+ "Plutón":E=>`Plutone indica la grande trasformazione della tua generazione: il tuo potere di rinascere agisce ${E.e}.`
+},
+/* Medio Cielo por signo: vocación */
+mc:["La tua vocazione ti chiede di guidare, intraprendere e aprire strade. Brilli quando lavori in proprio o quando tocca a te fare il primo passo.","La tua vocazione si fonda sul costruire qualcosa di stabile e concreto: finanza, bellezza, natura, gastronomia o qualsiasi mestiere in cui si notino la qualità e la costanza.","La tua vocazione sta nella parola e nelle idee: comunicare, scrivere, insegnare, vendere o mettere in contatto le persone.","La tua vocazione ha a che fare con il prendersi cura: la casa, la famiglia, l’alimentazione, l’accoglienza o qualsiasi lavoro che faccia sentire gli altri come a casa.","La tua vocazione è brillare: l’arte, lo spettacolo, la creatività o una leadership che nasce dal cuore. Hai bisogno di un lavoro in cui poterti far vedere.","La tua vocazione sta nel servire con eccellenza: la salute, l’analisi, l’organizzazione o qualsiasi lavoro in cui i dettagli fanno la differenza.","La tua vocazione è creare armonia: il design, l’estetica, il diritto, la mediazione o qualsiasi lavoro in coppia o in squadra.","La tua vocazione tocca il profondo: la psicologia, la ricerca, la finanza, la guarigione o tutto ciò che trasforma le persone.","La tua vocazione è allargare gli orizzonti: viaggi, insegnamento, filosofia, lingue o qualsiasi campo che ti permetta di ispirare e scoprire.","La tua vocazione è costruire una carriera solida e arrivare in alto. La disciplina, la gestione e il senso di responsabilità ti portano a ruoli di autorità.","La tua vocazione è innovare: la tecnologia, le cause sociali, la scienza o qualsiasi progetto che guardi al futuro.","La tua vocazione è ispirare e guarire: l’arte, la musica, la spiritualità, l’aiuto agli altri o qualsiasi lavoro che abbia un’anima."],
+/* Nodo Norte por signo: propósito del alma */
+nodo:["La tua anima è qui per imparare a essere indipendente, a fidarti di te e a fare il primo passo anche quando nessuno ti accompagna.","La tua anima è qui per imparare a costruire calma e sicurezza, a godere delle cose semplici e a lasciar andare i drammi.","La tua anima è qui per imparare ad ascoltare, a fare domande e ad aprirti ad altri punti di vista, senza credere di sapere già tutto.","La tua anima è qui per imparare a prenderti cura del tuo mondo emotivo e a creare una casa, al di là del successo e dell’immagine.","La tua anima è qui per imparare a brillare di luce propria, a creare e a lasciarti vedere senza paura del giudizio del gruppo.","La tua anima è qui per imparare a fare ordine, a prenderti cura del tuo corpo e a tradurre i sogni in passi concreti.","La tua anima è qui per imparare a condividere, a collaborare e a pensare all’altro, senza fare tutto in solitudine.","La tua anima è qui per imparare a lasciar andare l’attaccamento alle cose materiali e a osare le trasformazioni profonde.","La tua anima è qui per imparare a cercare un senso più ampio, a viaggiare, studiare e avere fiducia nella vita.","La tua anima è qui per imparare ad assumerti responsabilità, a costruire il tuo cammino e a maturare senza paura.","La tua anima è qui per imparare a pensare al collettivo, a unirti agli altri e a credere nei tuoi ideali per il futuro.","La tua anima è qui per imparare ad avere fiducia, ad abbandonarti all’intuizione e a sviluppare la compassione e la spiritualità."],
+/* Tipos de aspecto */
+asp:{
+ conj:{n:"congiunzione",t:"si fondono e agiscono come un’unica forza"},
+ sext:{n:"sestile",t:"collaborano tra loro e ti offrono opportunità facili da cogliere"},
+ cuad:{n:"quadratura",t:"si scontrano e generano una tensione che, se ben gestita, ti spinge a crescere"},
+ trig:{n:"trigono",t:"scorrono in armonia: è uno dei tuoi talenti naturali"},
+ opos:{n:"opposizione",t:"si guardano da estremi opposti e ti chiedono di trovare l’equilibrio"}
+},
+/* Modalidades */
+mod:{
+ cardinal:"Prevale l’energia cardinale: hai spirito d’iniziativa, avvii progetti e metti in moto le cose.",
+ fijo:"Prevale l’energia fissa: hai costanza, lealtà e perseveranza; quando decidi qualcosa, vai fino in fondo.",
+ mutable:"Prevale l’energia mobile: hai flessibilità, capacità di adattamento e versatilità; ti muovi con facilità tra situazioni diverse."
+},
+modNom:{cardinal:"cardinale",fijo:"fissa",mutable:"mobile"},
+/* Planetas retrógrados */
+retro:{
+ Mercurio:"Mercurio retrogrado: rifletti a lungo prima di parlare e la tua mente è profonda e originale. Rivedere e ripassare è il tuo modo di imparare.",
+ Venus:"Venere retrograda: vivi l’amore in modo molto personale e a volte fai fatica a darti valore. La tua sfida è volerti bene così come sei.",
+ Marte:"Marte retrogrado: la tua energia si rivolge verso l’interno; agisci meglio dopo aver riflettuto e la tua forza è più strategica che impulsiva.",
+ "Júpiter":"Giove retrogrado: la tua crescita è interiore; trovi l’abbondanza nella tua filosofia di vita più che nelle cose esterne.",
+ Saturno:"Saturno retrogrado: sei molto esigente con te. La tua grande lezione è diventare la tua stessa autorità senza giudicarti così tanto.",
+ Urano:"Urano retrogrado: la tua ribellione è interiore; trasformi la tua vita dal di dentro prima di mostrarlo fuori.",
+ Neptuno:"Nettuno retrogrado: la tua intuizione è molto profonda e hai bisogno di momenti di solitudine per entrarci in contatto.",
+ "Plutón":"Plutone retrogrado: vivi le trasformazioni in modo intimo e hai una grande capacità di rinascere."
+},
+/* Textos con datos */
+L:{
+ tGrandes:"I tuoi Tre Grandi",
+ xGrandes:(sol,luna,asc)=>`Il tuo Sole in ${sol} è la tua essenza; la tua Luna in ${luna}, ciò che senti e di cui hai bisogno; ${asc?`il tuo Ascendente in ${asc}, il modo in cui il mondo ti vede.`:'senza l’ora esatta di nascita non possiamo calcolare il tuo Ascendente.'} Questi tre elementi sono la base del tuo tema natale e spiegano gran parte della tua personalità.`,
+ tPlaneta:(tit,sig,casa)=>`${tit} · in ${sig}${casa?` · casa ${casa}`:''}`,
+ xCasa:(kw,area)=>` Nel tuo tema, lo scenario principale per ${kw} è questo: ${area}.`,
+ tAsc:sig=>`Il tuo Ascendente in ${sig}`,
+ tRegente:"Il pianeta dominante del tuo tema",
+ xRegente:(pl,sig,casa,area)=>`Il tuo Ascendente è governato da ${pl}, quindi questo pianeta è il «capitano» del tuo tema natale. Si trova in ${sig}${casa?`, nella tua casa ${casa}`:''}${area?`: buona parte della tua energia vitale si rivolge verso quest’area: ${area}`:''}.`,
+ tMC:sig=>`Il tuo Medio Cielo in ${sig}: vocazione e destino`,
+ tNodo:sig=>`Il tuo Nodo Nord in ${sig}: lo scopo della tua anima`,
+ xNodo:(txt,area)=>`${txt}${area?` L’area della vita in cui crescerai di più: ${area}.`:''}`,
+ tAspectos:"Gli aspetti principali del tuo tema",
+ xAspIntro:"Gli aspetti sono le conversazioni tra i tuoi pianeti. Ecco i più forti del tuo tema natale:",
+ aspItem:(p1,tipo,p2,kw1,kw2,txt)=>`${p1} in ${tipo} con ${p2}: ${kw1} e ${kw2} ${txt}.`,
+ xAspNone:"I tuoi pianeti non formano aspetti molto stretti: è un tema di energie indipendenti, che ti lascia la libertà di sviluppare ogni area a modo tuo.",
+ tElem:"Il tuo equilibrio di elementi e modalità",
+ xElem:(elemTxt,cuenta,modTxt,mcuenta)=>`${elemTxt} (${cuenta}) ${modTxt} (${mcuenta})`,
+ mcuenta:c=>`cardinale ${c.cardinal} · fissa ${c.fijo} · mobile ${c.mutable}`,
+ tRetro:"I tuoi pianeti retrogradi",
+ xRetroNone:"Non hai pianeti personali retrogradi: la tua energia si esprime in modo diretto e verso l’esterno.",
+ sinHora:"Senza l’ora esatta di nascita non è possibile calcolare l’Ascendente, le case e il Medio Cielo. Se riesci a trovare la tua ora (è indicata nel tuo atto di nascita), il tuo tema natale sarà molto più preciso.",
+ tSintesis:"Messaggio finale del tuo tema",
+ xSintesis:(sol,luna,dom,pn)=>`${pn}, il tuo tema natale parla di una persona con il cuore di ${sol} e l’anima di ${luna}, in cui prevale ${dom}. Ricorda che il tema natale non è un destino già scritto: è una mappa dei tuoi talenti e delle tue sfide. Sta a te decidere come percorrerla.`,
+ regaloPara:n=>`Un regalo per ${n}`,
+ regaloDe:n=>`Con affetto, da parte di ${n}`,
+ pdfTitulo:pn=>`Tema natale di ${pn}`,
+ pdfNacido:(f,lug)=>`Nascita: ${f} · ${lug}`,
+ pdfPie:"Madre Oráculo · Tema natale per intrattenimento e riflessione personale",
+ pdfBoton:"Scarica il mio tema natale in PDF",
+ elemNom:{fuego:"il fuoco",tierra:"la terra",aire:"l’aria",agua:"l’acqua"}
+}
+};
+
 PACKS.it={name:'Italiano',dir:'ltr',UI,M,NOMBRE_SIGNO,ZD,RIESGO,L_TAROT,L_RUNAS,L_TRIG,D_ICHING,L_CRISTAL,D_CRISTAL,L_ASTRO,TEMAS,TONOS,
-  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL};
+  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL,CARTA,PLANETA};
 })();
 
 </script>
@@ -1959,6 +2136,11 @@ var PACKS=window.PACKS||{};
    As chaves de UI são os originais em espanhol (não traduzir as chaves). */
 (function(){
 const UI={
+"Escribe arriba el nombre y los datos de nacimiento de la persona que recibe el regalo.":"Escreva acima o nome e os dados de nascimento da pessoa que vai receber o presente.",
+"Ascendente":"Ascendente",
+"Medio Cielo":"Meio do Céu",
+"Tu cielo exacto en el momento en que naciste: tus Tres Grandes, cada planeta en su signo y su casa, tu Ascendente y su regente, tu Medio Cielo, tu Nodo Norte, los aspectos entre tus planetas, tus elementos y tus planetas retrógrados. Para el Ascendente y las casas necesitas la hora y el lugar de nacimiento. Descárgala en PDF o regálasela a alguien especial.":"O seu céu exato no momento em que você nasceu: os seus Três Grandes, cada planeta no seu signo e na sua casa, o seu Ascendente e o seu regente, o Meio do Céu, o Nodo Norte, os aspectos entre os seus planetas, os seus elementos e os seus planetas retrógrados. Para o Ascendente e as casas, você precisa da hora e do local de nascimento. Baixe em PDF ou dê de presente a alguém especial.",
+
 "🎁 Es un regalo para otra persona":"🎁 É um presente para outra pessoa",
 "Escribe arriba el nombre y la fecha de nacimiento de la persona que recibe el regalo.":"Escreva acima o nome e a data de nascimento da pessoa que vai receber o presente.",
 "De parte de":"De",
@@ -2430,7 +2612,7 @@ const S={
   elemTitle:e=>`O seu elemento dominante: ${ELEM_NOM[['fuego','tierra','aire','agua'].indexOf(e)]}`,
   elemCount:c=>` (fogo ${c.fuego} · terra ${c.tierra} · ar ${c.aire} · água ${c.agua})`,
   chartTitle:pn=>`O mapa astral de ${pn}`,
-  pwChart:{t:'✦ Mapa astral completo · Premium',p:'Desbloqueie a sua Lua, o seu Ascendente, os seus planetas pessoais e o seu elemento dominante.',b:'Desbloquear · em breve',alert:'Muito em breve você poderá desbloquear o seu mapa astral completo.'},
+  pwChart:{t:'✦ Mapa astral completo · Premium',p:'Desbloqueie o seu relatório completo: cada planeta no seu signo e na sua casa, o Ascendente e o seu regente, o Meio do Céu, o Nodo Norte, os aspectos, os elementos e as modalidades e os retrógrados. Inclui o seu mapa em PDF com a roda do seu céu, para guardar ou presentear.',b:'Desbloquear · em breve',alert:'Muito em breve você poderá desbloquear o seu mapa astral completo.'},
   updated:'Última atualização: outubro de 2026'
 };
 
@@ -2609,8 +2791,86 @@ L:{
 }
 };
 
+/* ═══ CARTA ASTRAL AMPLIADA (português do Brasil) ═══ */
+const CARTA={
+/* Áreas de vida das 12 casas */
+casa:["sua identidade, seu corpo e seu jeito de se apresentar ao mundo","o dinheiro, seus recursos e aquilo que você valoriza","a comunicação, o aprendizado, os irmãos e seu círculo mais próximo","o lar, a família, suas raízes e seu mundo íntimo","a criatividade, o romance, o prazer e os filhos","o trabalho do dia a dia, a saúde e suas rotinas","os relacionamentos, os sócios e as relações de igual para igual","as crises que transformam, a intimidade profunda e os recursos compartilhados","as viagens, os estudos superiores, a filosofia e sua busca de sentido","sua carreira, sua imagem pública e suas metas","as amizades, os grupos e seus sonhos de futuro","seu mundo interior, o inconsciente e a espiritualidade"],
+/* Palavras-chave de cada planeta e ponto */
+kw:{Sol:"sua identidade",Luna:"suas emoções",Mercurio:"sua mente",Venus:"seu jeito de amar",Marte:"sua energia e seu desejo","Júpiter":"sua expansão e sua sorte",Saturno:"suas responsabilidades e seus limites",Urano:"sua necessidade de liberdade",Neptuno:"sua intuição e seus sonhos","Plutón":"seu poder de transformação",Asc:"seu jeito de se mostrar",MC:"sua vocação"},
+/* Título de cada planeta no relatório */
+tit:{Sol:"Seu Sol: sua essência",Luna:"Sua Lua: seu mundo emocional",Mercurio:"Mercúrio: sua mente e seu jeito de se comunicar",Venus:"Vênus: o amor, o prazer e aquilo que atrai você",Marte:"Marte: sua energia, seu desejo e seu jeito de lutar","Júpiter":"Júpiter: onde a sorte sorri para você",Saturno:"Saturno: seu grande mestre",Urano:"Urano: sua centelha de mudança",Neptuno:"Netuno: seus sonhos e sua intuição","Plutón":"Plutão: seu poder de transformação"},
+/* Planetas geracionais (signo) */
+gen:{
+ Urano:E=>`Urano marca a sua geração: seu jeito de inovar, quebrar padrões e buscar liberdade se expressa ${E.e}.`,
+ Neptuno:E=>`Netuno colore os sonhos da sua geração: sua intuição e sua espiritualidade são vividas ${E.e}.`,
+ "Plutón":E=>`Plutão aponta a grande transformação da sua geração: seu poder de renascer age ${E.e}.`
+},
+/* Meio do Céu por signo: vocação */
+mc:["Sua vocação pede liderar, empreender e abrir caminhos. Você brilha quando é seu próprio chefe ou quando cabe a você dar o primeiro passo.","Sua vocação se apoia em construir algo estável e concreto: finanças, beleza, natureza, gastronomia ou qualquer ofício em que a qualidade e a constância façam diferença.","Sua vocação está na palavra e nas ideias: comunicar, escrever, ensinar, vender ou conectar pessoas.","Sua vocação tem a ver com cuidar: o lar, a família, a alimentação, o acolhimento ou qualquer trabalho que faça os outros se sentirem em casa.","Sua vocação é brilhar: a arte, o espetáculo, a criatividade ou a liderança com coração. Você precisa de um trabalho em que possa ser visto.","Sua vocação está em servir com excelência: a saúde, a análise, a organização ou qualquer trabalho em que os detalhes façam a diferença.","Sua vocação é criar harmonia: o design, a estética, o direito, a mediação ou qualquer trabalho em dupla ou em equipe.","Sua vocação toca o profundo: a psicologia, a pesquisa, as finanças, a cura ou tudo aquilo que transforma as pessoas.","Sua vocação é expandir horizontes: viagens, ensino, filosofia, idiomas ou qualquer área que permita a você inspirar e descobrir.","Sua vocação é construir uma carreira sólida e chegar longe. A disciplina, a gestão e a responsabilidade levam você a posições de autoridade.","Sua vocação é inovar: a tecnologia, as causas sociais, a ciência ou qualquer projeto que olhe para o futuro.","Sua vocação é inspirar e curar: a arte, a música, a espiritualidade, a ajuda ao próximo ou qualquer trabalho com alma."],
+/* Nodo Norte por signo: propósito da alma */
+nodo:["Sua alma veio aprender a ser independente, a confiar em si e a dar o primeiro passo mesmo sem companhia.","Sua alma veio aprender a construir calma e segurança, a aproveitar as coisas simples e a deixar os dramas de lado.","Sua alma veio aprender a escutar, a perguntar e a se abrir a outros pontos de vista, sem achar que já sabe tudo.","Sua alma veio aprender a cuidar do seu mundo emocional e a criar um lar, para além do sucesso e da imagem.","Sua alma veio aprender a brilhar com luz própria, a criar e a se deixar ver sem medo do julgamento do grupo.","Sua alma veio aprender a pôr ordem nas coisas, a cuidar do seu corpo e a transformar sonhos em passos concretos.","Sua alma veio aprender a compartilhar, a colaborar e a pensar no outro, sem fazer tudo sozinha.","Sua alma veio aprender a soltar o apego ao material e a se arriscar nas transformações profundas.","Sua alma veio aprender a buscar um sentido mais amplo, a viajar, a estudar e a confiar na vida.","Sua alma veio aprender a assumir responsabilidades, a construir seu caminho e a amadurecer sem medo.","Sua alma veio aprender a pensar no coletivo, a se unir aos outros e a apostar nos seus ideais de futuro.","Sua alma veio aprender a confiar, a se entregar à intuição e a desenvolver a compaixão e a espiritualidade."],
+/* Tipos de aspecto */
+asp:{
+ conj:{n:"conjunção",t:"se fundem e agem como uma única força"},
+ sext:{n:"sextil",t:"colaboram entre si e oferecem a você oportunidades fáceis de aproveitar"},
+ cuad:{n:"quadratura",t:"se chocam e geram uma tensão que, bem conduzida, impulsiona você a crescer"},
+ trig:{n:"trígono",t:"fluem em harmonia: é um dos seus talentos naturais"},
+ opos:{n:"oposição",t:"se olham de extremos opostos e pedem que você encontre o equilíbrio"}
+},
+/* Modalidades */
+mod:{
+ cardinal:"Predomina a energia cardinal: você é uma pessoa de iniciativa, que começa projetos e coloca as coisas em movimento.",
+ fijo:"Predomina a energia fixa: você é uma pessoa constante, leal e perseverante; quando decide algo, vai até o fim.",
+ mutable:"Predomina a energia mutável: você é uma pessoa flexível, adaptável e versátil; transita com facilidade entre situações diferentes."
+},
+modNom:{cardinal:"cardinal",fijo:"fixa",mutable:"mutável"},
+/* Planetas retrógrados */
+retro:{
+ Mercurio:"Mercúrio retrógrado: você pensa muito antes de falar, e sua mente é profunda e original. Revisar e repassar é o seu jeito de aprender.",
+ Venus:"Vênus retrógrado: você vive o amor de forma muito pessoal e às vezes tem dificuldade de se valorizar. Seu desafio é se amar do jeito que você é.",
+ Marte:"Marte retrógrado: sua energia se volta para dentro; você age melhor depois de refletir, e sua força é mais estratégica do que impulsiva.",
+ "Júpiter":"Júpiter retrógrado: seu crescimento é interior; você encontra a abundância na sua própria filosofia de vida mais do que no mundo externo.",
+ Saturno:"Saturno retrógrado: você é muito exigente consigo. Sua grande lição é se tornar sua própria autoridade, sem se julgar tanto.",
+ Urano:"Urano retrógrado: sua rebeldia é interior; você transforma sua vida por dentro antes de mostrar isso por fora.",
+ Neptuno:"Netuno retrógrado: sua intuição é muito profunda, e você precisa de momentos de solidão para se conectar com ela.",
+ "Plutón":"Plutão retrógrado: você vive as transformações de forma íntima e tem uma enorme capacidade de renascer."
+},
+/* Textos com dados */
+L:{
+ tGrandes:"Seus Três Grandes",
+ xGrandes:(sol,luna,asc)=>`Seu Sol em ${sol} é a sua essência; sua Lua em ${luna}, aquilo que você sente e de que precisa; ${asc?`seu Ascendente em ${asc}, a forma como o mundo vê você.`:'sem a hora exata de nascimento, não é possível calcular o seu Ascendente.'} Essas três peças são a base do seu mapa e explicam grande parte da sua personalidade.`,
+ tPlaneta:(tit,sig,casa)=>`${tit} · em ${sig}${casa?` · casa ${casa}`:''}`,
+ xCasa:(kw,area)=>` No seu mapa, o foco de ${kw} está sobretudo aqui: ${area}.`,
+ tAsc:sig=>`Seu Ascendente em ${sig}`,
+ tRegente:"O regente do seu mapa",
+ xRegente:(pl,sig,casa,area)=>`Seu Ascendente é regido por ${pl}, então esse planeta é o «capitão» do seu mapa. Ele está em ${sig}${casa?`, na sua casa ${casa}`:''}${area?`: boa parte da sua energia vital se dirige para ${area}`:''}.`,
+ tMC:sig=>`Seu Meio do Céu em ${sig}: vocação e destino`,
+ tNodo:sig=>`Seu Nodo Norte em ${sig}: o propósito da sua alma`,
+ xNodo:(txt,area)=>`${txt}${area?` A área da vida em que você mais vai crescer: ${area}.`:''}`,
+ tAspectos:"Os principais aspectos do seu mapa",
+ xAspIntro:"Os aspectos são as conversas entre os seus planetas. Estes são os mais fortes do seu mapa:",
+ aspItem:(p1,tipo,p2,kw1,kw2,txt)=>`${p1} em ${tipo} com ${p2}: ${kw1} e ${kw2} ${txt}.`,
+ xAspNone:"Seus planetas não formam aspectos muito exatos: é um mapa de energias independentes, que dá a você liberdade para desenvolver cada área do seu jeito.",
+ tElem:"Seu equilíbrio de elementos e modalidades",
+ xElem:(elemTxt,cuenta,modTxt,mcuenta)=>`${elemTxt} (${cuenta}) ${modTxt} (${mcuenta})`,
+ mcuenta:c=>`cardinal ${c.cardinal} · fixa ${c.fijo} · mutável ${c.mutable}`,
+ tRetro:"Seus planetas retrógrados",
+ xRetroNone:"Você não tem planetas pessoais retrógrados: sua energia se expressa de forma direta e voltada para fora.",
+ sinHora:"Sem a hora exata de nascimento, não é possível calcular o Ascendente, as casas nem o Meio do Céu. Se você conseguir sua hora (ela aparece na sua certidão de nascimento), seu mapa ficará muito mais preciso.",
+ tSintesis:"Mensagem final do seu mapa",
+ xSintesis:(sol,luna,dom,pn)=>`${pn}, seu mapa fala de uma pessoa com coração de ${sol} e alma de ${luna}, em que predomina ${dom}. Lembre-se: o mapa astral não é um destino escrito, e sim um mapa dos seus talentos e dos seus desafios. É você quem decide como percorrê-lo.`,
+ regaloPara:n=>`Um presente para ${n}`,
+ regaloDe:n=>`Com carinho, da parte de ${n}`,
+ pdfTitulo:pn=>`Mapa astral de ${pn}`,
+ pdfNacido:(f,lug)=>`Nascimento: ${f} · ${lug}`,
+ pdfPie:"Madre Oráculo · Mapa astral para entretenimento e reflexão pessoal",
+ pdfBoton:"Baixar meu mapa astral em PDF",
+ elemNom:{fuego:"o fogo",tierra:"a terra",aire:"o ar",agua:"a água"}
+}
+};
+
 PACKS.pt={name:'Português (Brasil)',dir:'ltr',UI,M,NOMBRE_SIGNO,ZD,RIESGO,L_TAROT,L_RUNAS,L_TRIG,D_ICHING,L_CRISTAL,D_CRISTAL,L_ASTRO,TEMAS,TONOS,
-  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL};
+  NUMS,ANYO,RITUALES,ESTILO,ELEM_TXT,TXT_PLANETA,S,legal,PERSONAL,CARTA,PLANETA};
 })();
 
 </script>
@@ -3866,7 +4126,8 @@ L:{
 }
 };
 
-let PER=PERSONAL_ES;
+let PER=PERSONAL_ES, PLN=null;
+const plNom=n=>n==='Asc'?(LANG==='es'?'Ascendente':T('Ascendente')):n==='MC'?(LANG==='es'?'Medio Cielo':T('Medio Cielo')):(PLN?PLN[n]:n);
 /* Valores numerológicos de un nombre (tabla pitagórica). Devuelve null si no hay letras latinas. */
 function letrasNombre(nombre){
   const t=nombre.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z]/g,'');
@@ -3924,7 +4185,8 @@ function lecturaPersonal(nombre,fecha,q){
 
 /* ═══ PDF de la lectura (generador propio, sin librerías externas) ═══ */
 let _lecturaPDF=null;
-function toggleRegalo(){ document.getElementById('pregbox').style.display=document.getElementById('preg').checked?'block':'none'; }
+function toggleRegalo(p=''){ document.getElementById(p+'pregbox').style.display=document.getElementById(p+'preg').checked?'block':'none'; }
+let _cartaPDF=null;
 const PDF_W={"Times-Roman":[250,333,408,500,500,833,778,180,333,333,500,564,250,333,250,278,500,500,500,500,500,500,500,500,500,500,278,278,564,564,564,444,921,722,667,667,722,611,556,722,722,333,389,722,611,889,722,722,556,722,667,556,611,722,722,944,722,722,611,333,278,333,469,500,333,444,500,444,500,444,333,500,500,278,278,500,278,778,500,500,500,500,333,389,278,500,500,722,500,500,444,480,200,480,541,761,500,444,333,500,444,1000,500,500,333,1000,556,333,889,444,611,444,444,333,333,444,444,350,500,1000,333,980,389,333,722,444,444,722,250,333,500,500,500,500,200,500,333,760,276,500,564,333,760,333,400,564,300,300,333,500,453,250,333,300,310,500,750,750,750,444,722,722,722,722,722,722,889,667,611,611,611,611,333,333,333,333,722,722,722,722,722,722,722,564,722,722,722,722,722,722,556,500,444,444,444,444,444,444,667,444,444,444,444,444,278,278,278,278,500,500,500,500,500,500,500,564,500,500,500,500,500,500,500,500],"Times-Bold":[250,333,555,500,500,1000,833,278,333,333,500,570,250,333,250,278,500,500,500,500,500,500,500,500,500,500,333,333,570,570,570,500,930,722,667,722,722,667,611,778,778,389,500,778,667,944,722,778,611,778,722,556,667,722,722,1000,722,722,667,333,278,333,581,500,333,500,556,444,556,444,333,500,556,278,333,556,278,833,556,500,556,556,444,389,333,556,500,722,500,500,444,394,220,394,520,761,500,500,333,500,500,1000,500,500,333,1000,556,333,1000,500,667,500,500,333,333,500,500,350,500,1000,333,1000,389,333,722,500,444,722,250,333,500,500,500,500,220,500,333,747,300,500,570,333,747,333,400,570,300,300,333,556,540,250,333,300,330,500,750,750,750,500,722,722,722,722,722,722,1000,722,667,667,667,667,389,389,389,389,722,722,778,778,778,778,778,570,778,722,722,722,722,722,611,556,500,500,500,500,500,500,722,444,444,444,444,444,278,278,278,278,500,556,500,500,500,500,500,570,500,556,556,556,556,500,556,500],"Times-Italic":[250,333,420,500,500,833,778,214,333,333,500,675,250,333,250,278,500,500,500,500,500,500,500,500,500,500,333,333,675,675,675,500,920,611,611,667,722,611,611,722,722,333,444,667,556,833,667,722,611,722,611,500,556,722,611,833,611,556,556,389,278,389,422,500,333,500,500,444,500,444,278,500,500,278,278,444,278,722,500,500,500,500,389,389,278,500,444,667,444,444,389,400,275,400,541,761,500,500,333,500,556,889,500,500,333,1000,500,333,944,500,556,500,500,333,333,556,556,350,500,889,333,980,389,333,667,500,389,556,250,389,500,500,500,500,275,500,333,760,276,500,675,333,760,333,400,675,300,300,333,500,523,250,333,300,310,500,750,750,750,500,611,611,611,611,611,611,889,667,611,611,611,611,333,333,333,333,722,667,722,722,722,722,722,675,722,722,722,722,722,556,611,500,500,500,500,500,500,500,667,444,444,444,444,444,278,278,278,278,500,500,500,500,500,500,500,675,500,500,500,500,500,444,500,444]};
 const CP1252={8364:128,8218:130,402:131,8222:132,8230:133,8224:134,8225:135,710:136,8240:137,352:138,8249:139,338:140,381:142,8216:145,8217:146,8220:147,8221:148,8226:149,8211:150,8212:151,732:152,8482:153,353:154,8250:155,339:156,382:158,376:159};
 function pdfTxt(s){ /* a bytes cp1252; lo que no existe se elimina */
@@ -3942,6 +4204,7 @@ function crearPDF(){
     rect(x,y,w,h,fill){ c.push(`${col(fill)} rg ${x.toFixed(2)} ${(H-y-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f`); return api; },
     stroke(x,y,w,h,color,lw){ c.push(`${col(color)} RG ${lw} w ${x.toFixed(2)} ${(H-y-h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re S`); return api; },
     line(x1,y1,x2,y2,color,lw){ c.push(`${col(color)} RG ${lw} w ${x1.toFixed(2)} ${(H-y1).toFixed(2)} m ${x2.toFixed(2)} ${(H-y2).toFixed(2)} l S`); return api; },
+    circle(cx,cy,r,color,lw,fill){ const k=0.5523*r, Y=H-cy; c.push(`${col(color)} RG ${lw} w ${fill?col(fill)+' rg ':''}${cx+r} ${Y} m ${cx+r} ${Y+k} ${cx+k} ${Y+r} ${cx} ${Y+r} c ${cx-k} ${Y+r} ${cx-r} ${Y+k} ${cx-r} ${Y} c ${cx-r} ${Y-k} ${cx-k} ${Y-r} ${cx} ${Y-r} c ${cx+k} ${Y-r} ${cx+r} ${Y-k} ${cx+r} ${Y} c ${fill?'B':'S'}`); return api; },
     diamond(x,y,r,color){ c.push(`${col(color)} rg ${x} ${H-y+r} m ${x+r} ${H-y} l ${x} ${H-y-r} l ${x-r} ${H-y} l f`); return api; },
     width(t,f,sz){ const w=PDF_W[F[f]]; let s=0; for(const ch of pdfTxt(t)){ const k=ch.charCodeAt(0)-32; s+=(w[k]||500); } return s*sz/1000; },
     text(x,y,t,f,sz,color,align){ t=pdfTxt(t); const w=api.width(t,f,sz); if(align==='c') x-=w/2; else if(align==='r') x-=w;
@@ -3966,7 +4229,7 @@ function crearPDF(){
 }
 /* Maqueta de la lectura en PDF */
 function pdfLectura(D){
-  const p=crearPDF(), M=56, CW=p.W-2*M, ORO='#b8902f', MOR='#2a1458', TXT='#2b2340', FONDO='#fbf7ee', Lx=PER.L;
+  const p=crearPDF(), M=56, CW=p.W-2*M, ORO='#b8902f', MOR='#2a1458', TXT='#2b2340', FONDO='#fbf7ee', Lx=D.Lx||PER.L;
   let y=0, n=0;
   const nueva=()=>{ p.page(); n++; p.rect(0,0,p.W,p.H,FONDO).stroke(22,22,p.W-44,p.H-44,ORO,1.2).stroke(27,27,p.W-54,p.H-54,ORO,0.4);
     p.text(p.W/2,p.H-38,Lx.pdfPie+'  ·  '+n,'I',8.5,'#7a6a8a','c'); y=70; };
@@ -3976,17 +4239,18 @@ function pdfLectura(D){
   p.text(p.W/2,y+10,'MADRE ORÁCULO','B',12,ORO,'c'); y+=26;
   p.line(p.W/2-60,y,p.W/2+60,y,ORO,0.8); p.diamond(p.W/2,y,3.5,ORO); y+=34;
   p.wrap(Lx.pdfTitulo(D.nombre),'B',24,CW).forEach(l=>{ p.text(p.W/2,y,l,'B',24,MOR,'c'); y+=30; });
-  p.text(p.W/2,y,Lx.pdfNacido(D.fecha),'I',12,'#6b5a80','c'); y+=28;
+  p.text(p.W/2,y,Lx.pdfNacido(D.fecha,D.lugar),'I',12,'#6b5a80','c'); y+=28;
   if(D.regalo){
     p.rect(M+30,y,CW-60,0.1,FONDO); y+=6;
     p.text(p.W/2,y,Lx.regaloPara(D.nombre),'B',15,ORO,'c'); y+=20;
     if(D.regalo.ded){ p.wrap('«'+D.regalo.ded+'»','I',13,CW-80).forEach(l=>{ p.text(p.W/2,y,l,'I',13,TXT,'c'); y+=18; }); y+=4; }
     if(D.regalo.de){ p.text(p.W/2,y,Lx.regaloDe(D.regalo.de),'I',12,'#6b5a80','c'); y+=22; }
   }
+  if(D.rueda){ cabe(250); pdfRueda(p,p.W/2,y+112,110,D.rueda); y+=240; }
   y+=8; p.line(M+80,y,p.W-M-80,y,ORO,0.6); y+=30;
   /* Secciones */
   D.L.secciones.forEach(s=>{
-    const tl=p.wrap(s.t.toUpperCase(),'B',11.5,CW-18), bl=p.wrap(s.x,'R',11.5,CW);
+    const tl=p.wrap(s.t.replace(/<[^>]+>/g,' ').toUpperCase(),'B',11.5,CW-18), bl=s.x.split(/<br\s*\/?>/).flatMap(par=>p.wrap(par.replace(/<[^>]+>/g,'').replace(/^•\s*/,'– '),'R',11.5,CW));
     cabe(tl.length*15+Math.min(bl.length,3)*16+10);
     p.diamond(M+4,y-4,4,ORO); tl.forEach((l,i)=>{ p.text(M+16,y,l,'B',11.5,MOR); y+=15; }); y+=4;
     bl.forEach(l=>{ cabe(16); p.text(M,y,l,'R',11.5,TXT); y+=16; });
@@ -3995,11 +4259,26 @@ function pdfLectura(D){
   cabe(40); p.line(M+80,y,p.W-M-80,y,ORO,0.6);
   return p.blob();
 }
-async function descargarPDF(){
-  const b=document.getElementById('pdfbtn'), txt=b.innerHTML;
+function pdfRueda(p,cx,cy,R,c){
+  const ORO='#b8902f', MOR='#2a1458', ref=c.asc!=null?c.asc:0;
+  const xy=(lon,r)=>{ const a=(180+(lon-ref))*Math.PI/180; return [cx+r*Math.cos(a), cy-r*Math.sin(a)]; };
+  p.circle(cx,cy,R,ORO,1.2,'#f3ead2').circle(cx,cy,R-26,ORO,0.6).circle(cx,cy,R-70,ORO,0.6,'#fbf7ee');
+  for(let i=0;i<12;i++){ const [x1,y1]=xy(i*30,R-26), [x2,y2]=xy(i*30,R); p.line(x1,y1,x2,y2,ORO,0.6);
+    const [tx,ty]=xy(i*30+15,R-13); p.text(tx,ty+3,NOMBRE_SIGNO[i].slice(0,3),'B',7.5,MOR,'c'); }
+  if(c.asc!=null){ for(let k=0;k<12;k++){ const [tx,ty]=xy((signoDe(c.asc)+k)*30+15,R-62); p.text(tx,ty+3,String(k+1),'I',7,'#8a7aa0','c'); }
+    const [ax,ay]=xy(c.asc,R+4); p.line(cx,cy,ax,ay,ORO,1); p.text(ax-4,ay+3,'ASC','B',7,ORO,'r'); }
+  const pl=Object.fromEntries(c.pos.map(q=>[q.n,q.lon]));
+  aspectosDe(c).filter(a=>a.k!=='conj'&&pl[a.a]!=null&&pl[a.b]!=null).slice(0,10).forEach(a=>{ const [x1,y1]=xy(pl[a.a],R-72), [x2,y2]=xy(pl[a.b],R-72);
+    p.line(x1,y1,x2,y2,a.k==='cuad'||a.k==='opos'?'#c0504d':'#4f7fbf',0.6); });
+  const usados=[]; c.pos.forEach(q=>{ let r=R-40; usados.forEach(u=>{ if(Math.abs(((q.lon-u+540)%360)-180)<8) r-=11; }); usados.push(q.lon);
+    const [x,y]=xy(q.lon,r); p.diamond(x,y-1,2.2,ORO); p.text(x,y+8,plNom(q.n).slice(0,2),'B',6.5,MOR,'c'); });
+}
+async function descargarPDF(tipo){
+  const b=document.getElementById(tipo==='carta'?'pdfbtn2':'pdfbtn'), txt=b.innerHTML;
   try{ b.disabled=true; b.textContent=PER.L.pdfCargando;
-    const blob=pdfLectura(_lecturaPDF), url=URL.createObjectURL(blob), a=document.createElement('a');
-    a.href=url; a.download='Madre-Oraculo-'+_lecturaPDF.nombre.replace(/[^\p{L}\p{N}]+/gu,'-')+'.pdf';
+    const D=tipo==='carta'?_cartaPDF:_lecturaPDF;
+    const blob=pdfLectura(D), url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download='Madre-Oraculo-'+(tipo==='carta'?'Carta-':'')+D.nombre.replace(/[^\p{L}\p{N}]+/gu,'-')+'.pdf';
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch(e){ alert(PER.L.pdfError); }
   b.disabled=false; b.innerHTML=txt;
@@ -4100,15 +4379,118 @@ function localAUtc(y,m,d,h,mi,tz){
 const CUERPOS=[['Sol','Sun','☉'],['Luna','Moon','☽'],['Mercurio','Mercury','☿'],['Venus','Venus','♀'],['Marte','Mars','♂'],
   ['Júpiter','Jupiter','♃'],['Saturno','Saturn','♄'],['Urano','Uranus','♅'],['Neptuno','Neptune','♆'],['Plutón','Pluto','♇']];
 function calcularCarta(fechaUtc,lat,lng,conHora){
-  const A=window.Astronomy, t=A.MakeTime(fechaUtc);
-  const pos=CUERPOS.map(([n,b,g])=>({n,g,lon:A.Ecliptic(A.GeoVector(A.Body[b],t,true)).elon}));
-  let asc=null;
+  const A=window.Astronomy, t=A.MakeTime(fechaUtc), t2=A.MakeTime(new Date(+fechaUtc+86400000));
+  const lonDe=(b,tt)=>A.Ecliptic(A.GeoVector(A.Body[b],tt,true)).elon;
+  const pos=CUERPOS.map(([n,b,g])=>{ const l1=lonDe(b,t), l2=lonDe(b,t2); return {n,g,lon:l1,retro:!['Sol','Luna'].includes(n)&&(((l2-l1+540)%360)-180)<0}; });
+  /* Nodo Norte medio */
+  const T=(+fechaUtc-Date.UTC(2000,0,1,12))/86400000/36525;
+  const nodo=((125.04452-1934.136261*T+0.0020708*T*T)%360+360)%360;
+  let asc=null, mc=null;
   if(conHora){
     const lst=((A.SiderealTime(t)+lng/15)%24+24)%24, th=lst*15*Math.PI/180;
     const eps=A.e_tilt(t).tobl*Math.PI/180, ph=lat*Math.PI/180;
     asc=((Math.atan2(Math.cos(th),-(Math.sin(th)*Math.cos(eps)+Math.tan(ph)*Math.sin(eps)))*180/Math.PI)+360)%360;
+    mc=((Math.atan2(Math.sin(th),Math.cos(th)*Math.cos(eps))*180/Math.PI)+360)%360;
   }
-  return {pos,asc};
+  return {pos,asc,mc,nodo};
+}
+/* ═══ CARTA ASTRAL AMPLIADA (español) ═══ */
+const CARTA_ES={
+/* Áreas de vida de las 12 casas */
+casa:["tu identidad, tu cuerpo y tu forma de presentarte al mundo","el dinero, tus recursos y lo que valoras","la comunicación, el aprendizaje, los hermanos y tu entorno cercano","el hogar, la familia, tus raíces y tu mundo íntimo","la creatividad, el romance, el placer y los hijos","el trabajo diario, la salud y tus rutinas","la pareja, los socios y las relaciones de tú a tú","las crisis que transforman, la intimidad profunda y los recursos compartidos","los viajes, los estudios superiores, la filosofía y tu búsqueda de sentido","tu carrera, tu imagen pública y tus metas","las amistades, los grupos y tus sueños de futuro","tu mundo interior, el inconsciente y la espiritualidad"],
+/* Palabras clave de cada planeta y punto */
+kw:{Sol:"tu identidad",Luna:"tus emociones",Mercurio:"tu mente",Venus:"tu forma de amar",Marte:"tu energía y tu deseo","Júpiter":"tu expansión y tu suerte",Saturno:"tus responsabilidades y límites",Urano:"tu necesidad de libertad",Neptuno:"tu intuición y tus sueños","Plutón":"tu poder de transformación",Asc:"tu forma de mostrarte",MC:"tu vocación"},
+/* Título de cada planeta en el informe */
+tit:{Sol:"Tu Sol: tu esencia",Luna:"Tu Luna: tu mundo emocional",Mercurio:"Mercurio: tu mente y tu forma de comunicar",Venus:"Venus: el amor, el placer y lo que te atrae",Marte:"Marte: tu energía, tu deseo y tu forma de luchar","Júpiter":"Júpiter: dónde te sonríe la suerte",Saturno:"Saturno: tu gran maestro",Urano:"Urano: tu chispa de cambio",Neptuno:"Neptuno: tus sueños y tu intuición","Plutón":"Plutón: tu poder de transformación"},
+/* Planetas generacionales (signo) */
+gen:{
+ Urano:E=>`Urano marca a tu generación: tu forma de innovar, romper moldes y buscar libertad se expresa ${E.e}.`,
+ Neptuno:E=>`Neptuno colorea los sueños de tu generación: tu intuición y tu espiritualidad se viven ${E.e}.`,
+ "Plutón":E=>`Plutón señala la gran transformación de tu generación: tu poder de renacer actúa ${E.e}.`
+},
+/* Medio Cielo por signo: vocación */
+mc:["Tu vocación pide liderar, emprender y abrir caminos. Brillas cuando eres tu propio jefe o te toca dar el primer paso.","Tu vocación se apoya en construir algo estable y tangible: finanzas, belleza, naturaleza, gastronomía o cualquier oficio donde la calidad y la constancia se noten.","Tu vocación está en la palabra y las ideas: comunicar, escribir, enseñar, vender o conectar a las personas.","Tu vocación tiene que ver con cuidar: el hogar, la familia, la alimentación, la acogida o cualquier trabajo que haga sentir a otros como en casa.","Tu vocación es brillar: el arte, el espectáculo, la creatividad o el liderazgo con corazón. Necesitas un trabajo donde puedas ser visto.","Tu vocación está en servir con excelencia: la salud, el análisis, la organización o cualquier trabajo donde los detalles marquen la diferencia.","Tu vocación es crear armonía: el diseño, la estética, el derecho, la mediación o cualquier trabajo en pareja o en equipo.","Tu vocación toca lo profundo: la psicología, la investigación, las finanzas, la sanación o todo lo que transforme a las personas.","Tu vocación es expandir horizontes: viajes, enseñanza, filosofía, idiomas o cualquier campo que te permita inspirar y descubrir.","Tu vocación es construir una carrera sólida y llegar alto. La disciplina, la gestión y la responsabilidad te llevan a puestos de autoridad.","Tu vocación es innovar: la tecnología, las causas sociales, la ciencia o cualquier proyecto que mire al futuro.","Tu vocación es inspirar y sanar: el arte, la música, la espiritualidad, la ayuda a otros o cualquier trabajo con alma."],
+/* Nodo Norte por signo: propósito del alma */
+nodo:["Tu alma viene a aprender a ser independiente, a confiar en ti y a dar el primer paso aunque nadie te acompañe.","Tu alma viene a aprender a construir calma y seguridad, a disfrutar de lo sencillo y a soltar los dramas.","Tu alma viene a aprender a escuchar, a preguntar y a abrirte a otros puntos de vista, sin creer que ya lo sabes todo.","Tu alma viene a aprender a cuidar tu mundo emocional y a crear un hogar, más allá del éxito y la imagen.","Tu alma viene a aprender a brillar con tu propia luz, a crear y a dejarte ver sin miedo al juicio del grupo.","Tu alma viene a aprender a poner orden, a cuidar tu cuerpo y a aterrizar los sueños en pasos concretos.","Tu alma viene a aprender a compartir, a colaborar y a pensar en el otro, sin hacerlo todo en solitario.","Tu alma viene a aprender a soltar el apego a lo material y a atreverte con las transformaciones profundas.","Tu alma viene a aprender a buscar un sentido más amplio, a viajar, estudiar y confiar en la vida.","Tu alma viene a aprender a asumir responsabilidades, a construir tu camino y a madurar sin miedo.","Tu alma viene a aprender a pensar en el colectivo, a unirte a otros y a apostar por tus ideales de futuro.","Tu alma viene a aprender a confiar, a rendirte a la intuición y a desarrollar la compasión y la espiritualidad."],
+/* Tipos de aspecto */
+asp:{
+ conj:{n:"conjunción",t:"se funden y actúan como una sola fuerza"},
+ sext:{n:"sextil",t:"colaboran entre sí y te ofrecen oportunidades fáciles de aprovechar"},
+ cuad:{n:"cuadratura",t:"chocan y generan una tensión que, bien llevada, te empuja a crecer"},
+ trig:{n:"trígono",t:"fluyen en armonía: es uno de tus talentos naturales"},
+ opos:{n:"oposición",t:"se miran desde extremos opuestos y te piden encontrar el equilibrio"}
+},
+/* Modalidades */
+mod:{
+ cardinal:"Predomina la energía cardinal: eres una persona de iniciativa, que empieza proyectos y mueve las cosas.",
+ fijo:"Predomina la energía fija: eres constante, leal y perseverante; cuando decides algo, llegas hasta el final.",
+ mutable:"Predomina la energía mutable: eres flexible, adaptable y versátil; te mueves con facilidad entre situaciones distintas."
+},
+modNom:{cardinal:"cardinal",fijo:"fija",mutable:"mutable"},
+/* Planetas retrógrados */
+retro:{
+ Mercurio:"Mercurio retrógrado: piensas mucho antes de hablar y tu mente es profunda y original. Revisar y repasar es tu forma de aprender.",
+ Venus:"Venus retrógrado: vives el amor de forma muy personal y a veces te cuesta valorarte. Tu reto es quererte tal como eres.",
+ Marte:"Marte retrógrado: tu energía se dirige hacia dentro; actúas mejor tras reflexionar y tu fuerza es más estratégica que impulsiva.",
+ "Júpiter":"Júpiter retrógrado: tu crecimiento es interior; encuentras la abundancia en tu propia filosofía de vida más que en lo externo.",
+ Saturno:"Saturno retrógrado: eres muy exigente contigo. Tu gran lección es convertirte en tu propia autoridad sin juzgarte tanto.",
+ Urano:"Urano retrógrado: tu rebeldía es interior; transformas tu vida desde dentro antes de mostrarlo afuera.",
+ Neptuno:"Neptuno retrógrado: tu intuición es muy profunda y necesitas momentos de soledad para conectar con ella.",
+ "Plutón":"Plutón retrógrado: vives las transformaciones de forma íntima y tienes una gran capacidad para renacer."
+},
+/* Textos con datos */
+L:{
+ tGrandes:"Tus Tres Grandes",
+ xGrandes:(sol,luna,asc)=>`Tu Sol en ${sol} es tu esencia; tu Luna en ${luna}, lo que sientes y necesitas; ${asc?`tu Ascendente en ${asc}, la forma en que el mundo te ve.`:'sin la hora exacta de nacimiento no podemos calcular tu Ascendente.'} Estas tres piezas son la base de tu carta y explican gran parte de tu personalidad.`,
+ tPlaneta:(tit,sig,casa)=>`${tit} · en ${sig}${casa?` · casa ${casa}`:''}`,
+ xCasa:(kw,area)=>` En tu carta, el escenario principal de ${kw}: ${area}.`,
+ tAsc:sig=>`Tu Ascendente en ${sig}`,
+ tRegente:"El regente de tu carta",
+ xRegente:(pl,sig,casa,area)=>`Tu Ascendente está regido por ${pl}, así que este planeta es el «capitán» de tu carta. Está en ${sig}${casa?`, en tu casa ${casa}`:''}${area?`: buena parte de tu energía vital se dirige hacia ${area}`:''}.`,
+ tMC:sig=>`Tu Medio Cielo en ${sig}: vocación y destino`,
+ tNodo:sig=>`Tu Nodo Norte en ${sig}: el propósito de tu alma`,
+ xNodo:(txt,area)=>`${txt}${area?` El área de la vida donde más vas a crecer: ${area}.`:''}`,
+ tAspectos:"Los aspectos principales de tu carta",
+ xAspIntro:"Los aspectos son las conversaciones entre tus planetas. Estos son los más fuertes de tu carta:",
+ aspItem:(p1,tipo,p2,kw1,kw2,txt)=>`${p1} en ${tipo} con ${p2}: ${kw1} y ${kw2} ${txt}.`,
+ xAspNone:"Tus planetas no forman aspectos muy cerrados: es una carta de energías independientes, que te da libertad para desarrollar cada área a tu manera.",
+ tElem:"Tu equilibrio de elementos y modalidades",
+ xElem:(elemTxt,cuenta,modTxt,mcuenta)=>`${elemTxt} (${cuenta}) ${modTxt} (${mcuenta})`,
+ mcuenta:c=>`cardinal ${c.cardinal} · fija ${c.fijo} · mutable ${c.mutable}`,
+ tRetro:"Tus planetas retrógrados",
+ xRetroNone:"No tienes planetas personales retrógrados: tu energía se expresa de forma directa y hacia fuera.",
+ sinHora:"Sin la hora exacta de nacimiento no se pueden calcular el Ascendente, las casas ni el Medio Cielo. Si consigues tu hora (aparece en tu partida de nacimiento), tu carta será mucho más precisa.",
+ tSintesis:"Mensaje final de tu carta",
+ xSintesis:(sol,luna,dom,pn)=>`${pn}, tu carta habla de una persona con el corazón de ${sol} y el alma de ${luna}, donde predomina ${dom}. Recuerda que la carta astral no es un destino escrito: es un mapa de tus talentos y tus retos. Tú decides cómo recorrerlo.`,
+ regaloPara:n=>`Un regalo para ${n}`,
+ regaloDe:n=>`Con cariño, de parte de ${n}`,
+ pdfTitulo:pn=>`Carta astral de ${pn}`,
+ pdfNacido:(f,lug)=>`Nacimiento: ${f} · ${lug}`,
+ pdfPie:"Madre Oráculo · Carta astral de entretenimiento y reflexión personal",
+ pdfBoton:"Descargar mi carta astral en PDF",
+ elemNom:{fuego:"el fuego",tierra:"la tierra",aire:"el aire",agua:"el agua"}
+}
+};
+
+let CAR=CARTA_ES;
+/* Casas por signos enteros (casa 1 = signo del Ascendente) */
+const casaDe=(lon,asc)=>asc==null?null:((signoDe(lon)-signoDe(asc)+12)%12)+1;
+const REGENTE=['Marte','Venus','Mercurio','Luna','Sol','Mercurio','Venus','Plutón','Júpiter','Saturno','Urano','Neptuno'];
+const MODAL=['cardinal','fijo','mutable'];
+/* Aspectos principales */
+const ASPECTOS=[['conj',0,8],['sext',60,5],['cuad',90,7],['trig',120,7],['opos',180,8]];
+function aspectosDe(c){
+  const pts=c.pos.map(p=>({n:p.n,lon:p.lon}));
+  if(c.asc!=null){ pts.push({n:'Asc',lon:c.asc}); pts.push({n:'MC',lon:c.mc}); }
+  const lentos=['Urano','Neptuno','Plutón'], out=[];
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const a=pts[i], b=pts[j];
+    if(lentos.includes(a.n)&&lentos.includes(b.n)) continue;
+    if((a.n==='Asc'&&b.n==='MC')) continue;
+    const d=Math.abs(((a.lon-b.lon+540)%360)-180), dist=180-d;
+    for(const [k,ang,orb] of ASPECTOS){ const o=Math.abs(dist-ang); if(o<=orb){ out.push({a:a.n,b:b.n,k,orb:o,peso:o-(['Sol','Luna'].includes(a.n)||['Sol','Luna'].includes(b.n)?1.5:0)}); break; } }
+  }
+  return out.sort((x,y)=>x.peso-y.peso);
 }
 let NOMBRE_SIGNO=["Aries","Tauro","Géminis","Cáncer","Leo","Virgo","Libra","Escorpio","Sagitario","Capricornio","Acuario","Piscis"];
 const GLIFO_SIGNO=["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
@@ -4158,7 +4540,16 @@ function ruedaHTML(c){
   const usados=[];
   c.pos.forEach(p=>{ let r=R-58; usados.forEach(u=>{ if(Math.abs(((p.lon-u+540)%360)-180)<7) r-=20; }); usados.push(p.lon);
     const [x,y]=xy(p.lon,Math.max(r,30)); h+=`<span class="zpl" title="${p.n}" style="left:${x}px;top:${y}px">${p.g}&#xFE0E;</span>`; });
-  if(c.asc!=null){ h+=`<span class="rasc" style="left:${R}px;top:${R}px;width:${R}px"></span><span class="rasc-t" style="left:40px;top:${R+6}px">ASC</span>`; }
+  if(c.asc!=null){
+    h+=`<span class="rasc" style="left:${R}px;top:${R}px;width:${R}px"></span><span class="rasc-t" style="left:40px;top:${R+6}px">ASC</span>`;
+    for(let k=0;k<12;k++){ const [x,y]=xy((signoDe(c.asc)+k)*30+15,R-92); h+=`<span class="zcasa" style="left:${x}px;top:${y}px">${k+1}</span>`; }
+  }
+  /* líneas de aspectos en el centro */
+  const pl=Object.fromEntries(c.pos.map(p=>[p.n,p.lon]));
+  aspectosDe(c).filter(a=>a.k!=='conj'&&pl[a.a]!=null&&pl[a.b]!=null).slice(0,10).forEach(a=>{
+    const [x1,y1]=xy(pl[a.a],66), [x2,y2]=xy(pl[a.b],66), L=Math.hypot(x2-x1,y2-y1), ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+    h+=`<span class="zasp ${a.k==='cuad'||a.k==='opos'?'tenso':'suave'}" style="left:${x1}px;top:${y1}px;width:${L}px;transform:rotate(${ang}deg)"></span>`;
+  });
   return h+`</div>`;
 }
 
@@ -4188,6 +4579,7 @@ async function generarCarta(){
   const nombre=document.getElementById('cnom').value.trim();
   const dd=+document.getElementById('cdia').value, mm=+document.getElementById('cmes').value, y=+document.getElementById('canyo').value, sinHora=document.getElementById('csinhora').checked;
   const hh=sinHora?12:+document.getElementById('chh').value, mi=sinHora?0:+(document.getElementById('cmi').value||0);
+  if(preguntaDeRiesgo(document.getElementById('cpded').value)){ mostrarApoyo(); return; }
   if(!nombre||!dd||!mm||!y){ err.textContent=T('Escribe tu nombre y tu fecha de nacimiento.'); return; }
   const f=new Date(y,mm-1,dd);
   if(y<1900||f>new Date()||f.getDate()!==dd||f.getMonth()!==mm-1){ err.textContent=T('Esa fecha no existe. Revisa el día, el mes y el año.'); return; }
@@ -4198,26 +4590,44 @@ async function generarCarta(){
   const c=calcularCarta(utc,ciudadSel.lat,ciudadSel.lng,!sinHora);
   const P=Object.fromEntries(c.pos.map(p=>[p.n,p]));
   const pn=nombre.split(/\s+/)[0];
-  const sec=(i,t,x)=>({i,t,x});
-  const s=[];
-  const sS=signoDe(P.Sol.lon); s.push(sec('☉&#xFE0E;',`${TX.sun(NOMBRE_SIGNO[sS])} · ${Math.floor(P.Sol.lon%30)}°`,TXT_PLANETA.Sol(sS,ESTILO[sS])));
-  const sL=signoDe(P.Luna.lon); s.push(sec('☽&#xFE0E;',`${TX.moon(NOMBRE_SIGNO[sL])} · ${Math.floor(P.Luna.lon%30)}°`,TXT_PLANETA.Luna(sL,ESTILO[sL])+(sinHora?TX.moonNoTime:'')));
-  if(c.asc!=null){ const sA=signoDe(c.asc); s.push(sec('↑',`${TX.asc(NOMBRE_SIGNO[sA])} · ${Math.floor(c.asc%30)}°`,TXT_PLANETA.Asc(sA,ESTILO[sA]))); }
+  const sec=(i,t,x)=>({i,t,x}), C=CAR, Lc=C.L, NS=n=>NOMBRE_SIGNO[n];
+  const s=[], conHora=c.asc!=null;
+  const cs=lon=>casaDe(lon,c.asc), conCasa=(n,lon)=>{ const k=cs(lon); return k?Lc.xCasa(C.kw[n],C.casa[k-1]):''; };
+  const sS=signoDe(P.Sol.lon), sL=signoDe(P.Luna.lon), sA=conHora?signoDe(c.asc):null;
+  s.push(sec('✦',Lc.tGrandes,Lc.xGrandes(NS(sS),NS(sL),conHora?NS(sA):'')+(conHora?'':' '+Lc.sinHora)));
+  s.push(sec('☉&#xFE0E;',Lc.tPlaneta(C.tit.Sol,NS(sS)+' '+Math.floor(P.Sol.lon%30)+'°',cs(P.Sol.lon)),TXT_PLANETA.Sol(sS,ESTILO[sS])+conCasa('Sol',P.Sol.lon)));
+  s.push(sec('☽&#xFE0E;',Lc.tPlaneta(C.tit.Luna,NS(sL)+' '+Math.floor(P.Luna.lon%30)+'°',cs(P.Luna.lon)),TXT_PLANETA.Luna(sL,ESTILO[sL])+conCasa('Luna',P.Luna.lon)+(sinHora?TX.moonNoTime:'')));
+  if(conHora){
+    s.push(sec('↑',Lc.tAsc(NS(sA)+' '+Math.floor(c.asc%30)+'°'),TXT_PLANETA.Asc(sA,ESTILO[sA])));
+    const rg=REGENTE[sA], rl=P[rg].lon, rc=cs(rl);
+    s.push(sec('♔',Lc.tRegente,Lc.xRegente(plNom(rg),NS(signoDe(rl)),rc,rc?C.casa[rc-1]:'')));
+  }
   ['Mercurio','Venus','Marte','Júpiter','Saturno'].forEach(n=>{ const sg=signoDe(P[n].lon), g=CUERPOS.find(x=>x[0]===n)[2];
-    s.push(sec(g+'&#xFE0E;',TX.planet(n,NOMBRE_SIGNO[sg]),TXT_PLANETA[n](sg,ESTILO[sg]))); });
-  const cuenta={fuego:0,tierra:0,aire:0,agua:0};
-  ['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno'].forEach(n=>cuenta[ELEM[signoDe(P[n].lon)%4]]++);
-  if(c.asc!=null) cuenta[ELEM[signoDe(c.asc)%4]]++;
-  const dom=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a])[0];
-  s.push(sec('✦',TX.elemTitle(dom),ELEM_TXT[dom]+TX.elemCount(cuenta)));
+    s.push(sec(g+'&#xFE0E;',Lc.tPlaneta(C.tit[n],NS(sg),cs(P[n].lon)),TXT_PLANETA[n](sg,ESTILO[sg])+conCasa(n,P[n].lon))); });
+  ['Urano','Neptuno','Plutón'].forEach(n=>{ const sg=signoDe(P[n].lon), g=CUERPOS.find(x=>x[0]===n)[2];
+    s.push(sec(g+'&#xFE0E;',Lc.tPlaneta(C.tit[n],NS(sg),cs(P[n].lon)),C.gen[n](ESTILO[sg])+conCasa(n,P[n].lon))); });
+  if(conHora){ const sm=signoDe(c.mc); s.push(sec('⛰',Lc.tMC(NS(sm)),C.mc[sm])); }
+  { const sn=signoDe(c.nodo), cn=cs(c.nodo); s.push(sec('☊&#xFE0E;',Lc.tNodo(NS(sn)),Lc.xNodo(C.nodo[sn],cn?C.casa[cn-1]:''))); }
+  { const as=aspectosDe(c).slice(0,7);
+    s.push(sec('✶',Lc.tAspectos,as.length?Lc.xAspIntro+'<br>'+as.map(a=>'• '+Lc.aspItem(plNom(a.a),C.asp[a.k].n,plNom(a.b),C.kw[a.a],C.kw[a.b],C.asp[a.k].t)).join('<br>'):Lc.xAspNone)); }
+  const cuenta={fuego:0,tierra:0,aire:0,agua:0}, mcu={cardinal:0,fijo:0,mutable:0};
+  ['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno'].forEach(n=>{ const sg=signoDe(P[n].lon); cuenta[ELEM[sg%4]]++; mcu[MODAL[sg%3]]++; });
+  if(conHora){ cuenta[ELEM[sA%4]]++; mcu[MODAL[sA%3]]++; }
+  const dom=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a])[0], mdom=Object.keys(mcu).sort((a,b)=>mcu[b]-mcu[a])[0];
+  s.push(sec('◈',Lc.tElem,Lc.xElem(ELEM_TXT[dom],TX.elemCount(cuenta).replace(/^\s*\(|\)\s*$/g,''),C.mod[mdom],Lc.mcuenta(mcu))));
+  { const rs=c.pos.filter(p=>p.retro&&!['Urano','Neptuno','Plutón'].includes(p.n)); s.push(sec('℞',Lc.tRetro,rs.length?rs.map(p=>C.retro[p.n]).join('<br>'):Lc.xRetroNone)); }
+  s.push(sec('🔮',Lc.tSintesis,Lc.xSintesis(NS(sS),NS(sL),Lc.elemNom[dom],pn)));
+  const regalo=document.getElementById('cpreg').checked, de=document.getElementById('cpde').value.trim(), ded=document.getElementById('cpded').value.trim();
   const kC=[_norm(nombre),y,mm,dd,sinHora?'-':hh+':'+mi,ciudadSel.city,ciudadSel.country].join('|');
-  _ultima.carta={k:kC,datos:{nombre,dd,mm,y,hh,mi,sinHora,ciudad:ciudadSel}};
+  _ultima.carta={k:kC,datos:{nombre,dd,mm,y,hh,mi,sinHora,ciudad:ciudadSel,regalo,de,ded}};
+  const fTxt=`${dd}/${mm}/${y}${sinHora?'':` ${String(hh).padStart(2,'0')}:${String(mi).padStart(2,'0')}`}`;
+  _cartaPDF={L:{secciones:s},nombre,fecha:fTxt,lugar:nombreCiudad(ciudadSel),regalo:regalo?{de,ded}:null,Lx:Lc,rueda:c};
   const premium=esPremium()||comprado('carta',kC), box=document.getElementById('cres');
   box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:4px">${TX.chartTitle(pn)}</h2>
     <p class="sub" style="margin-bottom:6px">${dd}/${mm}/${y}${sinHora?'':` · ${String(hh).padStart(2,'0')}:${String(mi).padStart(2,'0')}`} · ${nombreCiudad(ciudadSel)}</p>`+
     ruedaHTML(c)+
     s.map((x,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)"><div class="al" style="color:var(--gold)"><span>${x.i}</span> ${x.t}</div><p class="at">${x.x}</p></div>`).join('')+
-    (premium?'':paywall(TX.pwChart,'carta'));
+    (premium?`<button class="bp w" id="pdfbtn2" onclick="descargarPDF('carta')">⬇ ${Lc.pdfBoton}</button>`:paywall(TX.pwChart,'carta'));
   box.style.display='flex'; sndReveal&&sndReveal();
   setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
@@ -4377,7 +4787,8 @@ async function initPagos(){
   }else{
     verCarta(); document.getElementById('cnom').value=d.nombre; document.getElementById('cdia').value=d.dd; document.getElementById('cmes').value=d.mm; document.getElementById('canyo').value=d.y;
     document.getElementById('csinhora').checked=d.sinHora; document.getElementById('chh').value=d.sinHora?'':d.hh; document.getElementById('cmi').value=d.sinHora?'':d.mi;
-    ciudadSel=d.ciudad; document.getElementById('clug').value=nombreCiudad(d.ciudad); generarCarta();
+    ciudadSel=d.ciudad; document.getElementById('clug').value=nombreCiudad(d.ciudad);
+    document.getElementById('cpreg').checked=!!d.regalo; document.getElementById('cpde').value=d.de||''; document.getElementById('cpded').value=d.ded||''; toggleRegalo('c'); generarCarta();
   }
 }
 const S_ES={
@@ -4416,7 +4827,7 @@ const S_ES={
   elemTitle:e=>`Tu elemento dominante: ${e}`,
   elemCount:c=>` (fuego ${c.fuego} · tierra ${c.tierra} · aire ${c.aire} · agua ${c.agua})`,
   chartTitle:pn=>`La carta astral de ${pn}`,
-  pwChart:{t:'✦ Carta astral completa · Premium',p:'Desbloquea tu Luna, tu Ascendente, tus planetas personales y tu elemento dominante.',b:'Desbloquear · próximamente',alert:'Muy pronto podrás desbloquear tu carta astral completa.'},
+  pwChart:{t:'✦ Carta astral completa · Premium',p:'Desbloquea tu informe completo: cada planeta en su signo y su casa, tu Ascendente y su regente, tu Medio Cielo, tu Nodo Norte, tus aspectos, tus elementos y modalidades y tus retrógrados. Incluye tu carta en PDF con la rueda de tu cielo, para guardar o regalar.',b:'Desbloquear · próximamente',alert:'Muy pronto podrás desbloquear tu carta astral completa.'},
   get updated(){ return 'Última actualización: '+ACTUALIZADO; }
 };
 let TX=S_ES;
@@ -4454,7 +4865,7 @@ async function setLang(l){
   const B=l==='es'?ES_BANCOS:{...P,M:ES_BANCOS.M.map(m=>({...m,...P.M[m.id]}))};
   M=B.M; ZD=B.ZD; L_TAROT=B.L_TAROT; L_RUNAS=B.L_RUNAS; L_TRIG=B.L_TRIG; D_ICHING=B.D_ICHING; L_CRISTAL=B.L_CRISTAL; D_CRISTAL=B.D_CRISTAL;
   L_ASTRO=B.L_ASTRO; TEMAS=B.TEMAS; TONOS=B.TONOS; NUMS=B.NUMS; ANYO=B.ANYO; RITUALES=B.RITUALES; ESTILO=B.ESTILO; ELEM_TXT=B.ELEM_TXT;
-  TXT_PLANETA=B.TXT_PLANETA; NOMBRE_SIGNO=B.NOMBRE_SIGNO; PER=l==='es'?PERSONAL_ES:P.PERSONAL;
+  TXT_PLANETA=B.TXT_PLANETA; NOMBRE_SIGNO=B.NOMBRE_SIGNO; PER=l==='es'?PERSONAL_ES:P.PERSONAL; CAR=l==='es'?CARTA_ES:P.CARTA; PLN=l==='es'?null:P.PLANETA;
   TX=l==='es'?S_ES:P.S;
   document.documentElement.lang=l;
   document.documentElement.dir=(P&&P.dir)||'ltr';
