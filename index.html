@@ -4308,8 +4308,8 @@ function generarPersonal(){
   const premium=esPremium()||comprado('personal',kP), box=document.getElementById('pres');
   box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:14px">${TX.personalTitle(L.pn)}</h2>`+
     L.secciones.map((s,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)">
-      <div class="al" style="color:var(--gold)"><span>${s.i}</span> ${s.t}</div><p class="at">${s.x}</p></div>`).join('')+
-    (premium?`<button class="bp w" id="pdfbtn" onclick="descargarPDF()">⬇ ${PER.L.pdfBoton}</button>`:paywall(TX.pwPersonal,'personal'));
+      <div class="al" style="color:var(--gold)"><span>${s.i}</span> ${s.t}</div><p class="at">${s.x}</p></div>`+(!premium&&i===0?paywall(TX.pwPersonal,'personal'):'')).join('')+
+    (premium?`<button class="bp w" id="pdfbtn" onclick="descargarPDF()">⬇ ${PER.L.pdfBoton}</button>`:'');
   box.style.display='flex'; sndReveal&&sndReveal();
   setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
@@ -4630,8 +4630,8 @@ async function generarCarta(){
   box.innerHTML=`<h2 class="tf" style="text-align:center;color:var(--p3);font-size:1.3rem;margin-bottom:4px">${TX.chartTitle(pn)}</h2>
     <p class="sub" style="margin-bottom:6px">${dd}/${mm}/${y}${sinHora?'':` · ${String(hh).padStart(2,'0')}:${String(mi).padStart(2,'0')}`} · ${nombreCiudad(ciudadSel)}</p>`+
     ruedaHTML(c)+
-    s.map((x,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)"><div class="al" style="color:var(--gold)"><span>${x.i}</span> ${x.t}</div><p class="at">${x.x}</p></div>`).join('')+
-    (premium?`<button class="bp w" id="pdfbtn2" onclick="descargarPDF('carta')">⬇ ${Lc.pdfBoton}</button>`:paywall(TX.pwChart,'carta'));
+    s.map((x,i)=>`<div class="ac on ${!premium&&i>0?'bloq':''}" style="--lc:var(--gold)"><div class="al" style="color:var(--gold)"><span>${x.i}</span> ${x.t}</div><p class="at">${x.x}</p></div>`+(!premium&&i===0?paywall(TX.pwChart,'carta'):'')).join('')+
+    (premium?`<button class="bp w" id="pdfbtn2" onclick="descargarPDF('carta')">⬇ ${Lc.pdfBoton}</button>`:'');
   box.style.display='flex'; sndReveal&&sndReveal();
   setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
