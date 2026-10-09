@@ -300,6 +300,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .cur-lista{list-style:none;padding:0;margin:0}
 .cur-lista li{color:#e6dcf7;font-size:.97rem;line-height:1.5;padding:5px 0 5px 22px;position:relative;border-bottom:1px solid #8b5cf622}
 .cur-lista li::before{content:'✦';position:absolute;left:2px;color:#fde68a;font-size:.8rem;top:7px}
+.cur-nota{color:#c4b5fd;font-size:.85rem;text-align:center;margin-top:12px;font-style:italic}
+#guia-compra .pwc{margin-top:8px}#guia-compra .bp{margin-top:10px}
+.guia-ok{text-align:center;margin-top:12px}.guia-ok p{color:#e6dcf7;margin-bottom:8px}.guia-ok .bp{display:inline-block;text-decoration:none}
 .cur-pie{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;flex-wrap:wrap}
 .cur-precio{font-family:'Cinzel',serif;font-size:1.5rem;color:#fde68a}.cur-pie .prox{margin-top:0}
 .shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;max-width:760px;width:100%}
@@ -627,7 +630,8 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
       <li>Cómo formular la pregunta y unir el mensaje de las cartas.</li>
       <li>Ejercicios prácticos para leer desde el primer día.</li>
     </ul>
-    <div class="cur-pie"><span class="cur-precio">47 €</span><span class="prox">Próximamente</span></div>
+    <p class="cur-nota">PDF de 68 páginas · Guía en español</p>
+    <div id="guia-compra"></div>
   </div>
   <div class="shop" style="margin-top:12px"><div class="prod"><div class="pi">✋</div><h3>Guía de quiromancia</h3><p>Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.</p><span class="prox">Próximamente</span></div></div>
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
@@ -703,6 +707,12 @@ const UI={
 "Cursos":"Courses",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Learn with Tara. Our first courses are opening very soon.",
 "Curso de tarot":"Tarot course",
+"PDF de 68 páginas · Guía en español":"68-page PDF · Guide in Spanish",
+"Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.":"You already have your guide. You can download it whenever you like from this device.",
+"Descargar mi guía (PDF)":"Download my guide (PDF)",
+"Quiero descargar la guía de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"I want to download the guide immediately and I accept that, once I receive it, I lose my right of withdrawal.",
+"Comprar la guía":"Buy the guide",
+"Pago confirmado. ¡Ya puedes descargar tu guía!":"Payment confirmed. You can now download your guide!",
 "Aprende con Tara, a tu ritmo y desde casa.":"Learn with Tara, at your own pace and from home.",
 "Guía descargable":"Downloadable guide",
 "Guía de Tarot de Tara":"Tara's Tarot Guide",
@@ -1458,6 +1468,12 @@ const UI={
 "Cursos":"Corsi",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Impara con Tara. I nostri primi corsi apriranno molto presto.",
 "Curso de tarot":"Corso di tarocchi",
+"PDF de 68 páginas · Guía en español":"PDF di 68 pagine · Guida in spagnolo",
+"Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.":"Hai già la tua guida. Puoi scaricarla quando vuoi da questo dispositivo.",
+"Descargar mi guía (PDF)":"Scarica la mia guida (PDF)",
+"Quiero descargar la guía de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Voglio scaricare subito la guida e accetto che, ricevendola, perdo il diritto di recesso.",
+"Comprar la guía":"Acquista la guida",
+"Pago confirmado. ¡Ya puedes descargar tu guía!":"Pagamento confermato. Ora puoi scaricare la tua guida!",
 "Aprende con Tara, a tu ritmo y desde casa.":"Impara con Tara, ai tuoi tempi e da casa.",
 "Guía descargable":"Guida scaricabile",
 "Guía de Tarot de Tara":"La Guida ai Tarocchi di Tara",
@@ -2213,6 +2229,12 @@ const UI={
 "Cursos":"Cursos",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Aprenda com a Tara. Muito em breve abriremos os nossos primeiros cursos.",
 "Curso de tarot":"Curso de tarô",
+"PDF de 68 páginas · Guía en español":"PDF de 68 páginas · Guia em espanhol",
+"Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.":"Você já tem o seu guia. Pode descarregá-lo quando quiser a partir deste dispositivo.",
+"Descargar mi guía (PDF)":"Descarregar o meu guia (PDF)",
+"Quiero descargar la guía de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Quero descarregar o guia de imediato e aceito que, ao recebê-lo, perco o direito de arrependimento.",
+"Comprar la guía":"Comprar o guia",
+"Pago confirmado. ¡Ya puedes descargar tu guía!":"Pagamento confirmado. Já pode descarregar o seu guia!",
 "Aprende con Tara, a tu ritmo y desde casa.":"Aprenda com a Tara, no seu ritmo e em casa.",
 "Guía descargable":"Guia para descarregar",
 "Guía de Tarot de Tara":"O Guia de Tarô da Tara",
@@ -3179,7 +3201,7 @@ function pintarMetodos(){
 pintarMetodos();
 
 /* ── NAV ── */
-function goTo(id){
+function goTo(id){ if(id==='s-cursos') setTimeout(pintarGuia,0);
   document.querySelectorAll('.scr').forEach(s=>s.classList.add('off'));
   const s=document.getElementById(id);
   s.classList.remove('off'); s.style.animation='fu .5s ease forwards';
@@ -4805,7 +4827,8 @@ function T(s){ return LANG==='es'?s:((PACKS[LANG]&&PACKS[LANG].UI[s])??s); }
    https://TU-WEB/?pago={CHECKOUT_SESSION_ID} */
 const PAGOS={
   personal:{link:'https://buy.stripe.com/test_00w4gt3G20RWcx07hn4F206',precio:'4,99 €'},
-  carta:{link:'https://buy.stripe.com/test_14A4gt7Wiasw8gKgRX4F203',precio:'6,99 €'}
+  carta:{link:'https://buy.stripe.com/test_14A4gt7Wiasw8gKgRX4F203',precio:'6,99 €'},
+  guia:{link:'https://buy.stripe.com/test_28EdR3ccygQUcx03174F208',precio:'47 €'}
 };
 const paywall=(P,prod)=>{
   const cfg=PAGOS[prod];
@@ -4831,6 +4854,21 @@ function pagar(prod){
   try{ localStorage.setItem('arc_pend',JSON.stringify({ref,p:prod,k:u.k,datos:u.datos,lang:LANG,t:Date.now(),acepta:{edad18:true,desistimiento:true,fecha:new Date().toISOString()}})); }catch(x){}
   location.href=PAGOS[prod].link+(PAGOS[prod].link.includes('?')?'&':'?')+'client_reference_id='+ref;
 }
+
+/* ═══ GUÍA DE TAROT (producto descargable) ═══ */
+function pintarGuia(){
+  const box=document.getElementById('guia-compra'); if(!box) return;
+  const c=compras().find(x=>x.p==='guia');
+  if(c){ box.innerHTML=`<div class="guia-ok"><p>${T('Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.')}</p><a class="bp" href="/api/guia?${/^cs_/.test(c.id)?'id':'ref'}=${encodeURIComponent(c.id)}">⬇ ${T('Descargar mi guía (PDF)')}</a></div>`; return; }
+  if(!PAGOS.guia.link){ box.innerHTML=`<div class="cur-pie"><span class="cur-precio">${PAGOS.guia.precio}</span><span class="prox">${T('Próximamente')}</span></div>`; return; }
+  _ultima.guia={k:'guia',datos:{}};
+  box.innerHTML=`<div class="cur-pie"><span class="cur-precio">${PAGOS.guia.precio}</span></div>
+  <label class="pwc"><input type="checkbox" id="pw18-guia"> <span>${T('Soy mayor de 18 años.')}</span></label>
+  <label class="pwc"><input type="checkbox" id="pwdes-guia"> <span>${T('Quiero descargar la guía de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.')}</span></label>
+  <p class="pwerr" id="pwerr-guia"></p>
+  <button class="bp w" onclick="pagar('guia')">${T('Comprar la guía')} · ${PAGOS.guia.precio}</button>
+  <p class="pwleg">${T('Pago seguro con Stripe.')} <a onclick="verLegal('condiciones')">${T('Condiciones de contratación')}</a></p>`;
+}
 function avisoPago(t,ms){ const m=document.getElementById('pagomsg'); m.textContent=t; m.style.display='block'; clearTimeout(avisoPago._t); if(ms) avisoPago._t=setTimeout(()=>m.style.display='none',ms); }
 /* Al volver de Stripe: ?pago=cs_... → se comprueba en el servidor y se desbloquea la lectura */
 async function initPagos(){
@@ -4844,7 +4882,9 @@ async function initPagos(){
   if(!r||!r.pagado||!pend||(r.producto&&r.producto!==pend.p)){
     avisoPago(T('No hemos podido confirmar el pago. Si se te ha cobrado, escríbenos a')+' '+TITULAR.email,12000); return;
   }
-  const c=compras(); if(!comprado(pend.p,pend.k)) c.push({p:pend.p,k:pend.k,id}); try{ localStorage.setItem('arc_compras',JSON.stringify(c)); localStorage.removeItem('arc_pend'); }catch(e){}
+  const sid=(r.id&&/^cs_/.test(r.id))?r.id:(/^cs_/.test(id)?id:pend.ref);
+  const c=compras(); if(!comprado(pend.p,pend.k)) c.push({p:pend.p,k:pend.k,id:sid}); try{ localStorage.setItem('arc_compras',JSON.stringify(c)); localStorage.removeItem('arc_pend'); }catch(e){}
+  if(pend.p==='guia'){ avisoPago(T('Pago confirmado. ¡Ya puedes descargar tu guía!'),8000); goTo('s-cursos'); pintarGuia(); return; }
   avisoPago(T('Pago confirmado. ¡Aquí tienes tu lectura completa!'),6000);
   const d=pend.datos;
   if(pend.p==='personal'){
@@ -5049,6 +5089,7 @@ function showResp(ans,m){
     if(sig&&el.value.length===len) document.getElementById(sig).focus(); });
 });
 initIdioma();
+pintarGuia();
 initPagos();
 initCarta();
 initAviso();
