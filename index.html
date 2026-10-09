@@ -291,6 +291,17 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   border-radius:11px;padding:12px 16px;color:#f7eedf;cursor:pointer;font-family:'EB Garamond',serif;font-size:1.05rem}
 .rec small{color:#e6c98f;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase}
 .rec span:last-child{margin-left:auto;color:#fde68a}
+.curso{background:linear-gradient(160deg,#241046,#160830);border:1px solid #fde68a66;border-radius:14px;padding:20px 18px;max-width:560px;width:100%;box-shadow:0 0 28px #7c3aed33}
+.cur-top{display:flex;gap:14px;align-items:center}.cur-top .pi{font-size:2.4rem}
+.cur-tipo{display:inline-block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#c4b5fd}
+.curso h3{font-family:'Cinzel',serif;color:#fff4e0;font-size:1.15rem;letter-spacing:.05em;margin-top:2px}
+.cur-desc{color:#e6dcf7;font-size:1rem;line-height:1.6;margin:12px 0 10px}
+.cur-h{font-family:'Cinzel',serif;color:#fde68a;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.cur-lista{list-style:none;padding:0;margin:0}
+.cur-lista li{color:#e6dcf7;font-size:.97rem;line-height:1.5;padding:5px 0 5px 22px;position:relative;border-bottom:1px solid #8b5cf622}
+.cur-lista li::before{content:'✦';position:absolute;left:2px;color:#fde68a;font-size:.8rem;top:7px}
+.cur-pie{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;flex-wrap:wrap}
+.cur-precio{font-family:'Cinzel',serif;font-size:1.5rem;color:#fde68a}.cur-pie .prox{margin-top:0}
 .shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;max-width:760px;width:100%}
 .prod{background:#1a0a3a;border:1px solid #8b5cf666;border-radius:12px;padding:18px 16px;text-align:center}
 .prod .pi{font-size:2rem}.prod h3{font-family:'Cinzel',serif;color:#fff4e0;font-size:.95rem;letter-spacing:.06em;margin:8px 0 6px}
@@ -603,8 +614,22 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 <div class="scr top off" id="s-cursos">
   <div class="divl"><span>✦</span></div>
   <h2 class="tf" style="font-size:clamp(1.1rem,3vw,1.8rem);color:var(--p3);text-align:center;margin-bottom:8px">Cursos</h2>
-  <p class="sub">Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.</p>
-  <div class="shop"><div class="prod"><div class="pi">🃏</div><h3>Curso de tarot</h3><p>Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.</p><span class="prox">Próximamente</span></div><div class="prod"><div class="pi">✋</div><h3>Curso de quiromancia</h3><p>Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.</p><span class="prox">Próximamente</span></div></div>
+  <p class="sub">Aprende con Tara, a tu ritmo y desde casa.</p>
+  <div class="curso">
+    <div class="cur-top"><div class="pi">🃏</div><div><span class="cur-tipo">Guía descargable</span><h3>Guía de Tarot de Tara</h3></div></div>
+    <p class="cur-desc">Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.</p>
+    <p class="cur-h">Qué vas a aprender</p>
+    <ul class="cur-lista">
+      <li>Los 78 arcanos: su significado al derecho y al revés.</li>
+      <li>Los 22 Arcanos Mayores y el viaje del Loco.</li>
+      <li>Los cuatro palos de los Arcanos Menores y las cartas de la corte.</li>
+      <li>Tiradas paso a paso: una carta, tres cartas y la Cruz Celta.</li>
+      <li>Cómo formular la pregunta y unir el mensaje de las cartas.</li>
+      <li>Ejercicios prácticos para leer desde el primer día.</li>
+    </ul>
+    <div class="cur-pie"><span class="cur-precio">47 €</span><span class="prox">Próximamente</span></div>
+  </div>
+  <div class="shop" style="margin-top:12px"><div class="prod"><div class="pi">✋</div><h3>Guía de quiromancia</h3><p>Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.</p><span class="prox">Próximamente</span></div></div>
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
 </div>
 
@@ -678,6 +703,18 @@ const UI={
 "Cursos":"Courses",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Learn with Tara. Our first courses are opening very soon.",
 "Curso de tarot":"Tarot course",
+"Aprende con Tara, a tu ritmo y desde casa.":"Learn with Tara, at your own pace and from home.",
+"Guía descargable":"Downloadable guide",
+"Guía de Tarot de Tara":"Tara's Tarot Guide",
+"Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"Your complete guide to learning to read tarot from scratch, step by step and at your own pace.",
+"Qué vas a aprender":"What you will learn",
+"Los 78 arcanos: su significado al derecho y al revés.":"All 78 cards: their upright and reversed meanings.",
+"Los 22 Arcanos Mayores y el viaje del Loco.":"The 22 Major Arcana and the Fool's journey.",
+"Los cuatro palos de los Arcanos Menores y las cartas de la corte.":"The four suits of the Minor Arcana and the court cards.",
+"Tiradas paso a paso: una carta, tres cartas y la Cruz Celta.":"Step-by-step spreads: one card, three cards and the Celtic Cross.",
+"Cómo formular la pregunta y unir el mensaje de las cartas.":"How to ask the question and weave the cards' message together.",
+"Ejercicios prácticos para leer desde el primer día.":"Practical exercises to start reading from day one.",
+"Guía de quiromancia":"Palmistry guide",
 "Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.":"Learn the meaning of the 22 Major Arcana and how to do your own spreads.",
 "Curso de quiromancia":"Palmistry course",
 "Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.":"Discover what the lines of the hand reveal: life, heart, head and fate.",
@@ -1421,6 +1458,18 @@ const UI={
 "Cursos":"Corsi",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Impara con Tara. I nostri primi corsi apriranno molto presto.",
 "Curso de tarot":"Corso di tarocchi",
+"Aprende con Tara, a tu ritmo y desde casa.":"Impara con Tara, ai tuoi tempi e da casa.",
+"Guía descargable":"Guida scaricabile",
+"Guía de Tarot de Tara":"La Guida ai Tarocchi di Tara",
+"Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"La tua guida completa per imparare a leggere i tarocchi da zero, passo dopo passo e ai tuoi tempi.",
+"Qué vas a aprender":"Cosa imparerai",
+"Los 78 arcanos: su significado al derecho y al revés.":"I 78 arcani: il loro significato dritto e capovolto.",
+"Los 22 Arcanos Mayores y el viaje del Loco.":"I 22 Arcani Maggiori e il viaggio del Matto.",
+"Los cuatro palos de los Arcanos Menores y las cartas de la corte.":"I quattro semi degli Arcani Minori e le figure di corte.",
+"Tiradas paso a paso: una carta, tres cartas y la Cruz Celta.":"Stese passo dopo passo: una carta, tre carte e la Croce Celtica.",
+"Cómo formular la pregunta y unir el mensaje de las cartas.":"Come formulare la domanda e unire il messaggio delle carte.",
+"Ejercicios prácticos para leer desde el primer día.":"Esercizi pratici per leggere fin dal primo giorno.",
+"Guía de quiromancia":"Guida alla chiromanzia",
 "Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.":"Impara il significato dei 22 Arcani Maggiori e a fare le tue stese.",
 "Curso de quiromancia":"Corso di chiromanzia",
 "Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.":"Scopri cosa raccontano le linee della mano: vita, cuore, testa e destino.",
@@ -2164,6 +2213,18 @@ const UI={
 "Cursos":"Cursos",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Aprenda com a Tara. Muito em breve abriremos os nossos primeiros cursos.",
 "Curso de tarot":"Curso de tarô",
+"Aprende con Tara, a tu ritmo y desde casa.":"Aprenda com a Tara, no seu ritmo e em casa.",
+"Guía descargable":"Guia para descarregar",
+"Guía de Tarot de Tara":"O Guia de Tarô da Tara",
+"Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"O seu guia completo para aprender a ler o tarô do zero, passo a passo e no seu ritmo.",
+"Qué vas a aprender":"O que você vai aprender",
+"Los 78 arcanos: su significado al derecho y al revés.":"Os 78 arcanos: o seu significado na posição normal e invertida.",
+"Los 22 Arcanos Mayores y el viaje del Loco.":"Os 22 Arcanos Maiores e a jornada do Louco.",
+"Los cuatro palos de los Arcanos Menores y las cartas de la corte.":"Os quatro naipes dos Arcanos Menores e as cartas da corte.",
+"Tiradas paso a paso: una carta, tres cartas y la Cruz Celta.":"Tiragens passo a passo: uma carta, três cartas e a Cruz Celta.",
+"Cómo formular la pregunta y unir el mensaje de las cartas.":"Como formular a pergunta e unir a mensagem das cartas.",
+"Ejercicios prácticos para leer desde el primer día.":"Exercícios práticos para ler desde o primeiro dia.",
+"Guía de quiromancia":"Guia de quiromancia",
 "Aprende el significado de los 22 Arcanos Mayores y a hacer tus propias tiradas.":"Aprenda o significado dos 22 Arcanos Maiores e a fazer as suas próprias tiragens.",
 "Curso de quiromancia":"Curso de quiromancia",
 "Descubre lo que cuentan las líneas de la mano: vida, corazón, cabeza y destino.":"Descubra o que as linhas da mão revelam: vida, coração, cabeça e destino.",
