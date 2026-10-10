@@ -437,6 +437,14 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 #fugaces .pv{position:absolute;bottom:-8px;border-radius:50%;opacity:0;animation:pv var(--d) linear var(--dl) infinite}
 @keyframes pv{0%{transform:translate(0,0);opacity:0}12%{opacity:.85}50%{transform:translate(var(--x),-55vh)}85%{opacity:.6}100%{transform:translate(calc(var(--x) * -.6),-108vh);opacity:0}}
 @media (prefers-reduced-motion:reduce){#fugaces .tw{animation:none;opacity:.5}#fugaces .pv{display:none}}
+/* ── ORDENADOR Y MÓVIL: campos de datos y botón «Volver» bien visibles ── */
+.inp{background:#1a0a3a!important;border:1px solid #8b5cf6aa!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;caret-color:#fde68a}
+.inp:focus{border-color:#c084fc!important;box-shadow:0 0 0 3px #a855f733,0 0 14px #a855f744;outline:none}
+.inp::placeholder{color:#b9a3e0!important;-webkit-text-fill-color:#b9a3e0!important;opacity:1}
+select.inp option{background:#1a0a3a;color:#fff}
+label.hf{color:#e6c98f!important}
+.bt{color:#d8c4fb!important;font-size:.9rem!important;padding:8px 16px;border:1px solid #8b5cf666!important;border-radius:999px!important;background:#1a0a3a99!important;transition:border-color .2s,color .2s}
+.bt:hover{color:#fff!important;border-color:#c084fc!important}
 /* Esfera de la portada: al tocarla, explosión y aparece el gato negro */
 #s-intro .orb{cursor:pointer}
 .gato{position:absolute;left:50%;top:50%;width:150px;transform:translate(-50%,-54%);pointer-events:none;opacity:0;z-index:4;overflow:visible;
