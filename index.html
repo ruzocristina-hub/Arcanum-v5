@@ -4888,7 +4888,7 @@ function pagar(prod){
 function pintarProd(prod,boxId){
   const box=document.getElementById(boxId); if(!box) return; const cfg=PAGOS[prod];
   const c=compras().find(x=>x.p===prod);
-  if(c){ box.innerHTML=`<div class="guia-ok"><p>${T('Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.')}</p><a class="bp" href="/api/guia?${/^cs_/.test(c.id)?'id':'ref'}=${encodeURIComponent(c.id)}&lang=${LANG}">⬇ ${T('Descargar mi guía (PDF)')}</a></div>`; return; }
+  if(c){ box.innerHTML=`<div class="guia-ok"><p>${T('Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.')}</p><a class="bp" href="/api/guia?${/^cs_/.test(c.id)?'id':'ref'}=${encodeURIComponent(c.id)}&lang=${LANG}" onclick="this.href=this.href.replace(/lang=[a-z]+/,'lang='+LANG)">⬇ ${T('Descargar mi guía (PDF)')}</a></div>`; return; }
   if(!cfg.link){ box.innerHTML=`<div class="cur-pie"><span class="cur-precio">${cfg.precio}</span><span class="prox">${T('Próximamente')}</span></div>`; return; }
   _ultima[prod]={k:prod,datos:{}};
   box.innerHTML=`<div class="cur-pie"><span class="cur-precio">${cfg.precio}</span></div>
@@ -5007,7 +5007,7 @@ async function setLang(l){
   document.documentElement.lang=l;
   document.documentElement.dir=(P&&P.dir)||'ltr';
   document.title='Tara';
-  traducirDOM(); pintarMetodos();
+  traducirDOM(); pintarMetodos(); pintarGuia();
   if(selM){ const m=M.find(x=>x.id===selM); if(m){ document.getElementById('mt').textContent=m.name; document.getElementById('ms').textContent=m.desc; document.getElementById('mc').innerHTML=m.info; } }
   if(!document.getElementById('s-legal').classList.contains('off')) verLegal();
   document.getElementById('langb').textContent=l.toUpperCase()+' ▾';
