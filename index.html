@@ -5362,5 +5362,256 @@ initMic('mic','qi'); initMic('pmic','pq');
   });
 })();
 </script>
+<script>
+/* Animaciones de cada método: al tocar el símbolo en la pantalla de la pregunta
+   Tarot: lechuza entre las cartas · Runas: cuervo sobre la piedra · I Ching: dragón de humo
+   Cristal: mano de humo sobre la bola · Astrología: constelaciones que se encienden */
+(function(){
+  const po=document.getElementById('po'); if(!po||!po.animate)return;
+  const caja=po.parentElement, NS='http://www.w3.org/2000/svg';
+  const R=(a,b)=>a+Math.random()*(b-a), espera=ms=>new Promise(r=>setTimeout(r,ms));
+  let ocupada=false, capa=null;
+  const T0='translate(-50%,-50%)';
+  function nuevaCapa(){
+    if(capa)capa.remove();
+    capa=document.createElement('div');
+    capa.style.cssText='position:absolute;left:50%;top:50%;width:300px;height:300px;margin:-150px 0 0 -150px;pointer-events:none;z-index:5;overflow:visible';
+    caja.appendChild(capa); return capa;
+  }
+  const svg=(html,extra='')=>{ capa.insertAdjacentHTML('beforeend',`<svg viewBox="0 0 300 300" width="300" height="300" style="position:absolute;inset:0;overflow:visible;${extra}">${html}</svg>`); return capa.lastElementChild; };
+  const A=(el,k,o)=>el.animate(k,{fill:'forwards',easing:'ease-in-out',...o});
+  function origen(el,o){ el.style.transformBox='view-box'; el.style.transformOrigin=o; }
+  function chispas(n,x,y,dmin,dmax,cols){
+    cols=cols||['#fde68a','#e9d5ff','#c084fc','#f5d0fe'];
+    for(let i=0;i<n;i++){
+      const e=document.createElement('span'), t=R(2.5,6), c=cols[i%cols.length], a=R(0,Math.PI*2), d=R(dmin,dmax);
+      e.style.cssText=`position:absolute;left:${x}px;top:${y}px;width:${t}px;height:${t}px;margin:${-t/2}px 0 0 ${-t/2}px;border-radius:50%;background:${c};box-shadow:0 0 8px ${c}`;
+      capa.appendChild(e);
+      e.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px) scale(.2)`,opacity:0}],
+        {duration:R(1000,1800),easing:'cubic-bezier(.15,.7,.3,1)'}).onfinish=()=>e.remove();
+    }
+  }
+  function sonido(notas,tipo,vol,sep){
+    if(typeof sndOn==='undefined'||!sndOn||typeof ga!=='function')return;
+    try{ const c=ga(),t=c.currentTime;
+      notas.forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(); o.type=tipo||'sine'; o.frequency.value=f;
+        const t0=t+i*(sep||.12); g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(vol||.06,t0+.02); g.gain.exponentialRampToValueAtTime(.001,t0+1.6);
+        o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0+1.7); });
+    }catch(e){}
+  }
+  function graznido(){
+    if(typeof sndOn==='undefined'||!sndOn||typeof ga!=='function')return;
+    try{ const c=ga(),t=c.currentTime;
+      [0,.42].forEach(d=>{ const len=Math.floor(c.sampleRate*.3), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0);
+        for(let j=0;j<len;j++) x[j]=(Math.random()*2-1);
+        const s=c.createBufferSource(); s.buffer=b;
+        const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=6; f.frequency.setValueAtTime(900,t+d); f.frequency.linearRampToValueAtTime(620,t+d+.28);
+        const g=c.createGain(); g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(.35,t+d+.03); g.gain.exponentialRampToValueAtTime(.001,t+d+.3);
+        s.connect(f); f.connect(g); g.connect(c.destination); s.start(t+d); });
+    }catch(e){}
+  }
+  const bolaTenue=()=>A(po,[{transform:T0,opacity:1},{transform:T0+' scale(.8)',opacity:.3}],{duration:700});
+  const bolaVuelve=()=>A(po,[{transform:T0+' scale(.8)',opacity:.3},{transform:T0,opacity:1}],{duration:900});
+  const BRILLO='filter:drop-shadow(0 0 1.2px #d8b4fe) drop-shadow(0 0 9px #7c3aedaa)';
+
+  /* ── TAROT: la lechuza ── */
+  async function tarot(){
+    const carta=(i)=>`<g class="ct${i}"><rect x="133" y="125" width="34" height="54" rx="3" fill="#141316" stroke="#ece7df" stroke-width="2"/><path d="M150 142l2.6 6.4 6.8.5-5.2 4.4 1.7 6.6-5.9-3.6-5.9 3.6 1.7-6.6-5.2-4.4 6.8-.5z" fill="#cbd5e1"/></g>`;
+    const s=svg(`<defs><radialGradient id="lzPl" cx="45%" cy="30%" r="80%"><stop offset="0" stop-color="#3b2f45"/><stop offset=".5" stop-color="#1a1222"/><stop offset="1" stop-color="#08050c"/></radialGradient>
+<radialGradient id="lzOj" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#fff1b0"/><stop offset=".5" stop-color="#ffc53d"/><stop offset="1" stop-color="#d9771a"/></radialGradient></defs>
+${carta(0)}${carta(1)}${carta(2)}
+<g class="lz" opacity="0" style="${BRILLO}"><g class="lzv">
+ <g class="alas" opacity="0" fill="url(#lzPl)" stroke="#6b5a7a" stroke-width=".8">
+  <g class="ai"><path d="M132 140C112 120 84 116 66 124C78 128 84 134 86 140C76 140 70 146 68 152C84 148 98 150 110 158C118 160 128 156 134 150Z"/></g>
+  <g class="ad"><path d="M168 140C188 120 216 116 234 124C222 128 216 134 214 140C224 140 230 146 232 152C216 148 202 150 190 158C182 160 172 156 166 150Z"/></g></g>
+ <ellipse cx="150" cy="150" rx="25" ry="32" fill="url(#lzPl)"/>
+ <g stroke="#7c6b8c" stroke-width=".8" fill="none" opacity=".7"><path d="M140 146q4 3 8 0M152 146q4 3 8 0M144 155q4 3 8 0M136 155q4 3 8 0M156 155q4 3 8 0M140 164q4 3 8 0M152 164q4 3 8 0"/></g>
+ <g class="plegadas" fill="url(#lzPl)" stroke="#5a4a6a" stroke-width=".8"><path d="M127 138C120 152 122 170 132 180C134 166 134 150 131 138Z"/><path d="M173 138C180 152 178 170 168 180C166 166 166 150 169 138Z"/></g>
+ <g fill="#c9a24a"><path d="M143 181l-3 5M146 181v6M149 181l2 5M152 181l-2 5M155 181v6M158 181l3 5" stroke="#c9a24a" stroke-width="1.6" stroke-linecap="round"/></g>
+ <g class="cabeza">
+  <path fill="url(#lzPl)" d="M132 118L127 98L141 110ZM168 118L173 98L159 110Z"/>
+  <ellipse cx="150" cy="120" rx="24" ry="19" fill="url(#lzPl)"/>
+  <circle cx="140" cy="120" r="10.5" fill="#241a2e" stroke="#6b5a7a" stroke-width=".8"/><circle cx="160" cy="120" r="10.5" fill="#241a2e" stroke="#6b5a7a" stroke-width=".8"/>
+  <g class="ojos" style="filter:drop-shadow(0 0 3px #ffc53d)"><circle cx="140" cy="120" r="6.4" fill="url(#lzOj)"/><circle cx="160" cy="120" r="6.4" fill="url(#lzOj)"/>
+   <circle class="pu" cx="140" cy="120" r="3.1" fill="#050208"/><circle class="pu" cx="160" cy="120" r="3.1" fill="#050208"/><circle cx="141.6" cy="118" r="1.1" fill="#fff"/><circle cx="161.6" cy="118" r="1.1" fill="#fff"/></g>
+  <path d="M150 124l-3 4 3 4 3-4z" fill="#c9a24a"/>
+ </g>
+</g></g>`);
+    const q=c=>s.querySelector(c);
+    [[ '.ct0','150px 179px'],['.ct1','150px 179px'],['.ct2','150px 179px'],['.lz','150px 150px'],['.lzv','150px 150px'],['.cabeza','150px 135px'],['.ojos','150px 120px'],['.ai','132px 145px'],['.ad','168px 145px']].forEach(([c,o])=>origen(q(c),o));
+    bolaTenue(); sonido([392,523,659,784],'sine',.05,.15);
+    const ab=[['.ct0','translate(-62px,30px) rotate(-20deg)'],['.ct1','translate(0,40px)'],['.ct2','translate(62px,30px) rotate(20deg)']];
+    ab.forEach(([c,t])=>A(q(c),[{transform:'scale(.3)',opacity:0},{transform:t,opacity:1}],{duration:900,easing:'cubic-bezier(.2,.8,.3,1)'}));
+    await espera(800); chispas(24,150,150,30,90);
+    A(q('.lz'),[{opacity:0,transform:'scale(.6)',filter:'blur(6px)'},{opacity:1,transform:'scale(1)',filter:'blur(0)'}],{duration:900,easing:'ease-out'});
+    await espera(1100);
+    for(let i=0;i<2;i++){ A(q('.ojos'),[{transform:'none'},{transform:'scaleY(.1)',offset:.4},{transform:'scaleY(.1)',offset:.6},{transform:'none'}],{duration:380}); await espera(650); }
+    A(q('.cabeza'),[{transform:'none'},{transform:'rotate(-16deg)',offset:.25},{transform:'rotate(-16deg)',offset:.45},{transform:'rotate(14deg)',offset:.7},{transform:'rotate(14deg)',offset:.85},{transform:'none'}],{duration:2200});
+    s.querySelectorAll('.pu').forEach(p=>A(p,[{transform:'none'},{transform:'translateX(-2px)',offset:.25},{transform:'translateX(-2px)',offset:.45},{transform:'translateX(2px)',offset:.7},{transform:'translateX(2px)',offset:.85},{transform:'none'}],{duration:2200}));
+    await espera(2400);
+    // alza el vuelo
+    A(q('.plegadas'),[{opacity:1},{opacity:0}],{duration:200}); A(q('.alas'),[{opacity:0},{opacity:1}],{duration:200});
+    q('.ai').animate([{transform:'scaleY(1)'},{transform:'scaleY(.25) rotate(8deg)'}],{duration:240,iterations:14,direction:'alternate',easing:'ease-in-out'});
+    q('.ad').animate([{transform:'scaleY(1)'},{transform:'scaleY(.25) rotate(-8deg)'}],{duration:240,iterations:14,direction:'alternate',easing:'ease-in-out'});
+    A(q('.lzv'),[{transform:'none',opacity:1},{transform:'translate(10px,-30px) scale(.9)',opacity:1,offset:.25},{transform:'translate(120px,-170px) scale(.25)',opacity:0}],{duration:2600,easing:'ease-in'});
+    ab.forEach(([c,t])=>A(q(c),[{transform:t,opacity:1},{transform:'scale(.3)',opacity:0}],{duration:900,delay:1200,easing:'ease-in'}));
+    await espera(2300); bolaVuelve(); await espera(900);
+  }
+
+  /* ── RUNAS: el cuervo ── */
+  async function runas(){
+    const s=svg(`<defs><radialGradient id="cvPl" cx="60%" cy="30%" r="80%"><stop offset="0" stop-color="#2a3350"/><stop offset=".45" stop-color="#11131f"/><stop offset="1" stop-color="#050509"/></radialGradient>
+<radialGradient id="cvPi" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#8b8597"/><stop offset=".6" stop-color="#4a4556"/><stop offset="1" stop-color="#25212d"/></radialGradient></defs>
+<g class="piedra" opacity="0"><ellipse cx="150" cy="238" rx="30" ry="17" fill="url(#cvPi)" stroke="#9ca3af" stroke-width=".6"/>
+ <text class="runa" x="150" y="246" text-anchor="middle" font-family="serif" font-size="22" fill="#fde68a" style="filter:drop-shadow(0 0 4px #fbbf24)">ᚱ</text></g>
+<g class="cv" opacity="0" style="filter:drop-shadow(0 0 1.2px #bfdbfe) drop-shadow(0 0 8px #3b82f6aa)"><g class="cvv">
+ <g class="alas" opacity="0" fill="url(#cvPl)" stroke="#334155" stroke-width=".7"><g class="ala"><path d="M144 200C132 168 104 150 76 150C92 160 100 170 104 180C94 180 88 186 86 192C104 188 120 192 132 204Z"/></g></g>
+ <path fill="#0b0c14" d="M118 210L92 218L95 224L120 216Z"/>
+ <path fill="url(#cvPl)" d="M114 210C120 190 150 184 166 192C172 198 168 212 156 218C140 224 122 222 114 210Z"/>
+ <path class="plegada" fill="#151a2b" stroke="#334155" stroke-width=".7" d="M120 208C132 192 156 192 162 200C152 210 132 214 120 208Z"/>
+ <g stroke="#1e1b29" stroke-width="2" stroke-linecap="round"><path d="M148 218L150 226M156 216L158 226M146 226h8M154 226h8"/></g>
+ <g class="cab"><circle cx="170" cy="184" r="11" fill="url(#cvPl)"/>
+  <path d="M178 180L198 185L178 189Z" fill="#14151f"/>
+  <g class="pico"><path d="M178 188L195 189L178 192Z" fill="#14151f"/></g>
+  <circle cx="173" cy="181" r="1.8" fill="#dbeafe" style="filter:drop-shadow(0 0 2px #93c5fd)"/></g>
+</g></g>`);
+    const q=c=>s.querySelector(c);
+    [['.cv','150px 226px'],['.cvv','150px 226px'],['.cab','166px 190px'],['.pico','178px 189px'],['.ala','140px 200px'],['.runa','150px 240px']].forEach(([c,o])=>origen(q(c),o));
+    A(po,[{transform:T0,opacity:1},{transform:T0+' translateY(-26px) scale(.8)',opacity:.45}],{duration:700});
+    A(q('.piedra'),[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:800}); origen(q('.piedra'),'150px 238px');
+    q('.runa').animate([{opacity:.5},{opacity:1}],{duration:900,iterations:12,direction:'alternate'});
+    sonido([220,277,330],'triangle',.05,.2);
+    await espera(600);
+    // llega planeando
+    A(q('.alas'),[{opacity:1},{opacity:1}],{duration:10}); A(q('.plegada'),[{opacity:0},{opacity:0}],{duration:10});
+    q('.ala').animate([{transform:'scaleY(1)'},{transform:'scaleY(.3)'}],{duration:300,iterations:5,direction:'alternate',easing:'ease-in-out'});
+    A(q('.cv'),[{opacity:0},{opacity:1}],{duration:400});
+    await A(q('.cvv'),[{transform:'translate(-170px,-150px) scale(.5)'},{transform:'translate(-40px,-40px) scale(.85)',offset:.7},{transform:'none'}],{duration:1600,easing:'ease-out'}).finished;
+    A(q('.alas'),[{opacity:1},{opacity:0}],{duration:250}); A(q('.plegada'),[{opacity:0},{opacity:1}],{duration:250});
+    chispas(10,150,236,15,40,['#fde68a','#fbbf24']);
+    await espera(700);
+    // grazna dos veces
+    graznido();
+    for(let i=0;i<2;i++){
+      A(q('.cab'),[{transform:'none'},{transform:'translate(3px,-2px) rotate(-12deg)',offset:.3},{transform:'none'}],{duration:420});
+      A(q('.pico'),[{transform:'none'},{transform:'rotate(28deg)',offset:.3},{transform:'none'}],{duration:420});
+      await espera(420);
+    }
+    await espera(700);
+    A(q('.cab'),[{transform:'none'},{transform:'rotate(14deg)',offset:.3},{transform:'rotate(14deg)',offset:.75},{transform:'none'}],{duration:1600});
+    await espera(1800);
+    // se va volando
+    A(q('.alas'),[{opacity:0},{opacity:1}],{duration:150}); A(q('.plegada'),[{opacity:1},{opacity:0}],{duration:150});
+    q('.ala').animate([{transform:'scaleY(1)'},{transform:'scaleY(.25)'}],{duration:220,iterations:12,direction:'alternate',easing:'ease-in-out'});
+    A(q('.cvv'),[{transform:'none',opacity:1},{transform:'translate(30px,-20px)',opacity:1,offset:.2},{transform:'translate(170px,-190px) scale(.35)',opacity:0}],{duration:2300,easing:'ease-in'});
+    A(q('.piedra'),[{opacity:1},{opacity:0}],{duration:900,delay:1400});
+    await espera(1600);
+    A(po,[{transform:T0+' translateY(-26px) scale(.8)',opacity:.45},{transform:T0,opacity:1}],{duration:900}); await espera(900);
+  }
+
+  /* ── I CHING: el dragón de humo ── */
+  async function iching(){
+    const N=30;
+    let seg='';
+    for(let i=N-1;i>=1;i--){ const r=9-i*0.24; seg+=`<circle class="sg" r="${Math.max(r,1.6).toFixed(2)}" fill="${i%5===0?'#fde68a':'#34d399'}" opacity="${(0.9-i*0.022).toFixed(2)}"/>`; }
+    const s=svg(`<g style="filter:blur(.6px) drop-shadow(0 0 6px #10b981)">${seg}</g>
+<g class="humo"></g>
+<g class="cabeza" style="filter:drop-shadow(0 0 5px #34d399)">
+ <path d="M-4 -8C6 -10 16 -9 23 -4L29 0L23 4C16 9 6 10 -4 8Z" fill="#10b981" stroke="#a7f3d0" stroke-width=".8"/>
+ <path d="M23 -4L31 -2L23 1Z" fill="#fde68a"/>
+ <path d="M6 -8L-6 -19L10 -9M12 -7L4 -17L15 -7" stroke="#fde68a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+ <circle cx="15" cy="-3" r="1.8" fill="#fef08a" style="filter:drop-shadow(0 0 2px #fde047)"/>
+ <path d="M26 3C22 12 12 16 0 15M24 -3C20 -12 10 -16 -2 -15" stroke="#fde68a" stroke-width=".8" fill="none"/>
+</g>`);
+    const segs=[...s.querySelectorAll('.sg')].reverse(), cab=s.querySelector('.cabeza'), humo=s.querySelector('.humo');
+    sonido([294,370,440,587],'sine',.05,.18);
+    A(po,[{transform:T0,opacity:1},{transform:T0+' scale(.85)',opacity:.6}],{duration:700});
+    const DUR=6200, t0=performance.now(), hist=[];
+    const pos=t=>{ // sale de la bola, rodea dos veces y sube
+      const k=Math.min(t/DUR,1), ang=-Math.PI/2+k*Math.PI*4.2;
+      const rad=k<.15?20+k/.15*72:k<.8?92+Math.sin(k*18)*6:92+(k-.8)/.2*40;
+      const y=150+Math.sin(ang)*rad*.92-(k>.8?(k-.8)/.2*90:0);
+      return [150+Math.cos(ang)*rad, y];
+    };
+    let ult=0;
+    await new Promise(fin=>{ (function paso(now){
+      const t=now-t0; const [x,y]=pos(t); hist.unshift([x,y]); if(hist.length>N*3) hist.pop();
+      const op=t<400?t/400:t>DUR-900?Math.max(0,(DUR-t)/900):1;
+      const [px,py]=hist[Math.min(2,hist.length-1)];
+      cab.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(Math.atan2(y-py,x-px)*180/Math.PI).toFixed(1)})`); cab.style.opacity=op;
+      segs.forEach((c,i)=>{ const h=hist[Math.min((i+1)*3,hist.length-1)]; c.setAttribute('cx',h[0].toFixed(1)); c.setAttribute('cy',(h[1]+Math.sin(t/180+i*.6)*1.8).toFixed(1)); c.style.opacity=op; });
+      if(t-ult>90){ ult=t; const h=hist[hist.length-1]; const c=document.createElementNS(NS,'circle');
+        c.setAttribute('cx',h[0]); c.setAttribute('cy',h[1]); c.setAttribute('r',R(4,8)); c.setAttribute('fill','#d1fae5'); c.style.filter='blur(3px)'; humo.appendChild(c);
+        c.animate([{opacity:.45,transform:'translate(0,0)'},{opacity:0,transform:`translate(${R(-10,10)}px,-24px)`}],{duration:1400,easing:'ease-out'}).onfinish=()=>c.remove(); }
+      if(t<DUR) requestAnimationFrame(paso); else fin();
+    })(t0); });
+    chispas(18,150,40,20,60,['#34d399','#fde68a','#a7f3d0']);
+    A(po,[{transform:T0+' scale(.85)',opacity:.6},{transform:T0,opacity:1}],{duration:900}); await espera(900);
+  }
+
+  /* ── CRISTAL: la mano de humo ── */
+  async function cristal(){
+    const s=svg(`<defs><linearGradient id="mnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5f3ff" stop-opacity="0"/><stop offset=".45" stop-color="#ede9fe" stop-opacity=".55"/><stop offset="1" stop-color="#ffffff" stop-opacity=".8"/></linearGradient></defs>
+<g class="humo"></g>
+<g class="mano" opacity="0" style="filter:blur(1px) drop-shadow(0 0 8px #e9d5ff) drop-shadow(0 0 18px #a855f7aa)"><g class="mm" opacity=".85"><path fill="url(#mnG)" d="M139 -14C138 14 136 36 134 58L168 58C166 36 164 14 163 -14Z"/><path fill="#f5f3ff" fill-opacity=".62" d="M131 56C127 68 128 82 134 90C146 95 158 95 168 90C173 80 174 66 170 56C158 50 142 50 131 56Z"/><g fill="#f5f3ff" fill-opacity=".66"><path transform="translate(137 87) rotate(9)" d="M-3.9 0C-4.2 12.7 -2.7 22.0 0 23C2.7 22.0 4.2 12.7 3.9 0Z"/><path transform="translate(146 89) rotate(3)" d="M-3.9 0C-4.2 15.4 -2.7 27.0 0 28C2.7 27.0 4.2 15.4 3.9 0Z"/><path transform="translate(155 89) rotate(-3)" d="M-3.9 0C-4.2 14.9 -2.7 26.0 0 27C2.7 26.0 4.2 14.9 3.9 0Z"/><path transform="translate(163.5 86) rotate(-10)" d="M-3.4 0C-3.6999999999999997 11.0 -2.2 19.0 0 20C2.2 19.0 3.6999999999999997 11.0 3.4 0Z"/><path transform="translate(131 66) rotate(42)" d="M-4.2 0C-4.5 12.1 -3.0 21.0 0 22C3.0 21.0 4.5 12.1 4.2 0Z"/></g><g stroke="#ffffff" stroke-opacity=".35" stroke-width=".7" fill="none"><path d="M140 70q10-4 22 0M139 78q11 3 24 0"/></g></g></g>`);
+    const q=c=>s.querySelector(c), humo=q('.humo');
+    origen(q('.mano'),'150px 60px'); origen(q('.mm'),'150px 60px');
+    sonido([523,659,880,1047],'sine',.045,.22);
+    A(q('.mano'),[{opacity:0,filter:'blur(8px)',transform:'translateY(-20px)'},{opacity:1,filter:'blur(1px) drop-shadow(0 0 8px #e9d5ff) drop-shadow(0 0 18px #a855f7aa)',transform:'none'}],{duration:1400,easing:'ease-out'});
+    const vivo=setInterval(()=>{ const c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx',R(136,166)); c.setAttribute('cy',R(10,60)); c.setAttribute('r',R(5,10)); c.setAttribute('fill','#ede9fe'); c.style.filter='blur(4px)'; humo.appendChild(c);
+      c.animate([{opacity:.4,transform:'translate(0,0)'},{opacity:0,transform:`translate(${R(-14,14)}px,-40px)`}],{duration:2000,easing:'ease-out'}).onfinish=()=>c.remove(); },160);
+    await espera(1200);
+    A(q('.mm'),[{transform:'none'},{transform:'translate(-34px,4px) rotate(10deg)',offset:.25},{transform:'translate(30px,6px) rotate(-10deg)',offset:.6},{transform:'translate(-14px,3px) rotate(5deg)',offset:.82},{transform:'none'}],{duration:4200});
+    po.animate([{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'},{boxShadow:'0 0 60px #f5f3ff,0 0 120px #a855f7'},{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'}],{duration:2100,iterations:2,easing:'ease-in-out'});
+    await espera(2200); chispas(16,150,150,30,70,['#ffffff','#e9d5ff','#c084fc']);
+    await espera(2200);
+    clearInterval(vivo);
+    A(q('.mano'),[{opacity:1,transform:'none',filter:'blur(1px)'},{opacity:0,transform:'translateY(-40px)',filter:'blur(10px)'}],{duration:1500,easing:'ease-in'});
+    await espera(1600);
+  }
+
+  /* ── ASTROLOGÍA: las constelaciones ── */
+  async function astro(){
+    const C=[ // Osa Mayor, Casiopea, Orión, Escorpio
+      {p:[[22,62],[44,52],[64,56],[82,66],[86,88],[112,90],[110,64]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3]]},
+      {p:[[192,38],[210,60],[228,46],[246,64],[268,50]],l:[[0,1],[1,2],[2,3],[3,4]]},
+      {p:[[108,212],[156,206],[122,240],[132,237],[142,234],[112,274],[162,268]],l:[[0,2],[1,4],[2,3],[3,4],[2,5],[4,6],[0,1]]},
+      {p:[[238,150],[250,166],[256,186],[252,206],[258,226],[274,236],[286,226]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]},
+    ];
+    let h='<g stroke="#c4b5fd" stroke-width="1.1" stroke-linecap="round" style="filter:drop-shadow(0 0 3px #a78bfa)">';
+    C.forEach((c,ci)=>c.l.forEach(([a,b])=>{ const [x1,y1]=c.p[a],[x2,y2]=c.p[b], L=Math.hypot(x2-x1,y2-y1).toFixed(1);
+      h+=`<line class="ln k${ci}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-dasharray="${L}" stroke-dashoffset="${L}" data-l="${L}"/>`; }));
+    h+='</g><g fill="#fffbeb" style="filter:drop-shadow(0 0 4px #fde68a) drop-shadow(0 0 9px #c084fc)">';
+    C.forEach((c,ci)=>c.p.forEach(([x,y],i)=>{ h+=`<path class="es k${ci}" opacity="0" d="M${x} ${y-4.5}L${x+1.2} ${y-1.2}L${x+4.5} ${y}L${x+1.2} ${y+1.2}L${x} ${y+4.5}L${x-1.2} ${y+1.2}L${x-4.5} ${y}L${x-1.2} ${y-1.2}Z"/>`; }));
+    h+='</g>';
+    const s=svg(h);
+    s.querySelectorAll('.es').forEach(e=>{ const b=e.getBBox(); origen(e,`${b.x+b.width/2}px ${b.y+b.height/2}px`); });
+    sonido([523,587,659,784,880,1047,1175],'sine',.04,.28);
+    for(let ci=0;ci<C.length;ci++){
+      const es=[...s.querySelectorAll('.es.k'+ci)], ln=[...s.querySelectorAll('.ln.k'+ci)];
+      es.forEach((e,i)=>A(e,[{opacity:0,transform:'scale(0)'},{opacity:1,transform:'scale(1.6)',offset:.6},{opacity:1,transform:'scale(1)'}],{duration:500,delay:i*120}));
+      ln.forEach((l,i)=>A(l,[{strokeDashoffset:l.dataset.l},{strokeDashoffset:0}],{duration:450,delay:300+i*140,easing:'ease-out'}));
+      await espera(300+ln.length*140);
+    }
+    s.querySelectorAll('.es').forEach(e=>e.animate([{opacity:1},{opacity:.45},{opacity:1}],{duration:R(900,1500),iterations:2,easing:'ease-in-out',composite:'replace'}));
+    po.animate([{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'},{boxShadow:'0 0 60px #fde68a,0 0 110px #a855f7'},{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'}],{duration:2600,easing:'ease-in-out'});
+    await espera(2800);
+    A(s,[{opacity:1},{opacity:0}],{duration:1200}); await espera(1200);
+  }
+
+  const ANIM={tarot,runas,i_ching:iching,cristal,astrologia:astro};
+  po.style.cursor='pointer';
+  po.addEventListener('click',async()=>{
+    if(ocupada||po.classList.contains('pulse')||typeof selM==='undefined'||!ANIM[selM])return;
+    ocupada=true; nuevaCapa();
+    try{ await ANIM[selM](); }catch(e){}
+    po.getAnimations().filter(a=>!(window.CSSAnimation&&a instanceof CSSAnimation)).forEach(a=>a.cancel());
+    if(capa){capa.remove(); capa=null;} ocupada=false;
+  });
+  // si se sale de la pantalla a mitad, se limpia
+  const _goTo=window.goTo; if(typeof _goTo==='function') window.goTo=function(id){ if(id!=='s-preg'&&capa){capa.remove();capa=null;} return _goTo.apply(this,arguments); };
+})();
+</script>
 </body>
 </html>
