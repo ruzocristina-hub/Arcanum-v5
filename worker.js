@@ -1,12 +1,16 @@
 /* Tara · servidor en Cloudflare.
    - Redirige las direcciones antiguas (…workers.dev, www.) a taraoraculo.com
    - /api/verificar  comprueba un pago en Stripe (por ?id=cs_… o ?ref=mo_…)
-   - /api/guia       entrega el PDF de la guía comprada (tarot o quiromancia) solo si el pago está confirmado
+   - /api/guia       entrega el PDF de la guía comprada (tarot o quiromancia), en el idioma pedido (?lang=), solo si el pago está confirmado
    - El PDF no se puede descargar directamente desde su dirección pública.
    Variable secreta necesaria: STRIPE_SECRET_KEY (clave restringida rk_… con LECTURA en Checkout Sessions). */
 const PRINCIPAL = 'taraoraculo.com';
-const GUIAS = { guia: { archivo: '/guia-tarot-tara.pdf', nombre: 'Guia-de-Tarot-de-Tara.pdf' },
-                quiro: { archivo: '/guia-quiromancia-tara.pdf', nombre: 'Guia-de-Quiromancia-de-Tara.pdf' } };
+// Cada guía existe en 4 idiomas: /guia-tarot-tara-es.pdf, -en, -it, -pt (y lo mismo para quiromancia)
+const IDIOMAS = ['es', 'en', 'it', 'pt'];
+const GUIAS = {
+  guia: { base: 'guia-tarot-tara', nombre: { es: 'Guia-de-Tarot-de-Tara', en: 'Taras-Tarot-Guide', it: 'Guida-ai-Tarocchi-di-Tara', pt: 'Guia-de-Taro-da-Tara' } },
+  quiro: { base: 'guia-quiromancia-tara', nombre: { es: 'Guia-de-Quiromancia-de-Tara', en: 'Taras-Palmistry-Guide', it: 'Guida-alla-Chiromanzia-di-Tara', pt: 'Guia-de-Quiromancia-da-Tara' } }
+};
 const PRECIOS = { 499: 'personal', 699: 'carta' };
 
 const json = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
@@ -23,7 +27,7 @@ async function buscarSesion(env, id, ref) {
   }
   return undefined;
 }
-// Las dos guías cuestan lo mismo: se distinguen por el nombre del producto comprado
+// Las guías se distinguen por el nombre del producto comprado
 async function productoDe(env, s) {
   if (PRECIOS[s.amount_subtotal]) return PRECIOS[s.amount_subtotal];
   if (![4700, 5700].includes(s.amount_subtotal)) return null;
@@ -59,13 +63,14 @@ export default {
       const s = await buscarSesion(env, id, ref);
       const prod = pagada(s) ? await productoDe(env, s) : null;
       if (!GUIAS[prod]) return txt('No hemos encontrado el pago de la guía.', 403);
-      const f = await env.ASSETS.fetch(new Request(url.origin + GUIAS[prod].archivo));
+      const lang = IDIOMAS.includes(p.get('lang')) ? p.get('lang') : 'es';
+      const f = await env.ASSETS.fetch(new Request(url.origin + '/' + GUIAS[prod].base + '-' + lang + '.pdf'));
       if (!f.ok) return txt('Guía no disponible.', 404);
-      return new Response(f.body, { headers: { 'content-type': 'application/pdf', 'content-disposition': 'attachment; filename="' + GUIAS[prod].nombre + '"', 'cache-control': 'private, no-store' } });
+      return new Response(f.body, { headers: { 'content-type': 'application/pdf', 'content-disposition': 'attachment; filename="' + GUIAS[prod].nombre[lang] + '.pdf"', 'cache-control': 'private, no-store' } });
     }
 
     // Archivos que no deben verse desde fuera
-    if (Object.values(GUIAS).some(g => g.archivo === url.pathname) || url.pathname === '/worker.js' || url.pathname === '/wrangler.jsonc' || url.pathname.startsWith('/functions/')) {
+    if (/^\/guia-(tarot|quiromancia)-tara(-[a-z]{2})?\.pdf$/.test(url.pathname) || url.pathname === '/worker.js' || url.pathname === '/wrangler.jsonc' || url.pathname.startsWith('/functions/')) {
       return new Response('No encontrado', { status: 404 });
     }
     return env.ASSETS.fetch(request);
