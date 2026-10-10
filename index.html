@@ -5364,13 +5364,13 @@ initMic('mic','qi'); initMic('pmic','pq');
 </script>
 <script>
 /* Animaciones de cada método: al tocar el símbolo en la pantalla de la pregunta
-   Tarot: lechuza entre las cartas · Runas: cuervo sobre la piedra · I Ching: dragón de humo
-   Cristal: mano de humo sobre la bola · Astrología: constelaciones que se encienden */
+   Tarot: lechuza entre las cartas · Runas: aurora boreal y anillo de runas · I Ching: dragón que persigue la perla
+   Cristal: mariposa que nace de la bola · Astrología: constelaciones de colores */
 (function(){
   const po=document.getElementById('po'); if(!po||!po.animate)return;
   const caja=po.parentElement, NS='http://www.w3.org/2000/svg';
   const R=(a,b)=>a+Math.random()*(b-a), espera=ms=>new Promise(r=>setTimeout(r,ms));
-  let ocupada=false, capa=null;
+  let ocupada=false, capa=null, vivo=true;
   const T0='translate(-50%,-50%)';
   function nuevaCapa(){
     if(capa)capa.remove();
@@ -5381,221 +5381,241 @@ initMic('mic','qi'); initMic('pmic','pq');
   const svg=(html,extra='')=>{ capa.insertAdjacentHTML('beforeend',`<svg viewBox="0 0 300 300" width="300" height="300" style="position:absolute;inset:0;overflow:visible;${extra}">${html}</svg>`); return capa.lastElementChild; };
   const A=(el,k,o)=>el.animate(k,{fill:'forwards',easing:'ease-in-out',...o});
   function origen(el,o){ el.style.transformBox='view-box'; el.style.transformOrigin=o; }
+  const ARCO=['#fde68a','#f472b6','#22d3ee','#a78bfa','#4ade80','#fb923c'];
   function chispas(n,x,y,dmin,dmax,cols){
-    cols=cols||['#fde68a','#e9d5ff','#c084fc','#f5d0fe'];
+    cols=cols||ARCO;
     for(let i=0;i<n;i++){
-      const e=document.createElement('span'), t=R(2.5,6), c=cols[i%cols.length], a=R(0,Math.PI*2), d=R(dmin,dmax);
+      const e=document.createElement('span'), t=R(2.5,6.5), c=cols[i%cols.length], a=R(0,Math.PI*2), d=R(dmin,dmax);
       e.style.cssText=`position:absolute;left:${x}px;top:${y}px;width:${t}px;height:${t}px;margin:${-t/2}px 0 0 ${-t/2}px;border-radius:50%;background:${c};box-shadow:0 0 8px ${c}`;
       capa.appendChild(e);
       e.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px) scale(.2)`,opacity:0}],
         {duration:R(1000,1800),easing:'cubic-bezier(.15,.7,.3,1)'}).onfinish=()=>e.remove();
     }
   }
-  function sonido(notas,tipo,vol,sep){
+  function sonido(notas,tipo,vol,sep,dur){
     if(typeof sndOn==='undefined'||!sndOn||typeof ga!=='function')return;
     try{ const c=ga(),t=c.currentTime;
       notas.forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(); o.type=tipo||'sine'; o.frequency.value=f;
-        const t0=t+i*(sep||.12); g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(vol||.06,t0+.02); g.gain.exponentialRampToValueAtTime(.001,t0+1.6);
-        o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0+1.7); });
+        const t0=t+i*(sep||.12), d=dur||1.6; g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(vol||.06,t0+.02); g.gain.exponentialRampToValueAtTime(.001,t0+d);
+        o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0+d+.1); });
     }catch(e){}
   }
-  function graznido(){
-    if(typeof sndOn==='undefined'||!sndOn||typeof ga!=='function')return;
-    try{ const c=ga(),t=c.currentTime;
-      [0,.42].forEach(d=>{ const len=Math.floor(c.sampleRate*.3), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0);
-        for(let j=0;j<len;j++) x[j]=(Math.random()*2-1);
-        const s=c.createBufferSource(); s.buffer=b;
-        const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=6; f.frequency.setValueAtTime(900,t+d); f.frequency.linearRampToValueAtTime(620,t+d+.28);
-        const g=c.createGain(); g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(.35,t+d+.03); g.gain.exponentialRampToValueAtTime(.001,t+d+.3);
-        s.connect(f); f.connect(g); g.connect(c.destination); s.start(t+d); });
-    }catch(e){}
-  }
-  const bolaTenue=()=>A(po,[{transform:T0,opacity:1},{transform:T0+' scale(.8)',opacity:.3}],{duration:700});
-  const bolaVuelve=()=>A(po,[{transform:T0+' scale(.8)',opacity:.3},{transform:T0,opacity:1}],{duration:900});
-  const BRILLO='filter:drop-shadow(0 0 1.2px #d8b4fe) drop-shadow(0 0 9px #7c3aedaa)';
+  const bolaA=(de,a,ms)=>A(po,[de,a],{duration:ms||800});
+  const NORMAL={transform:T0,opacity:1};
+  // bucle por fotogramas con duración fija
+  const bucle=(dur,fn)=>new Promise(fin=>{ const t0=performance.now(); (function paso(now){ const t=Math.min(now-t0,dur); if(!capa){fin();return;} fn(t,t/dur); if(t<dur) requestAnimationFrame(paso); else fin(); })(t0); });
 
   /* ── TAROT: la lechuza ── */
   async function tarot(){
-    const carta=(i)=>`<g class="ct${i}"><rect x="133" y="125" width="34" height="54" rx="3" fill="#141316" stroke="#ece7df" stroke-width="2"/><path d="M150 142l2.6 6.4 6.8.5-5.2 4.4 1.7 6.6-5.9-3.6-5.9 3.6 1.7-6.6-5.2-4.4 6.8-.5z" fill="#cbd5e1"/></g>`;
-    const s=svg(`<defs><radialGradient id="lzPl" cx="45%" cy="30%" r="80%"><stop offset="0" stop-color="#3b2f45"/><stop offset=".5" stop-color="#1a1222"/><stop offset="1" stop-color="#08050c"/></radialGradient>
-<radialGradient id="lzOj" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#fff1b0"/><stop offset=".5" stop-color="#ffc53d"/><stop offset="1" stop-color="#d9771a"/></radialGradient></defs>
+    const COLS=[['#7c3aed','#db2777'],['#2563eb','#7c3aed'],['#db2777','#f59e0b']];
+    const carta=i=>`<g class="ct${i}"><rect x="133" y="125" width="34" height="54" rx="3.5" fill="url(#ctG${i})" stroke="#fde68a" stroke-width="1.8"/><rect x="137" y="129" width="26" height="46" rx="2" fill="none" stroke="#fde68a" stroke-opacity=".5" stroke-width=".7"/><path d="M150 142l2.6 6.4 6.8.5-5.2 4.4 1.7 6.6-5.9-3.6-5.9 3.6 1.7-6.6-5.2-4.4 6.8-.5z" fill="#fde68a" style="filter:drop-shadow(0 0 3px #fde68a)"/></g>`;
+    const grads=COLS.map((c,i)=>`<linearGradient id="ctG${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>`).join('');
+    const s=svg(`<defs>${grads}
+<radialGradient id="lzPl" cx="45%" cy="25%" r="85%"><stop offset="0" stop-color="#d9a066"/><stop offset=".45" stop-color="#9a6234"/><stop offset="1" stop-color="#4a2c16"/></radialGradient>
+<radialGradient id="lzPe" cx="50%" cy="30%" r="75%"><stop offset="0" stop-color="#fff7e6"/><stop offset="1" stop-color="#f1d9ae"/></radialGradient>
+<radialGradient id="lzCa" cx="50%" cy="50%" r="60%"><stop offset="0" stop-color="#fffaf0"/><stop offset=".75" stop-color="#f6e6c8"/><stop offset="1" stop-color="#e8c58f"/></radialGradient>
+<radialGradient id="lzOj" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#fff59d"/><stop offset=".45" stop-color="#ffb020"/><stop offset="1" stop-color="#ff5e00"/></radialGradient>
+<linearGradient id="lzAl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9783f"/><stop offset=".6" stop-color="#7a4a24"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
 ${carta(0)}${carta(1)}${carta(2)}
-<g class="lz" opacity="0" style="${BRILLO}"><g class="lzv">
- <g class="alas" opacity="0" fill="url(#lzPl)" stroke="#6b5a7a" stroke-width=".8">
-  <g class="ai"><path d="M132 140C112 120 84 116 66 124C78 128 84 134 86 140C76 140 70 146 68 152C84 148 98 150 110 158C118 160 128 156 134 150Z"/></g>
-  <g class="ad"><path d="M168 140C188 120 216 116 234 124C222 128 216 134 214 140C224 140 230 146 232 152C216 148 202 150 190 158C182 160 172 156 166 150Z"/></g></g>
+<g class="lz" opacity="0" style="filter:drop-shadow(0 0 1.5px #fde68a) drop-shadow(0 0 10px #f59e0baa)"><g class="lzv">
+ <g class="alas" opacity="0" fill="url(#lzAl)" stroke="#fde68a" stroke-width=".8">
+  <g class="ai"><path d="M132 140C112 120 84 116 66 124C78 128 84 134 86 140C76 140 70 146 68 152C84 148 98 150 110 158C118 160 128 156 134 150Z"/><path d="M84 132l8 6M98 128l6 9M112 128l4 10" stroke="#fef3c7" stroke-opacity=".6" fill="none"/></g>
+  <g class="ad"><path d="M168 140C188 120 216 116 234 124C222 128 216 134 214 140C224 140 230 146 232 152C216 148 202 150 190 158C182 160 172 156 166 150Z"/><path d="M216 132l-8 6M202 128l-6 9M188 128l-4 10" stroke="#fef3c7" stroke-opacity=".6" fill="none"/></g></g>
  <ellipse cx="150" cy="150" rx="25" ry="32" fill="url(#lzPl)"/>
- <g stroke="#7c6b8c" stroke-width=".8" fill="none" opacity=".7"><path d="M140 146q4 3 8 0M152 146q4 3 8 0M144 155q4 3 8 0M136 155q4 3 8 0M156 155q4 3 8 0M140 164q4 3 8 0M152 164q4 3 8 0"/></g>
- <g class="plegadas" fill="url(#lzPl)" stroke="#5a4a6a" stroke-width=".8"><path d="M127 138C120 152 122 170 132 180C134 166 134 150 131 138Z"/><path d="M173 138C180 152 178 170 168 180C166 166 166 150 169 138Z"/></g>
- <g fill="#c9a24a"><path d="M143 181l-3 5M146 181v6M149 181l2 5M152 181l-2 5M155 181v6M158 181l3 5" stroke="#c9a24a" stroke-width="1.6" stroke-linecap="round"/></g>
+ <ellipse cx="150" cy="156" rx="16" ry="22" fill="url(#lzPe)"/>
+ <g stroke="#9a6234" stroke-width="1" fill="none" stroke-linecap="round"><path d="M143 146l3 2.5 3-2.5M151 146l3 2.5 3-2.5M139 154l3 2.5 3-2.5M147 154l3 2.5 3-2.5M155 154l3 2.5 3-2.5M143 162l3 2.5 3-2.5M151 162l3 2.5 3-2.5M147 170l3 2.5 3-2.5"/></g>
+ <g class="plegadas" fill="url(#lzAl)" stroke="#fde68a" stroke-width=".7"><path d="M127 136C119 152 121 172 132 182C134 166 134 150 131 136Z"/><path d="M173 136C181 152 179 172 168 182C166 166 166 150 169 136Z"/></g>
+ <g stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"><path d="M143 181l-3 5M146 181v6M149 181l2 5M152 181l-2 5M155 181v6M158 181l3 5"/></g>
  <g class="cabeza">
-  <path fill="url(#lzPl)" d="M132 118L127 98L141 110ZM168 118L173 98L159 110Z"/>
-  <ellipse cx="150" cy="120" rx="24" ry="19" fill="url(#lzPl)"/>
-  <circle cx="140" cy="120" r="10.5" fill="#241a2e" stroke="#6b5a7a" stroke-width=".8"/><circle cx="160" cy="120" r="10.5" fill="#241a2e" stroke="#6b5a7a" stroke-width=".8"/>
-  <g class="ojos" style="filter:drop-shadow(0 0 3px #ffc53d)"><circle cx="140" cy="120" r="6.4" fill="url(#lzOj)"/><circle cx="160" cy="120" r="6.4" fill="url(#lzOj)"/>
-   <circle class="pu" cx="140" cy="120" r="3.1" fill="#050208"/><circle class="pu" cx="160" cy="120" r="3.1" fill="#050208"/><circle cx="141.6" cy="118" r="1.1" fill="#fff"/><circle cx="161.6" cy="118" r="1.1" fill="#fff"/></g>
-  <path d="M150 124l-3 4 3 4 3-4z" fill="#c9a24a"/>
+  <path fill="url(#lzPl)" d="M132 118L126 96L142 109ZM168 118L174 96L158 109Z"/><path fill="#fbbf24" d="M127 99L126 96L130 98ZM173 99L174 96L170 98Z"/>
+  <ellipse cx="150" cy="120" rx="25" ry="20" fill="url(#lzPl)"/>
+  <path d="M150 104C136 102 125 110 125 121C125 131 136 138 150 133C164 138 175 131 175 121C175 110 164 102 150 104Z" fill="url(#lzCa)" stroke="#d97706" stroke-width="1.2"/>
+  <g class="ojos" style="filter:drop-shadow(0 0 3px #ffb020)"><circle cx="140" cy="120" r="7" fill="url(#lzOj)" stroke="#7c2d12" stroke-width=".8"/><circle cx="160" cy="120" r="7" fill="url(#lzOj)" stroke="#7c2d12" stroke-width=".8"/>
+   <circle class="pu" cx="140" cy="120" r="3.4" fill="#120804"/><circle class="pu" cx="160" cy="120" r="3.4" fill="#120804"/><circle cx="141.8" cy="117.8" r="1.3" fill="#fff"/><circle cx="161.8" cy="117.8" r="1.3" fill="#fff"/></g>
+  <path d="M150 124l-3.2 4 3.2 5 3.2-5z" fill="#f59e0b" stroke="#92400e" stroke-width=".5"/>
  </g>
 </g></g>`);
     const q=c=>s.querySelector(c);
-    [[ '.ct0','150px 179px'],['.ct1','150px 179px'],['.ct2','150px 179px'],['.lz','150px 150px'],['.lzv','150px 150px'],['.cabeza','150px 135px'],['.ojos','150px 120px'],['.ai','132px 145px'],['.ad','168px 145px']].forEach(([c,o])=>origen(q(c),o));
-    bolaTenue(); sonido([392,523,659,784],'sine',.05,.15);
+    [['.ct0','150px 179px'],['.ct1','150px 179px'],['.ct2','150px 179px'],['.lz','150px 150px'],['.lzv','150px 150px'],['.cabeza','150px 135px'],['.ojos','150px 120px'],['.ai','132px 145px'],['.ad','168px 145px']].forEach(([c,o])=>origen(q(c),o));
+    bolaA(NORMAL,{transform:T0+' scale(.8)',opacity:.3},700); sonido([392,523,659,784],'sine',.05,.15);
     const ab=[['.ct0','translate(-62px,30px) rotate(-20deg)'],['.ct1','translate(0,40px)'],['.ct2','translate(62px,30px) rotate(20deg)']];
     ab.forEach(([c,t])=>A(q(c),[{transform:'scale(.3)',opacity:0},{transform:t,opacity:1}],{duration:900,easing:'cubic-bezier(.2,.8,.3,1)'}));
-    await espera(800); chispas(24,150,150,30,90);
-    A(q('.lz'),[{opacity:0,transform:'scale(.6)',filter:'blur(6px)'},{opacity:1,transform:'scale(1)',filter:'blur(0)'}],{duration:900,easing:'ease-out'});
+    await espera(800); chispas(26,150,150,30,95);
+    A(q('.lz'),[{opacity:0,transform:'scale(.6)',filter:'blur(6px)'},{opacity:1,transform:'scale(1)',filter:'blur(0) drop-shadow(0 0 1.5px #fde68a) drop-shadow(0 0 10px #f59e0baa)'}],{duration:900,easing:'ease-out'});
     await espera(1100);
     for(let i=0;i<2;i++){ A(q('.ojos'),[{transform:'none'},{transform:'scaleY(.1)',offset:.4},{transform:'scaleY(.1)',offset:.6},{transform:'none'}],{duration:380}); await espera(650); }
     A(q('.cabeza'),[{transform:'none'},{transform:'rotate(-16deg)',offset:.25},{transform:'rotate(-16deg)',offset:.45},{transform:'rotate(14deg)',offset:.7},{transform:'rotate(14deg)',offset:.85},{transform:'none'}],{duration:2200});
     s.querySelectorAll('.pu').forEach(p=>A(p,[{transform:'none'},{transform:'translateX(-2px)',offset:.25},{transform:'translateX(-2px)',offset:.45},{transform:'translateX(2px)',offset:.7},{transform:'translateX(2px)',offset:.85},{transform:'none'}],{duration:2200}));
     await espera(2400);
-    // alza el vuelo
     A(q('.plegadas'),[{opacity:1},{opacity:0}],{duration:200}); A(q('.alas'),[{opacity:0},{opacity:1}],{duration:200});
     q('.ai').animate([{transform:'scaleY(1)'},{transform:'scaleY(.25) rotate(8deg)'}],{duration:240,iterations:14,direction:'alternate',easing:'ease-in-out'});
     q('.ad').animate([{transform:'scaleY(1)'},{transform:'scaleY(.25) rotate(-8deg)'}],{duration:240,iterations:14,direction:'alternate',easing:'ease-in-out'});
     A(q('.lzv'),[{transform:'none',opacity:1},{transform:'translate(10px,-30px) scale(.9)',opacity:1,offset:.25},{transform:'translate(120px,-170px) scale(.25)',opacity:0}],{duration:2600,easing:'ease-in'});
+    setTimeout(()=>chispas(14,180,110,10,40,['#fde68a','#fb923c']),500);
     ab.forEach(([c,t])=>A(q(c),[{transform:t,opacity:1},{transform:'scale(.3)',opacity:0}],{duration:900,delay:1200,easing:'ease-in'}));
-    await espera(2300); bolaVuelve(); await espera(900);
+    await espera(2300); bolaA({transform:T0+' scale(.8)',opacity:.3},NORMAL,900); await espera(900);
   }
 
-  /* ── RUNAS: el cuervo ── */
+  /* ── RUNAS: aurora boreal y anillo de runas de colores ── */
   async function runas(){
-    const s=svg(`<defs><radialGradient id="cvPl" cx="60%" cy="30%" r="80%"><stop offset="0" stop-color="#2a3350"/><stop offset=".45" stop-color="#11131f"/><stop offset="1" stop-color="#050509"/></radialGradient>
-<radialGradient id="cvPi" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#8b8597"/><stop offset=".6" stop-color="#4a4556"/><stop offset="1" stop-color="#25212d"/></radialGradient></defs>
-<g class="piedra" opacity="0"><ellipse cx="150" cy="238" rx="30" ry="17" fill="url(#cvPi)" stroke="#9ca3af" stroke-width=".6"/>
- <text class="runa" x="150" y="246" text-anchor="middle" font-family="serif" font-size="22" fill="#fde68a" style="filter:drop-shadow(0 0 4px #fbbf24)">ᚱ</text></g>
-<g class="cv" opacity="0" style="filter:drop-shadow(0 0 1.2px #bfdbfe) drop-shadow(0 0 8px #3b82f6aa)"><g class="cvv">
- <g class="alas" opacity="0" fill="url(#cvPl)" stroke="#334155" stroke-width=".7"><g class="ala"><path d="M144 200C132 168 104 150 76 150C92 160 100 170 104 180C94 180 88 186 86 192C104 188 120 192 132 204Z"/></g></g>
- <path fill="#0b0c14" d="M118 210L92 218L95 224L120 216Z"/>
- <path fill="url(#cvPl)" d="M114 210C120 190 150 184 166 192C172 198 168 212 156 218C140 224 122 222 114 210Z"/>
- <path class="plegada" fill="#151a2b" stroke="#334155" stroke-width=".7" d="M120 208C132 192 156 192 162 200C152 210 132 214 120 208Z"/>
- <g stroke="#1e1b29" stroke-width="2" stroke-linecap="round"><path d="M148 218L150 226M156 216L158 226M146 226h8M154 226h8"/></g>
- <g class="cab"><circle cx="170" cy="184" r="11" fill="url(#cvPl)"/>
-  <path d="M178 180L198 185L178 189Z" fill="#14151f"/>
-  <g class="pico"><path d="M178 188L195 189L178 192Z" fill="#14151f"/></g>
-  <circle cx="173" cy="181" r="1.8" fill="#dbeafe" style="filter:drop-shadow(0 0 2px #93c5fd)"/></g>
-</g></g>`);
-    const q=c=>s.querySelector(c);
-    [['.cv','150px 226px'],['.cvv','150px 226px'],['.cab','166px 190px'],['.pico','178px 189px'],['.ala','140px 200px'],['.runa','150px 240px']].forEach(([c,o])=>origen(q(c),o));
-    A(po,[{transform:T0,opacity:1},{transform:T0+' translateY(-26px) scale(.8)',opacity:.45}],{duration:700});
-    A(q('.piedra'),[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:800}); origen(q('.piedra'),'150px 238px');
-    q('.runa').animate([{opacity:.5},{opacity:1}],{duration:900,iterations:12,direction:'alternate'});
-    sonido([220,277,330],'triangle',.05,.2);
-    await espera(600);
-    // llega planeando
-    A(q('.alas'),[{opacity:1},{opacity:1}],{duration:10}); A(q('.plegada'),[{opacity:0},{opacity:0}],{duration:10});
-    q('.ala').animate([{transform:'scaleY(1)'},{transform:'scaleY(.3)'}],{duration:300,iterations:5,direction:'alternate',easing:'ease-in-out'});
-    A(q('.cv'),[{opacity:0},{opacity:1}],{duration:400});
-    await A(q('.cvv'),[{transform:'translate(-170px,-150px) scale(.5)'},{transform:'translate(-40px,-40px) scale(.85)',offset:.7},{transform:'none'}],{duration:1600,easing:'ease-out'}).finished;
-    A(q('.alas'),[{opacity:1},{opacity:0}],{duration:250}); A(q('.plegada'),[{opacity:0},{opacity:1}],{duration:250});
-    chispas(10,150,236,15,40,['#fde68a','#fbbf24']);
-    await espera(700);
-    // grazna dos veces
-    graznido();
-    for(let i=0;i<2;i++){
-      A(q('.cab'),[{transform:'none'},{transform:'translate(3px,-2px) rotate(-12deg)',offset:.3},{transform:'none'}],{duration:420});
-      A(q('.pico'),[{transform:'none'},{transform:'rotate(28deg)',offset:.3},{transform:'none'}],{duration:420});
-      await espera(420);
-    }
-    await espera(700);
-    A(q('.cab'),[{transform:'none'},{transform:'rotate(14deg)',offset:.3},{transform:'rotate(14deg)',offset:.75},{transform:'none'}],{duration:1600});
-    await espera(1800);
-    // se va volando
-    A(q('.alas'),[{opacity:0},{opacity:1}],{duration:150}); A(q('.plegada'),[{opacity:1},{opacity:0}],{duration:150});
-    q('.ala').animate([{transform:'scaleY(1)'},{transform:'scaleY(.25)'}],{duration:220,iterations:12,direction:'alternate',easing:'ease-in-out'});
-    A(q('.cvv'),[{transform:'none',opacity:1},{transform:'translate(30px,-20px)',opacity:1,offset:.2},{transform:'translate(170px,-190px) scale(.35)',opacity:0}],{duration:2300,easing:'ease-in'});
-    A(q('.piedra'),[{opacity:1},{opacity:0}],{duration:900,delay:1400});
-    await espera(1600);
-    A(po,[{transform:T0+' translateY(-26px) scale(.8)',opacity:.45},{transform:T0,opacity:1}],{duration:900}); await espera(900);
+    const GL=['ᚠ','ᚱ','ᚨ','ᛉ','ᛟ','ᚷ','ᛊ','ᛏ'], CO=['#4ade80','#22d3ee','#a78bfa','#f472b6','#fbbf24','#34d399','#60a5fa','#fb7185'];
+    let piedras='';
+    GL.forEach((g,i)=>{ piedras+=`<g class="pd" opacity="0"><ellipse rx="14" ry="11" fill="url(#rpG)" stroke="${CO[i]}" stroke-width="1.2"/><text y="6" text-anchor="middle" font-family="serif" font-size="16" fill="${CO[i]}" style="filter:drop-shadow(0 0 3px ${CO[i]}) drop-shadow(0 0 7px ${CO[i]})">${g}</text></g>`; });
+    const s=svg(`<defs><radialGradient id="rpG" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#6b6880"/><stop offset=".6" stop-color="#36334a"/><stop offset="1" stop-color="#1b1928"/></radialGradient>
+<linearGradient id="au1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ade80" stop-opacity="0"/><stop offset=".5" stop-color="#4ade80" stop-opacity=".75"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></linearGradient>
+<linearGradient id="au2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a78bfa" stop-opacity="0"/><stop offset=".5" stop-color="#c084fc" stop-opacity=".7"/><stop offset="1" stop-color="#f472b6" stop-opacity="0"/></linearGradient>
+<linearGradient id="au3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee" stop-opacity="0"/><stop offset=".5" stop-color="#67e8f9" stop-opacity=".6"/><stop offset="1" stop-color="#4ade80" stop-opacity="0"/></linearGradient></defs>
+<g class="aurora" opacity="0" style="filter:blur(5px)">
+ <path class="b1" d="M-30 70C30 30 80 95 150 55S260 30 330 70L330 120C260 80 220 110 150 100S30 75 -30 120Z" fill="url(#au1)"/>
+ <path class="b2" d="M-30 40C40 70 90 10 160 40S270 70 330 30L330 85C270 115 220 60 160 90S40 60 -30 95Z" fill="url(#au2)"/>
+ <path class="b3" d="M-30 95C50 70 100 120 170 90S270 85 330 105L330 140C270 120 230 140 170 130S50 110 -30 135Z" fill="url(#au3)"/>
+</g>${piedras}`);
+    const q=c=>s.querySelector(c), pd=[...s.querySelectorAll('.pd')];
+    ['.b1','.b2','.b3'].forEach((c,i)=>{ origen(q(c),'150px 80px'); q(c).animate([{transform:'translateX(-18px) scaleY(.85)'},{transform:'translateX(18px) scaleY(1.15)'}],{duration:2600+i*700,iterations:6,direction:'alternate',easing:'ease-in-out'}); });
+    A(q('.aurora'),[{opacity:0},{opacity:1}],{duration:1500});
+    sonido([262,330,392,523,659],'triangle',.04,.25,2);
+    const DUR=6600;
+    await bucle(DUR,(t,k)=>{
+      pd.forEach((p,i)=>{
+        const ini=i*180, kk=Math.max(0,Math.min(1,(t-ini)/1200));      // cada piedra sube desde abajo
+        const ang=-Math.PI/2+i*Math.PI*2/8+t/2200;
+        const rad=k<.82?96:96*(1-(k-.82)/.18);                          // al final entran en la bola
+        let x=150+Math.cos(ang)*rad, y=150+Math.sin(ang)*rad*.95;
+        const e=1-Math.pow(1-kk,3); x=150+(x-150)*e; y=300+(y-300)*e;
+        const op=kk*(k>.9?Math.max(0,(1-k)/.1):1);
+        p.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${(k>.82?1-(k-.82)/.18*.6:1).toFixed(2)})`); p.style.opacity=op;
+      });
+    });
+    chispas(36,150,150,30,120,CO);
+    po.animate([{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'},{boxShadow:'0 0 70px #4ade80,0 0 130px #a78bfa'},{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'}],{duration:1600,easing:'ease-out'});
+    sonido([523,784,1047],'sine',.06,.06,1.4);
+    A(q('.aurora'),[{opacity:1},{opacity:0}],{duration:1600});
+    await espera(1700);
   }
 
-  /* ── I CHING: el dragón de humo ── */
+  /* ── I CHING: el dragón que persigue la perla ── */
   async function iching(){
-    const N=30;
+    const N=34;
     let seg='';
-    for(let i=N-1;i>=1;i--){ const r=9-i*0.24; seg+=`<circle class="sg" r="${Math.max(r,1.6).toFixed(2)}" fill="${i%5===0?'#fde68a':'#34d399'}" opacity="${(0.9-i*0.022).toFixed(2)}"/>`; }
-    const s=svg(`<g style="filter:blur(.6px) drop-shadow(0 0 6px #10b981)">${seg}</g>
+    for(let i=N-1;i>=1;i--){
+      const r=Math.max(10.5-i*0.25,2.4), hue=i<12?8+i*3.2:i<24?46+(i-12)*9:150+(i-24)*2;
+      const col=`hsl(${hue.toFixed(0)},85%,${i<24?52:45}%)`, osc=`hsl(${hue.toFixed(0)},80%,30%)`;
+      const pua=i%2===0&&i<N-3?`<path d="M-${(r*.45).toFixed(1)} ${(-r*.75).toFixed(1)}L0 ${(-r*1.75).toFixed(1)}L${(r*.45).toFixed(1)} ${(-r*.75).toFixed(1)}Z" fill="#fde68a"/>`:'';
+      const pata=(i===6||i===18)?`<path d="M0 ${r*.8} l-3 7 m3 -7 l1 8 m-1 -8 l4 6" stroke="#fde68a" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M0 ${-r*.8} l-3 -7 m3 7 l1 -8 m-1 8 l4 -6" stroke="#fde68a" stroke-width="1.3" stroke-linecap="round" fill="none"/>`:'';
+      seg+=`<g class="sg">${pata}${pua}<circle r="${r.toFixed(2)}" fill="${col}" stroke="${osc}" stroke-width=".8"/><path d="M${(-r*.5).toFixed(1)} 0a${(r*.5).toFixed(1)} ${(r*.5).toFixed(1)} 0 0 1 ${r.toFixed(1)} 0" stroke="#fff" stroke-opacity=".35" stroke-width=".8" fill="none"/></g>`;
+    }
+    const s=svg(`<defs><radialGradient id="prG" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fbcfe8"/><stop offset="1" stop-color="#f472b6"/></radialGradient></defs>
 <g class="humo"></g>
-<g class="cabeza" style="filter:drop-shadow(0 0 5px #34d399)">
- <path d="M-4 -8C6 -10 16 -9 23 -4L29 0L23 4C16 9 6 10 -4 8Z" fill="#10b981" stroke="#a7f3d0" stroke-width=".8"/>
- <path d="M23 -4L31 -2L23 1Z" fill="#fde68a"/>
- <path d="M6 -8L-6 -19L10 -9M12 -7L4 -17L15 -7" stroke="#fde68a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
- <circle cx="15" cy="-3" r="1.8" fill="#fef08a" style="filter:drop-shadow(0 0 2px #fde047)"/>
- <path d="M26 3C22 12 12 16 0 15M24 -3C20 -12 10 -16 -2 -15" stroke="#fde68a" stroke-width=".8" fill="none"/>
-</g>`);
-    const segs=[...s.querySelectorAll('.sg')].reverse(), cab=s.querySelector('.cabeza'), humo=s.querySelector('.humo');
-    sonido([294,370,440,587],'sine',.05,.18);
-    A(po,[{transform:T0,opacity:1},{transform:T0+' scale(.85)',opacity:.6}],{duration:700});
-    const DUR=6200, t0=performance.now(), hist=[];
-    const pos=t=>{ // sale de la bola, rodea dos veces y sube
-      const k=Math.min(t/DUR,1), ang=-Math.PI/2+k*Math.PI*4.2;
-      const rad=k<.15?20+k/.15*72:k<.8?92+Math.sin(k*18)*6:92+(k-.8)/.2*40;
-      const y=150+Math.sin(ang)*rad*.92-(k>.8?(k-.8)/.2*90:0);
-      return [150+Math.cos(ang)*rad, y];
-    };
+<g class="perla" style="filter:drop-shadow(0 0 6px #f9a8d4) drop-shadow(0 0 14px #fb923c)"><circle r="7" fill="url(#prG)"/><path class="llama" d="M-10 0C-8 -8 -2 -12 0 -16C2 -12 8 -8 10 0" stroke="#fb923c" stroke-width="1.4" fill="none" opacity=".8"/></g>
+<g style="filter:drop-shadow(0 0 5px #f97316aa)">${seg}</g>
+<g class="cabeza" style="filter:drop-shadow(0 0 6px #ef4444)"><g transform="scale(1.3)">
+ <path d="M-2 -10L-15 -17L-9 -6L-19 -3L-9 0L-19 3L-9 6L-15 17L-2 10Z" fill="#f97316" stroke="#fde68a" stroke-width=".5"/>
+ <path d="M4 -10C0 -18 -6 -22 -13 -22C-7 -18 -3 -14 0 -9Z" fill="#fde68a"/><path d="M10 -9C8 -16 4 -20 -1 -21C3 -17 5 -13 6 -8Z" fill="#fcd34d"/>
+ <path class="mand" d="M-2 2L8 2L24 4L28 7C20 10 8 10 -2 7Z" fill="#b91c1c" stroke="#fca5a5" stroke-width=".5"/>
+ <path d="M-4 -9C6 -12 16 -11 24 -6L32 -3C30 0 26 1 22 0L6 1L-4 3Z" fill="#dc2626" stroke="#fca5a5" stroke-width=".6"/>
+ <path d="M8 1l2 2.4 2-2.4M14 1.4l2 2.4 2-2.4M20 1l1.6 2 1.6-2" fill="#fff"/>
+ <circle cx="31" cy="-3" r="2" fill="#fbbf24"/>
+ <ellipse cx="14" cy="-5.5" rx="2.8" ry="1.9" fill="#fef08a"/><ellipse cx="14.6" cy="-5.5" rx=".8" ry="1.6" fill="#1c0a00"/>
+ <path d="M28 -1C35 6 31 16 20 22M28 0C37 -6 35 -16 24 -23" stroke="#fde68a" stroke-width="1" fill="none" stroke-linecap="round"/>
+</g></g>`);
+    const segs=[...s.querySelectorAll('.sg')].reverse(), cab=s.querySelector('.cabeza'), humo=s.querySelector('.humo'), perla=s.querySelector('.perla'), mand=s.querySelector('.mand');
+    origen(mand,'0px 2px');
+    sonido([294,370,440,587,740],'sine',.05,.2,2);
+    A(po,[NORMAL,{transform:T0+' scale(.85)',opacity:.55}],{duration:700});
+    const DUR=7600, hist=[];
+    const pos=t=>{ const k=Math.min(t/DUR,1), ang=-Math.PI/2+k*Math.PI*4.4;
+      const rad=k<.12?18+k/.12*76:k<.82?94+Math.sin(k*20)*7:94+(k-.82)/.18*30;
+      return [150+Math.cos(ang)*rad, 150+Math.sin(ang)*rad*.92-(k>.82?(k-.82)/.18*70:0)]; };
     let ult=0;
-    await new Promise(fin=>{ (function paso(now){
-      const t=now-t0; const [x,y]=pos(t); hist.unshift([x,y]); if(hist.length>N*3) hist.pop();
-      const op=t<400?t/400:t>DUR-900?Math.max(0,(DUR-t)/900):1;
-      const [px,py]=hist[Math.min(2,hist.length-1)];
-      cab.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(Math.atan2(y-py,x-px)*180/Math.PI).toFixed(1)})`); cab.style.opacity=op;
-      segs.forEach((c,i)=>{ const h=hist[Math.min((i+1)*3,hist.length-1)]; c.setAttribute('cx',h[0].toFixed(1)); c.setAttribute('cy',(h[1]+Math.sin(t/180+i*.6)*1.8).toFixed(1)); c.style.opacity=op; });
-      if(t-ult>90){ ult=t; const h=hist[hist.length-1]; const c=document.createElementNS(NS,'circle');
-        c.setAttribute('cx',h[0]); c.setAttribute('cy',h[1]); c.setAttribute('r',R(4,8)); c.setAttribute('fill','#d1fae5'); c.style.filter='blur(3px)'; humo.appendChild(c);
-        c.animate([{opacity:.45,transform:'translate(0,0)'},{opacity:0,transform:`translate(${R(-10,10)}px,-24px)`}],{duration:1400,easing:'ease-out'}).onfinish=()=>c.remove(); }
-      if(t<DUR) requestAnimationFrame(paso); else fin();
-    })(t0); });
-    chispas(18,150,40,20,60,['#34d399','#fde68a','#a7f3d0']);
-    A(po,[{transform:T0+' scale(.85)',opacity:.6},{transform:T0,opacity:1}],{duration:900}); await espera(900);
+    await bucle(DUR,(t,k)=>{
+      const [x,y]=pos(t); hist.unshift([x,y]); if(hist.length>N*3+3) hist.pop();
+      const op=t<400?t/400:t>DUR-1000?Math.max(0,(DUR-t)/1000):1;
+      const [px,py]=hist[Math.min(2,hist.length-1)], ang=Math.atan2(y-py,x-px)*180/Math.PI;
+      cab.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${ang.toFixed(1)})`); cab.style.opacity=op;
+      mand.setAttribute('transform',`rotate(${(Math.sin(t/260)*8+8).toFixed(1)})`);
+      const [qx,qy]=pos(t+420); perla.setAttribute('transform',`translate(${qx.toFixed(1)},${(qy-6).toFixed(1)}) rotate(${(t/8)%360})`); perla.style.opacity=k>.9?Math.max(0,(1-k)/.1):Math.min(1,t/300);
+      segs.forEach((c,i)=>{ const a=hist[Math.min((i+1)*3,hist.length-1)], b=hist[Math.min((i+1)*3+2,hist.length-1)];
+        const ondula=Math.sin(t/170+i*.55)*2; const rot=Math.atan2(a[1]-b[1],a[0]-b[0])*180/Math.PI;
+        c.setAttribute('transform',`translate(${a[0].toFixed(1)},${(a[1]+ondula).toFixed(1)}) rotate(${rot.toFixed(1)})`); c.style.opacity=op; });
+      if(t-ult>80){ ult=t; const h=hist[hist.length-1]; const c=document.createElementNS(NS,'circle');
+        c.setAttribute('cx',h[0]); c.setAttribute('cy',h[1]); c.setAttribute('r',R(4,9)); c.setAttribute('fill',['#fecaca','#fde68a','#a7f3d0'][Math.floor(R(0,3))]); c.style.filter='blur(3px)'; humo.appendChild(c);
+        c.animate([{opacity:.5,transform:'translate(0,0)'},{opacity:0,transform:`translate(${R(-10,10)}px,-26px)`}],{duration:1500,easing:'ease-out'}).onfinish=()=>c.remove(); }
+    });
+    chispas(30,150,60,20,80,['#ef4444','#fb923c','#fde68a','#4ade80','#f472b6']);
+    sonido([587,880,1175],'sine',.05,.08,1.4);
+    A(po,[{transform:T0+' scale(.85)',opacity:.55},NORMAL],{duration:900}); await espera(900);
   }
 
-  /* ── CRISTAL: la mano de humo ── */
+  /* ── CRISTAL: la mariposa que nace de la bola ── */
   async function cristal(){
-    const s=svg(`<defs><linearGradient id="mnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5f3ff" stop-opacity="0"/><stop offset=".45" stop-color="#ede9fe" stop-opacity=".55"/><stop offset="1" stop-color="#ffffff" stop-opacity=".8"/></linearGradient></defs>
-<g class="humo"></g>
-<g class="mano" opacity="0" style="filter:blur(1px) drop-shadow(0 0 8px #e9d5ff) drop-shadow(0 0 18px #a855f7aa)"><g class="mm" opacity=".85"><path fill="url(#mnG)" d="M139 -14C138 14 136 36 134 58L168 58C166 36 164 14 163 -14Z"/><path fill="#f5f3ff" fill-opacity=".62" d="M131 56C127 68 128 82 134 90C146 95 158 95 168 90C173 80 174 66 170 56C158 50 142 50 131 56Z"/><g fill="#f5f3ff" fill-opacity=".66"><path transform="translate(137 87) rotate(9)" d="M-3.9 0C-4.2 12.7 -2.7 22.0 0 23C2.7 22.0 4.2 12.7 3.9 0Z"/><path transform="translate(146 89) rotate(3)" d="M-3.9 0C-4.2 15.4 -2.7 27.0 0 28C2.7 27.0 4.2 15.4 3.9 0Z"/><path transform="translate(155 89) rotate(-3)" d="M-3.9 0C-4.2 14.9 -2.7 26.0 0 27C2.7 26.0 4.2 14.9 3.9 0Z"/><path transform="translate(163.5 86) rotate(-10)" d="M-3.4 0C-3.6999999999999997 11.0 -2.2 19.0 0 20C2.2 19.0 3.6999999999999997 11.0 3.4 0Z"/><path transform="translate(131 66) rotate(42)" d="M-4.2 0C-4.5 12.1 -3.0 21.0 0 22C3.0 21.0 4.5 12.1 4.2 0Z"/></g><g stroke="#ffffff" stroke-opacity=".35" stroke-width=".7" fill="none"><path d="M140 70q10-4 22 0M139 78q11 3 24 0"/></g></g></g>`);
-    const q=c=>s.querySelector(c), humo=q('.humo');
-    origen(q('.mano'),'150px 60px'); origen(q('.mm'),'150px 60px');
-    sonido([523,659,880,1047],'sine',.045,.22);
-    A(q('.mano'),[{opacity:0,filter:'blur(8px)',transform:'translateY(-20px)'},{opacity:1,filter:'blur(1px) drop-shadow(0 0 8px #e9d5ff) drop-shadow(0 0 18px #a855f7aa)',transform:'none'}],{duration:1400,easing:'ease-out'});
-    const vivo=setInterval(()=>{ const c=document.createElementNS(NS,'circle');
-      c.setAttribute('cx',R(136,166)); c.setAttribute('cy',R(10,60)); c.setAttribute('r',R(5,10)); c.setAttribute('fill','#ede9fe'); c.style.filter='blur(4px)'; humo.appendChild(c);
-      c.animate([{opacity:.4,transform:'translate(0,0)'},{opacity:0,transform:`translate(${R(-14,14)}px,-40px)`}],{duration:2000,easing:'ease-out'}).onfinish=()=>c.remove(); },160);
-    await espera(1200);
-    A(q('.mm'),[{transform:'none'},{transform:'translate(-34px,4px) rotate(10deg)',offset:.25},{transform:'translate(30px,6px) rotate(-10deg)',offset:.6},{transform:'translate(-14px,3px) rotate(5deg)',offset:.82},{transform:'none'}],{duration:4200});
-    po.animate([{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'},{boxShadow:'0 0 60px #f5f3ff,0 0 120px #a855f7'},{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'}],{duration:2100,iterations:2,easing:'ease-in-out'});
-    await espera(2200); chispas(16,150,150,30,70,['#ffffff','#e9d5ff','#c084fc']);
-    await espera(2200);
-    clearInterval(vivo);
-    A(q('.mano'),[{opacity:1,transform:'none',filter:'blur(1px)'},{opacity:0,transform:'translateY(-40px)',filter:'blur(10px)'}],{duration:1500,easing:'ease-in'});
-    await espera(1600);
+    const ala=`<path d="M0 -2C10 -28 36 -36 44 -22C50 -11 37 3 0 3Z" fill="url(#mpA)" stroke="#fde68a" stroke-width="1"/>
+<path d="M0 3C23 3 36 11 31 25C27 35 10 31 0 7Z" fill="url(#mpB)" stroke="#fde68a" stroke-width="1"/>
+<circle cx="30" cy="-20" r="3.4" fill="#fff" opacity=".85"/><circle cx="38" cy="-14" r="2" fill="#fde68a"/><circle cx="21" cy="19" r="3" fill="#fde68a" opacity=".9"/>
+<path d="M4 -4C14 -18 26 -24 36 -22M4 4C14 8 22 14 26 24" stroke="#1e1b4b" stroke-opacity=".45" stroke-width=".8" fill="none"/>`;
+    const s=svg(`<defs>
+<radialGradient id="mpA" cx="15%" cy="70%" r="100%"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".35" stop-color="#2563eb"/><stop offset=".65" stop-color="#22d3ee"/><stop offset="1" stop-color="#d946ef"/></radialGradient>
+<radialGradient id="mpB" cx="10%" cy="10%" r="110%"><stop offset="0" stop-color="#4338ca"/><stop offset=".5" stop-color="#a855f7"/><stop offset="1" stop-color="#f472b6"/></radialGradient>
+<clipPath id="mpBola"><circle cx="150" cy="150" r="44"/></clipPath></defs>
+<g class="niebla" clip-path="url(#mpBola)" opacity="0" style="filter:blur(4px)"><g class="giro">
+ <circle cx="130" cy="140" r="20" fill="#22d3ee" opacity=".7"/><circle cx="168" cy="146" r="18" fill="#f472b6" opacity=".7"/><circle cx="150" cy="170" r="20" fill="#fde68a" opacity=".6"/><circle cx="150" cy="128" r="14" fill="#a78bfa" opacity=".8"/></g></g>
+<g class="estela"></g>
+<g class="mp" opacity="0" style="filter:drop-shadow(0 0 4px #67e8f9) drop-shadow(0 0 12px #d946ef88)">
+ <g class="ad">${ala}</g><g class="ai"><g transform="scale(-1,1)">${ala}</g></g>
+ <ellipse rx="2.6" ry="13" cy="3" fill="#1e1b4b" stroke="#fde68a" stroke-width=".6"/><circle cy="-10" r="3" fill="#1e1b4b"/>
+ <path d="M-1 -12C-4 -20 -8 -24 -12 -25M1 -12C4 -20 8 -24 12 -25" stroke="#fde68a" stroke-width=".9" fill="none" stroke-linecap="round"/><circle cx="-12" cy="-25" r="1.4" fill="#fde68a"/><circle cx="12" cy="-25" r="1.4" fill="#fde68a"/>
+</g>`);
+    const q=c=>s.querySelector(c), mp=q('.mp'), estela=q('.estela');
+    origen(q('.giro'),'150px 150px');
+    q('.giro').animate([{transform:'rotate(0)'},{transform:'rotate(360deg)'}],{duration:2600,iterations:4,easing:'linear'});
+    A(q('.niebla'),[{opacity:0},{opacity:1}],{duration:900});
+    sonido([659,784,988,1319],'sine',.045,.2,2);
+    await espera(1400);
+    chispas(22,150,150,20,70,['#22d3ee','#f472b6','#fde68a','#a78bfa']);
+    [q('.ad'),q('.ai')].forEach(w=>w.animate([{transform:'scaleX(1)'},{transform:'scaleX(.18)'}],{duration:170,iterations:60,direction:'alternate',easing:'ease-in-out'}));
+    const DUR=6200; let ult=0;
+    await bucle(DUR,(t,k)=>{
+      const sale=Math.min(1,t/900);
+      let x=150+Math.sin(t/620)*62*sale, y=150-sale*30+Math.sin(t/410)*20;
+      if(k>.78){ const f=(k-.78)/.22; x+=f*120; y-=f*170; }
+      const esc=(.35+.65*sale)*(k>.78?1-(k-.78)/.22*.5:1);
+      const inc=Math.cos(t/620)*22;
+      mp.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${inc.toFixed(1)}) scale(${(esc*.75).toFixed(2)})`);
+      mp.style.opacity=k>.9?Math.max(0,(1-k)/.1):Math.min(1,t/500);
+      if(t-ult>70){ ult=t; const c=document.createElementNS(NS,'circle');
+        c.setAttribute('cx',x); c.setAttribute('cy',y+8); c.setAttribute('r',R(1.2,2.6)); c.setAttribute('fill',ARCO[Math.floor(R(0,ARCO.length))]); c.style.filter='drop-shadow(0 0 3px #fff)'; estela.appendChild(c);
+        c.animate([{opacity:1,transform:'translate(0,0)'},{opacity:0,transform:`translate(${R(-6,6)}px,${R(8,20)}px)`}],{duration:1200,easing:'ease-out'}).onfinish=()=>c.remove(); }
+    });
+    A(q('.niebla'),[{opacity:1},{opacity:0}],{duration:1000}); await espera(1000);
   }
 
-  /* ── ASTROLOGÍA: las constelaciones ── */
+  /* ── ASTROLOGÍA: constelaciones de colores ── */
   async function astro(){
     const C=[ // Osa Mayor, Casiopea, Orión, Escorpio
-      {p:[[22,62],[44,52],[64,56],[82,66],[86,88],[112,90],[110,64]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3]]},
-      {p:[[192,38],[210,60],[228,46],[246,64],[268,50]],l:[[0,1],[1,2],[2,3],[3,4]]},
-      {p:[[108,212],[156,206],[122,240],[132,237],[142,234],[112,274],[162,268]],l:[[0,2],[1,4],[2,3],[3,4],[2,5],[4,6],[0,1]]},
-      {p:[[238,150],[250,166],[256,186],[252,206],[258,226],[274,236],[286,226]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]},
+      {c:'#fbbf24',p:[[22,62],[44,52],[64,56],[82,66],[86,88],[112,90],[110,64]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3]]},
+      {c:'#f472b6',p:[[192,38],[210,60],[228,46],[246,64],[268,50]],l:[[0,1],[1,2],[2,3],[3,4]]},
+      {c:'#22d3ee',p:[[108,212],[156,206],[122,240],[132,237],[142,234],[112,274],[162,268]],l:[[0,2],[1,4],[2,3],[3,4],[2,5],[4,6],[0,1]]},
+      {c:'#4ade80',p:[[238,150],[250,166],[256,186],[252,206],[258,226],[274,236],[286,226]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]},
     ];
-    let h='<g stroke="#c4b5fd" stroke-width="1.1" stroke-linecap="round" style="filter:drop-shadow(0 0 3px #a78bfa)">';
-    C.forEach((c,ci)=>c.l.forEach(([a,b])=>{ const [x1,y1]=c.p[a],[x2,y2]=c.p[b], L=Math.hypot(x2-x1,y2-y1).toFixed(1);
-      h+=`<line class="ln k${ci}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-dasharray="${L}" stroke-dashoffset="${L}" data-l="${L}"/>`; }));
-    h+='</g><g fill="#fffbeb" style="filter:drop-shadow(0 0 4px #fde68a) drop-shadow(0 0 9px #c084fc)">';
-    C.forEach((c,ci)=>c.p.forEach(([x,y],i)=>{ h+=`<path class="es k${ci}" opacity="0" d="M${x} ${y-4.5}L${x+1.2} ${y-1.2}L${x+4.5} ${y}L${x+1.2} ${y+1.2}L${x} ${y+4.5}L${x-1.2} ${y+1.2}L${x-4.5} ${y}L${x-1.2} ${y-1.2}Z"/>`; }));
-    h+='</g>';
+    let h=`<g class="nebulosa" opacity="0" style="filter:blur(18px)"><ellipse cx="70" cy="70" rx="60" ry="34" fill="#7c3aed" opacity=".55"/><ellipse cx="235" cy="55" rx="55" ry="28" fill="#db2777" opacity=".45"/><ellipse cx="140" cy="245" rx="60" ry="34" fill="#0891b2" opacity=".5"/><ellipse cx="262" cy="200" rx="34" ry="52" fill="#059669" opacity=".45"/></g>`;
+    C.forEach((c,ci)=>{ h+=`<g stroke="${c.c}" stroke-width="1.3" stroke-linecap="round" style="filter:drop-shadow(0 0 3px ${c.c})">`;
+      c.l.forEach(([a,b])=>{ const [x1,y1]=c.p[a],[x2,y2]=c.p[b], L=Math.hypot(x2-x1,y2-y1).toFixed(1);
+        h+=`<line class="ln k${ci}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-dasharray="${L}" stroke-dashoffset="${L}" data-l="${L}"/>`; });
+      h+=`</g><g fill="#fffbeb" style="filter:drop-shadow(0 0 3px ${c.c}) drop-shadow(0 0 9px ${c.c})">`;
+      c.p.forEach(([x,y])=>{ h+=`<path class="es k${ci}" opacity="0" d="M${x} ${y-5}L${x+1.3} ${y-1.3}L${x+5} ${y}L${x+1.3} ${y+1.3}L${x} ${y+5}L${x-1.3} ${y+1.3}L${x-5} ${y}L${x-1.3} ${y-1.3}Z"/>`; });
+      h+='</g>'; });
     const s=svg(h);
     s.querySelectorAll('.es').forEach(e=>{ const b=e.getBBox(); origen(e,`${b.x+b.width/2}px ${b.y+b.height/2}px`); });
+    A(s.querySelector('.nebulosa'),[{opacity:0},{opacity:1}],{duration:2000});
     sonido([523,587,659,784,880,1047,1175],'sine',.04,.28);
     for(let ci=0;ci<C.length;ci++){
       const es=[...s.querySelectorAll('.es.k'+ci)], ln=[...s.querySelectorAll('.ln.k'+ci)];
-      es.forEach((e,i)=>A(e,[{opacity:0,transform:'scale(0)'},{opacity:1,transform:'scale(1.6)',offset:.6},{opacity:1,transform:'scale(1)'}],{duration:500,delay:i*120}));
+      es.forEach((e,i)=>A(e,[{opacity:0,transform:'scale(0)'},{opacity:1,transform:'scale(1.7)',offset:.6},{opacity:1,transform:'scale(1)'}],{duration:500,delay:i*120}));
       ln.forEach((l,i)=>A(l,[{strokeDashoffset:l.dataset.l},{strokeDashoffset:0}],{duration:450,delay:300+i*140,easing:'ease-out'}));
       await espera(300+ln.length*140);
     }
-    s.querySelectorAll('.es').forEach(e=>e.animate([{opacity:1},{opacity:.45},{opacity:1}],{duration:R(900,1500),iterations:2,easing:'ease-in-out',composite:'replace'}));
-    po.animate([{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'},{boxShadow:'0 0 60px #fde68a,0 0 110px #a855f7'},{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'}],{duration:2600,easing:'ease-in-out'});
+    s.querySelectorAll('.es').forEach(e=>e.animate([{opacity:1},{opacity:.45},{opacity:1}],{duration:R(900,1500),iterations:2,easing:'ease-in-out'}));
+    po.animate([{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'},{boxShadow:'0 0 60px #fde68a,0 0 120px #f472b6'},{boxShadow:'0 0 38px #7c3aed,0 0 75px #4c1d95'}],{duration:2600,easing:'ease-in-out'});
+    chispas(20,150,150,40,120);
     await espera(2800);
     A(s,[{opacity:1},{opacity:0}],{duration:1200}); await espera(1200);
   }
