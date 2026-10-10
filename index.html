@@ -309,6 +309,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .sug #sug-btn{margin-top:6px}
 .sug-msg{margin-top:12px;text-align:center;font-size:.98rem;line-height:1.55;color:#fde68a;min-height:1em}
 .sug-msg.err{color:#fda4af}
+.iaestado{margin-top:12px;text-align:center;color:#d8c4fb;font-size:.9rem;line-height:1.5}.iaestado button{margin-top:8px}
+.bono-box{background:linear-gradient(160deg,#241046,#160830);border:1px solid #fde68a66;border-radius:12px;padding:14px 14px 10px;margin:12px auto;text-align:left;max-width:520px}
+.bono-box .bono-t{font-family:'Cinzel',serif;color:#fde68a;font-size:.95rem;letter-spacing:.06em;margin-bottom:4px}
+.bono-box p{color:#e6dcf7;font-size:.92rem;line-height:1.5}.bono-box .pwc{max-width:none;margin:8px 0}
+.iamark{max-width:520px;text-align:center;color:#c4b5fd;font-size:.85rem;font-style:italic;line-height:1.5;margin:0 auto 12px;padding:6px 12px;border:1px solid #8b5cf655;border-radius:999px;background:#1a0a3a99}.iamark.off{display:none}
 .cur-nota{color:#c4b5fd;font-size:.85rem;text-align:center;margin-top:12px;font-style:italic}
 #guia-compra .pwc,#quiro-compra .pwc{margin-top:8px}#guia-compra .bp,#quiro-compra .bp{margin-top:10px}
 .guia-ok{text-align:center;margin-top:12px}.guia-ok p{color:#e6dcf7;margin-bottom:8px}.guia-ok .bp{display:inline-block;text-decoration:none}
@@ -549,6 +554,8 @@ label.hf{color:#e6c98f!important}
     <label class="hf" style="display:block;color:var(--gold);margin-bottom:7px;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase">Tu pregunta al Oráculo</label>
     <div class="qwrap"><textarea id="qi" class="inp" rows="4" placeholder="Escribe o dicta tu pregunta…" oninput="document.getElementById('ab').disabled=!this.value.trim()"></textarea><button type="button" class="mic" id="mic" aria-label="Dictar la pregunta"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="#fff"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
     <button id="ab" class="bp w" style="margin-top:14px" onclick="startRitual()" disabled>✦ Iniciar el Ritual ✦</button>
+    <div id="iaestado" class="iaestado"></div>
+    <div id="iabono-preg"></div>
   </div>
   <button class="bt" onclick="goTo('s-metodo')">← Cambiar método</button>
 </div>
@@ -563,6 +570,8 @@ label.hf{color:#e6c98f!important}
       <span id="elbl" class="hf" style="font-size:.74rem;letter-spacing:.24em;text-transform:uppercase"></span>
     </div>
   </div>
+  <p id="iamark" class="iamark off"></p>
+  <div id="iabono-resp" style="max-width:520px;width:100%"></div>
   <div id="mbadge" style="margin-bottom:14px;opacity:0;transition:opacity .5s ease .3s;display:flex;align-items:center;gap:6px">
     <span id="bico"></span>
     <span id="bnm" class="hf" style="font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:#7c3aed66"></span>
@@ -803,6 +812,17 @@ const UI={
 "Guía de Tarot de Tara":"Tara's Tarot Guide",
 "Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"Your complete guide to learning to read tarot from scratch, step by step and at your own pace.",
 "Qué vas a aprender":"What you will learn",
+"Hoy ya has usado tus 2 lecturas personalizadas con IA gratis. Esta es una lectura clásica de Tara; mañana tendrás 2 nuevas.":"You've already used your 2 free AI-personalised readings today. This is a classic Tara reading; tomorrow you'll have 2 new ones.",
+"Hoy ya has usado tus 2 lecturas personalizadas con IA gratis.":"You've already used your 2 free AI-personalised readings today.",
+"Lecturas personalizadas con IA gratis hoy:":"Free AI-personalised readings left today:",
+"Lecturas de tu bono:":"Readings left in your pack:",
+"Comprar bono de 10 lecturas":"Buy a 10-reading pack",
+"Bono de 10 lecturas personalizadas con IA":"Pack of 10 AI-personalised readings",
+"Úsalas cuando quieras durante 12 meses, además de tus 2 lecturas gratis de cada día.":"Use them whenever you like for 12 months, on top of your 2 free readings every day.",
+"Quiero empezar a usar el bono de inmediato y acepto que pierdo el derecho de desistimiento sobre las lecturas que use.":"I want to start using the pack straight away and I accept that I lose my right of withdrawal for the readings I use.",
+"Comprar el bono":"Buy the pack",
+"Pago confirmado. ¡Ya tienes 10 lecturas personalizadas con IA!":"Payment confirmed. You now have 10 AI-personalised readings!",
+"✦ Lectura personalizada para tu pregunta con inteligencia artificial":"✦ Reading personalised to your question with artificial intelligence",
 "Tu opinión":"Your opinion",
 "¿Qué curso te gustaría?":"Which course would you like?",
 "¿Te gustaría que Tara preparara algún curso más? Cuéntanos cuál y lo tendremos en cuenta.":"Would you like Tara to create another course? Tell us which one and we'll take it into account.",
@@ -1195,11 +1215,11 @@ privacidad:`<h3>Privacy policy</h3>
 <li><b>Voice dictation:</b> if you use the microphone, speech recognition is performed by your browser. Depending on the browser (for example Chrome or Safari), the audio may be sent to its maker's servers (Google, Apple) to be converted into text, under their policies. Tara neither receives nor stores your audio.</li>
 <li><b>Course suggestions:</b> the course you propose and, if you ask us to create it to order, your email address. The owner receives them by email to consider the idea and, where applicable, send you a quote. They are not used for advertising.</li>
 <li><b>Account and purchases</b> (when available): email address, purchases and credits. Payments are processed by Stripe; we never see or store your card details.</li>
-<li><b>AI readings</b> (when available): your question and the symbols drawn are sent to an AI provider to generate the answer. Please don't send health data, data about other people or other sensitive information.</li>
+<li><b>AI readings:</b> when you ask a question, your question, the method and the symbols drawn are sent to Anthropic, our AI provider, to write your reading. Your name and other personal details are not sent, and Tara does not store your question. Please don't send health data, data about other people or other sensitive information.</li>
 </ul>
 <p><b>Legal basis.</b> Performance of the service you request, compliance with legal obligations (such as invoicing) and, where applicable, your consent, which you may withdraw at any time.</p>
 <p><b>Retention.</b> Account data for as long as you keep your account; suggestions and made-to-order requests, for up to 12 months or until you ask us to delete them; invoicing data for the periods required by law; the daily memory is deleted automatically the next day.</p>
-<p><b>Service providers</b> (data processors): Cloudflare (web hosting and email notifications), jsDelivr (library delivery), Google Fonts (typefaces) and, once activated, Supabase (accounts), Stripe (payments) and Anthropic (artificial intelligence). Some are located outside the European Economic Area; transfers rely on the safeguards provided by the GDPR (standard contractual clauses or the EU-US Data Privacy Framework).</p>
+<p><b>Service providers</b> (data processors): Cloudflare (web hosting and email notifications), jsDelivr (library delivery), Google Fonts (typefaces) Stripe (payments), Anthropic (artificial intelligence) and, once activated, Supabase (accounts). Some are located outside the European Economic Area; transfers rely on the safeguards provided by the GDPR (standard contractual clauses or the EU-US Data Privacy Framework).</p>
 <p><b>Your rights.</b> You may access, rectify or erase your data, object to or restrict its processing and request its portability by writing to ${T.email}. If you believe your request has not been handled properly, you may complain to the Spanish Data Protection Agency (aepd.es) or to the authority in your country.</p>
 <p><b>Minors.</b> The service is not intended for children under 14. Purchases may only be made by people over 18.</p>`,
 
@@ -1212,27 +1232,27 @@ cookies:`<h3>Cookies and storage</h3>
 <li><b>arc_compras:</b> remembers the readings you have bought on this device, so you can view them again.</li>
 <li><b>arc_pend:</b> during payment, keeps the details of the reading you are buying and your acceptance of the terms, so it can be delivered when you return from Stripe.</li>
 <li><b>arc_aviso:</b> remembers that you have seen the privacy notice.</li>
+<li><b>arc_ia:</b> counts how many AI-personalised readings you have had today (2 free per day). It resets every day.</li>
 <li><b>arc_lang:</b> remembers the language you chose.</li>
 </ul>
 <p>This data is necessary for the service you request and is not shared with anyone. You can delete it at any time from your browser settings.</p>
 <p>When the website loads, your browser connects to Cloudflare, jsDelivr and Google Fonts to download the page, the libraries and the typefaces; these services may log your IP address under their own policies.</p>`,
 
 condiciones:`<h3>Terms of sale</h3>
-<p class="nota">These terms will apply once purchases are enabled.</p>
 <p><b>Seller:</b> ${T.nombre}, NIF ${T.nif}, ${T.dir}, Canary Islands (Spain). Contact: ${T.email}.</p>
-<p><b>Products.</b> Digital entertainment content: the full personal reading, the full birth chart, AI reading packs and the Tara Premium subscription. The description and price of each product are shown before payment.</p>
+<p><b>Products.</b> Digital entertainment content: the full personal reading, the full birth chart, downloadable PDF guides (tarot and palmistry) and AI reading packs. The description and price of each product are shown before payment.</p>
+<p><b>AI reading pack.</b> Every day you get 2 free AI-personalised consultations. The 10-reading pack (€2.99) gives you 10 more personalised consultations, which you can use whenever you like for 12 months from purchase. It is stored on the device and browser you paid with; if you clear the site data, write to us and we will restore it.</p>
 <p><b>Prices and taxes.</b> Prices include the indirect taxes that apply according to your place of residence (IGIC in the Canary Islands, VAT in the rest of Spain and the European Union, or the applicable tax in other countries).</p>
 <p><b>Age.</b> You must be over 18 to make a purchase.</p>
 <p><b>Payment and delivery.</b> Payment is made by card or other methods through Stripe. Content is delivered immediately on the website after payment. You will receive the invoice by email.</p>
 <p><b>Right of withdrawal.</b> As a consumer, you have 14 days to withdraw from a purchase. However, for digital content delivered immediately, before paying we will ask you to expressly agree to immediate delivery and to acknowledge that you therefore lose your right of withdrawal (Article 103(m) of the Spanish consolidated Consumer Protection Act). Unused credits may be refunded if you request it within 14 days of purchase.</p>
-<p><b>Subscription.</b> Tara Premium renews automatically every month or every year, depending on the plan, until you cancel it. You can cancel at any time from your account, as easily as you subscribed; you will keep access until the end of the period already paid.</p>
 <p><b>Complaints.</b> For any issue, write to ${T.email}. We will reply as soon as possible and in any case within the time limit set by law. You may also contact the consumer protection services in your region.</p>
 <p><b>Governing law.</b> These terms are governed by Spanish law, without prejudice to the rights granted to you as a consumer by the law of your country of residence.</p>`,
 
 lecturas:`<h3>About the readings</h3>
 <p>Tara readings are a tool for <b>entertainment and self-reflection</b>. They do not predict the future and are not a substitute for the advice of health, psychology, legal or financial professionals. Don't make important decisions based on them alone.</p>
 <p>If you are going through a hard time, talk to someone you trust or to a professional. If you are thinking about harming yourself, contact your local crisis line or emergency services right away (in Spain: <b>024</b>, free and available at any time; emergencies: <b>112</b>).</p>
-<p><b>Use of artificial intelligence.</b> Free readings are composed from pre-written texts. AI readings, when available, will be generated automatically by artificial intelligence and labelled as such.</p>
+<p><b>Use of artificial intelligence.</b> Every reading starts from the symbols you draw in the ritual and from texts written by Tara. Every day, 2 consultations (plus those in your pack, if you buy one) are personalised to your question with artificial intelligence (Anthropic); those readings are labelled on screen as AI-generated. The personal reading and the birth chart are composed without AI.</p>
 <p><b>Astrological calculations.</b> The positions of the planets are calculated with real astronomical data; their interpretation is symbolic.</p>`
   };
 }
@@ -1592,6 +1612,17 @@ const UI={
 "Guía de Tarot de Tara":"La Guida ai Tarocchi di Tara",
 "Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"La tua guida completa per imparare a leggere i tarocchi da zero, passo dopo passo e ai tuoi tempi.",
 "Qué vas a aprender":"Cosa imparerai",
+"Hoy ya has usado tus 2 lecturas personalizadas con IA gratis. Esta es una lectura clásica de Tara; mañana tendrás 2 nuevas.":"Oggi hai già usato le tue 2 letture personalizzate con IA gratuite. Questa è una lettura classica di Tara; domani ne avrai 2 nuove.",
+"Hoy ya has usado tus 2 lecturas personalizadas con IA gratis.":"Oggi hai già usato le tue 2 letture personalizzate con IA gratuite.",
+"Lecturas personalizadas con IA gratis hoy:":"Letture personalizzate con IA gratuite oggi:",
+"Lecturas de tu bono:":"Letture del tuo pacchetto:",
+"Comprar bono de 10 lecturas":"Acquista il pacchetto da 10 letture",
+"Bono de 10 lecturas personalizadas con IA":"Pacchetto di 10 letture personalizzate con IA",
+"Úsalas cuando quieras durante 12 meses, además de tus 2 lecturas gratis de cada día.":"Usale quando vuoi per 12 mesi, oltre alle tue 2 letture gratuite di ogni giorno.",
+"Quiero empezar a usar el bono de inmediato y acepto que pierdo el derecho de desistimiento sobre las lecturas que use.":"Voglio iniziare a usare il pacchetto subito e accetto di perdere il diritto di recesso sulle letture che uso.",
+"Comprar el bono":"Acquista il pacchetto",
+"Pago confirmado. ¡Ya tienes 10 lecturas personalizadas con IA!":"Pagamento confermato. Ora hai 10 letture personalizzate con IA!",
+"✦ Lectura personalizada para tu pregunta con inteligencia artificial":"✦ Lettura personalizzata per la tua domanda con intelligenza artificiale",
 "Tu opinión":"La tua opinione",
 "¿Qué curso te gustaría?":"Quale corso ti piacerebbe?",
 "¿Te gustaría que Tara preparara algún curso más? Cuéntanos cuál y lo tendremos en cuenta.":"Ti piacerebbe che Tara preparasse un altro corso? Dicci quale e lo terremo in considerazione.",
@@ -1984,11 +2015,11 @@ privacidad:`<h3>Informativa sulla privacy</h3>
 <li><b>Dettatura vocale:</b> se usi il microfono, il riconoscimento vocale viene eseguito dal tuo browser. A seconda del browser (per esempio Chrome o Safari), l’audio può essere inviato ai server del suo produttore (Google, Apple) per essere convertito in testo, secondo le loro politiche. Tara non riceve né conserva il tuo audio.</li>
 <li><b>Suggerimenti di corsi:</b> il corso che proponi e, se chiedi di prepararlo su richiesta, il tuo indirizzo email. La titolare li riceve per email per valutare l’idea e, se del caso, inviarti un preventivo. Non vengono usati per pubblicità.</li>
 <li><b>Account e acquisti</b> (quando disponibili): indirizzo email, acquisti e crediti. I pagamenti sono gestiti da Stripe; non vediamo né conserviamo mai i dati della tua carta.</li>
-<li><b>Letture con IA</b> (quando disponibili): la tua domanda e i simboli estratti vengono inviati a un fornitore di intelligenza artificiale per generare la risposta. Ti chiediamo di non inviare dati sanitari, dati su altre persone o altre informazioni sensibili.</li>
+<li><b>Letture con IA:</b> quando fai una consultazione, la tua domanda, il metodo e i simboli estratti vengono inviati ad Anthropic, il nostro fornitore di intelligenza artificiale, per scrivere la tua lettura. Il tuo nome e gli altri tuoi dati non vengono inviati, e Tara non conserva la tua domanda. Ti chiediamo di non inviare dati sanitari, dati su altre persone o altre informazioni sensibili.</li>
 </ul>
 <p><b>Base giuridica.</b> L’esecuzione del servizio che richiedi, l’adempimento di obblighi di legge (come la fatturazione) e, ove applicabile, il tuo consenso, che puoi revocare in qualsiasi momento.</p>
 <p><b>Conservazione.</b> I dati dell’account, finché mantieni il tuo account; i suggerimenti e le richieste su misura, fino a 12 mesi o finché non ne chiedi la cancellazione; i dati di fatturazione, per i periodi previsti dalla legge; la memoria del giorno viene cancellata automaticamente il giorno successivo.</p>
-<p><b>Fornitori di servizi</b> (responsabili del trattamento): Cloudflare (hosting web e invio di avvisi via email), jsDelivr (distribuzione di librerie), Google Fonts (caratteri tipografici) e, una volta attivati, Supabase (account), Stripe (pagamenti) e Anthropic (intelligenza artificiale). Alcuni si trovano al di fuori dello Spazio economico europeo; i trasferimenti si basano sulle garanzie previste dal GDPR (clausole contrattuali tipo o EU-US Data Privacy Framework).</p>
+<p><b>Fornitori di servizi</b> (responsabili del trattamento): Cloudflare (hosting web e invio di avvisi via email), jsDelivr (distribuzione di librerie), Google Fonts (caratteri tipografici) Stripe (pagamenti), Anthropic (intelligenza artificiale) e, una volta attivato, Supabase (account). Alcuni si trovano al di fuori dello Spazio economico europeo; i trasferimenti si basano sulle garanzie previste dal GDPR (clausole contrattuali tipo o EU-US Data Privacy Framework).</p>
 <p><b>I tuoi diritti.</b> Puoi accedere ai tuoi dati, rettificarli o cancellarli, opporti al loro trattamento o limitarlo e richiederne la portabilità scrivendo a ${T.email}. Se ritieni che la tua richiesta non sia stata gestita correttamente, puoi presentare reclamo all’Agenzia spagnola per la protezione dei dati (aepd.es) o all’autorità del tuo paese.</p>
 <p><b>Minori.</b> Il servizio non è destinato ai minori di 14 anni. Gli acquisti possono essere effettuati solo da persone maggiori di 18 anni.</p>`,
 
@@ -2001,27 +2032,27 @@ cookies:`<h3>Cookie e archiviazione</h3>
 <li><b>arc_compras:</b> ricorda le letture che hai acquistato su questo dispositivo, così puoi rivederle.</li>
 <li><b>arc_pend:</b> durante il pagamento conserva i dati della lettura che stai acquistando e la tua accettazione delle condizioni, per consegnartela al ritorno da Stripe.</li>
 <li><b>arc_aviso:</b> ricorda che hai visto l’informativa sulla privacy.</li>
+<li><b>arc_ia:</b> conta quante letture personalizzate con IA hai ricevuto oggi (2 gratuite al giorno). Si azzera ogni giorno.</li>
 <li><b>arc_lang:</b> ricorda la lingua che hai scelto.</li>
 </ul>
 <p>Questi dati sono necessari per il servizio che richiedi e non vengono condivisi con nessuno. Puoi cancellarli in qualsiasi momento dalle impostazioni del tuo browser.</p>
 <p>Quando il sito web si carica, il tuo browser si collega a Cloudflare, jsDelivr e Google Fonts per scaricare la pagina, le librerie e i caratteri tipografici; questi servizi possono registrare il tuo indirizzo IP secondo le proprie politiche.</p>`,
 
 condiciones:`<h3>Condizioni di vendita</h3>
-<p class="nota">Queste condizioni si applicheranno quando gli acquisti saranno attivati.</p>
 <p><b>Venditrice:</b> ${T.nombre}, NIF ${T.nif}, ${T.dir}, Isole Canarie (Spagna). Contatto: ${T.email}.</p>
-<p><b>Prodotti.</b> Contenuti digitali di intrattenimento: la lettura personale completa, il tema natale completo, pacchetti di letture con IA e l’abbonamento Tara Premium. La descrizione e il prezzo di ciascun prodotto vengono mostrati prima del pagamento.</p>
+<p><b>Prodotti.</b> Contenuti digitali di intrattenimento: la lettura personale completa, il tema natale completo, guide scaricabili in PDF (tarocchi e chiromanzia) e pacchetti di letture con IA. La descrizione e il prezzo di ciascun prodotto vengono mostrati prima del pagamento.</p>
+<p><b>Pacchetto di letture con IA.</b> Ogni giorno hai 2 consultazioni personalizzate con IA gratuite. Il pacchetto da 10 letture (2,99 €) ti dà altre 10 consultazioni personalizzate, da usare quando vuoi entro 12 mesi dall’acquisto. Viene salvato sul dispositivo e sul browser con cui hai pagato; se cancelli i dati del sito, scrivici e lo recupereremo.</p>
 <p><b>Prezzi e imposte.</b> I prezzi includono le imposte indirette applicabili in base al tuo luogo di residenza (IGIC nelle Isole Canarie, IVA nel resto della Spagna e dell’Unione europea, o l’imposta applicabile negli altri paesi).</p>
 <p><b>Età.</b> Per effettuare un acquisto devi avere più di 18 anni.</p>
 <p><b>Pagamento e consegna.</b> Il pagamento si effettua con carta o altri metodi tramite Stripe. Il contenuto viene consegnato immediatamente sul sito web dopo il pagamento. Riceverai la fattura via email.</p>
 <p><b>Diritto di recesso.</b> In quanto consumatore, hai 14 giorni per recedere da un acquisto. Tuttavia, per i contenuti digitali forniti immediatamente, prima del pagamento ti chiederemo di acconsentire espressamente alla fornitura immediata e di riconoscere che, di conseguenza, perdi il diritto di recesso (articolo 103, lettera m, del Testo consolidato spagnolo della Legge generale per la tutela dei consumatori e degli utenti). I crediti non utilizzati possono essere rimborsati se ne fai richiesta entro 14 giorni dall’acquisto.</p>
-<p><b>Abbonamento.</b> Tara Premium si rinnova automaticamente ogni mese o ogni anno, a seconda del piano, finché non lo annulli. Puoi annullarlo in qualsiasi momento dal tuo account, con la stessa facilità con cui hai sottoscritto l’abbonamento; manterrai l’accesso fino alla fine del periodo già pagato.</p>
 <p><b>Reclami.</b> Per qualsiasi problema, scrivi a ${T.email}. Ti risponderemo il prima possibile e in ogni caso entro il termine previsto dalla legge. Puoi anche rivolgerti ai servizi di tutela dei consumatori della tua regione.</p>
 <p><b>Legge applicabile.</b> Queste condizioni sono regolate dalla legge spagnola, fatti salvi i diritti che ti riconosce come consumatore la legge del tuo paese di residenza.</p>`,
 
 lecturas:`<h3>Avviso sulle letture</h3>
 <p>Le letture di Tara sono uno strumento di <b>intrattenimento e di riflessione personale</b>. Non predicono il futuro e non sostituiscono il parere di professionisti della salute, della psicologia, del diritto o della finanza. Non prendere decisioni importanti basandoti solo su di esse.</p>
 <p>Se stai attraversando un momento difficile, parlane con una persona di fiducia o con un professionista. Se stai pensando di farti del male, contatta subito la linea di aiuto per le crisi del tuo paese o i servizi di emergenza (in Spagna: <b>024</b>, gratuito e disponibile a qualsiasi ora; emergenze: <b>112</b>).</p>
-<p><b>Uso dell’intelligenza artificiale.</b> Le letture gratuite sono composte a partire da testi già scritti. Le letture con IA, quando disponibili, saranno generate automaticamente dall’intelligenza artificiale e indicate come tali.</p>
+<p><b>Uso dell’intelligenza artificiale.</b> Ogni lettura parte dai simboli che escono nel rituale e da testi scritti da Tara. Ogni giorno 2 consultazioni (più quelle del tuo pacchetto, se lo acquisti) vengono personalizzate per la tua domanda con intelligenza artificiale (Anthropic); queste letture sono indicate sullo schermo come generate con IA. La lettura personale e il tema natale sono composti senza IA.</p>
 <p><b>Calcoli astrologici.</b> Le posizioni dei pianeti sono calcolate con dati astronomici reali; la loro interpretazione è simbolica.</p>`
   };
 }
@@ -2381,6 +2412,17 @@ const UI={
 "Guía de Tarot de Tara":"O Guia de Tarô da Tara",
 "Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"O seu guia completo para aprender a ler o tarô do zero, passo a passo e no seu ritmo.",
 "Qué vas a aprender":"O que você vai aprender",
+"Hoy ya has usado tus 2 lecturas personalizadas con IA gratis. Esta es una lectura clásica de Tara; mañana tendrás 2 nuevas.":"Hoje você já usou as suas 2 leituras personalizadas com IA grátis. Esta é uma leitura clássica da Tara; amanhã você terá 2 novas.",
+"Hoy ya has usado tus 2 lecturas personalizadas con IA gratis.":"Hoje você já usou as suas 2 leituras personalizadas com IA grátis.",
+"Lecturas personalizadas con IA gratis hoy:":"Leituras personalizadas com IA grátis hoje:",
+"Lecturas de tu bono:":"Leituras do seu pacote:",
+"Comprar bono de 10 lecturas":"Comprar pacote de 10 leituras",
+"Bono de 10 lecturas personalizadas con IA":"Pacote de 10 leituras personalizadas com IA",
+"Úsalas cuando quieras durante 12 meses, además de tus 2 lecturas gratis de cada día.":"Use quando quiser durante 12 meses, além das suas 2 leituras grátis de cada dia.",
+"Quiero empezar a usar el bono de inmediato y acepto que pierdo el derecho de desistimiento sobre las lecturas que use.":"Quero começar a usar o pacote imediatamente e aceito que perco o direito de arrependimento sobre as leituras que usar.",
+"Comprar el bono":"Comprar o pacote",
+"Pago confirmado. ¡Ya tienes 10 lecturas personalizadas con IA!":"Pagamento confirmado. Agora você tem 10 leituras personalizadas com IA!",
+"✦ Lectura personalizada para tu pregunta con inteligencia artificial":"✦ Leitura personalizada para a sua pergunta com inteligência artificial",
 "Tu opinión":"A sua opinião",
 "¿Qué curso te gustaría?":"Que curso você gostaria?",
 "¿Te gustaría que Tara preparara algún curso más? Cuéntanos cuál y lo tendremos en cuenta.":"Você gostaria que a Tara preparasse mais algum curso? Conte qual e vamos levar em conta.",
@@ -2773,11 +2815,11 @@ privacidad:`<h3>Política de privacidade</h3>
 <li><b>Ditado por voz:</b> se você usar o microfone, o reconhecimento de voz é feito pelo seu navegador. Dependendo do navegador (por exemplo, Chrome ou Safari), o áudio pode ser enviado aos servidores do fabricante (Google, Apple) para ser convertido em texto, de acordo com as políticas deles. Tara não recebe nem guarda o seu áudio.</li>
 <li><b>Sugestões de cursos:</b> o curso que você propõe e, se pedir que o preparemos sob encomenda, o seu e-mail. A titular os recebe por e-mail para avaliar a ideia e, se for o caso, enviar um orçamento. Não são usados para publicidade.</li>
 <li><b>Conta e compras</b> (quando disponíveis): endereço de e-mail, compras e créditos. Os pagamentos são processados pela Stripe; nunca vemos nem guardamos os dados do seu cartão.</li>
-<li><b>Leituras com IA</b> (quando disponíveis): a sua pergunta e os símbolos tirados são enviados a um provedor de IA para gerar a resposta. Não envie dados de saúde, dados de outras pessoas nem outras informações sensíveis.</li>
+<li><b>Leituras com IA:</b> quando você faz uma consulta, a sua pergunta, o método e os símbolos tirados são enviados à Anthropic, a nossa provedora de IA, para redigir a sua leitura. O seu nome e outros dados seus não são enviados, e a Tara não guarda a sua pergunta. Não envie dados de saúde, dados de outras pessoas nem outras informações sensíveis.</li>
 </ul>
 <p><b>Base jurídica.</b> A execução do serviço que você solicita, o cumprimento de obrigações legais (como a emissão de faturas) e, quando for o caso, o seu consentimento, que você pode retirar a qualquer momento.</p>
 <p><b>Conservação.</b> Os dados da conta, enquanto você mantiver a sua conta; as sugestões e os pedidos sob encomenda, por até 12 meses ou até você pedir que sejam apagados; os dados de faturamento, durante os prazos exigidos por lei; a memória diária é apagada automaticamente no dia seguinte.</p>
-<p><b>Prestadores de serviços</b> (operadores de dados): Cloudflare (hospedagem do site e envio de avisos por e-mail), jsDelivr (distribuição de bibliotecas), Google Fonts (fontes tipográficas) e, quando forem ativados, Supabase (contas), Stripe (pagamentos) e Anthropic (inteligência artificial). Alguns estão localizados fora do Espaço Econômico Europeu; as transferências se baseiam nas garantias previstas no RGPD (cláusulas contratuais-padrão ou o Quadro de Privacidade de Dados UE-EUA).</p>
+<p><b>Prestadores de serviços</b> (operadores de dados): Cloudflare (hospedagem do site e envio de avisos por e-mail), jsDelivr (distribuição de bibliotecas), Google Fonts (fontes tipográficas) Stripe (pagamentos), Anthropic (inteligência artificial) e, quando for ativado, Supabase (contas). Alguns estão localizados fora do Espaço Econômico Europeu; as transferências se baseiam nas garantias previstas no RGPD (cláusulas contratuais-padrão ou o Quadro de Privacidade de Dados UE-EUA).</p>
 <p><b>Os seus direitos.</b> Você pode acessar, retificar ou apagar os seus dados, opor-se ao tratamento ou limitá-lo e solicitar a sua portabilidade escrevendo para ${T.email}. Se considerar que a sua solicitação não foi atendida corretamente, você pode apresentar uma reclamação à Agência Espanhola de Proteção de Dados (aepd.es) ou à autoridade do seu país.</p>
 <p><b>Menores de idade.</b> O serviço não é destinado a menores de 14 anos. As compras só podem ser feitas por maiores de 18 anos.</p>`,
 
@@ -2790,27 +2832,27 @@ cookies:`<h3>Cookies e armazenamento</h3>
 <li><b>arc_compras:</b> lembra as leituras que você comprou neste dispositivo, para que você possa vê-las novamente.</li>
 <li><b>arc_pend:</b> durante o pagamento, guarda os dados da leitura que você está comprando e a sua aceitação das condições, para entregá-la quando você voltar do Stripe.</li>
 <li><b>arc_aviso:</b> lembra que você já viu o aviso de privacidade.</li>
+<li><b>arc_ia:</b> conta quantas leituras personalizadas com IA você recebeu hoje (2 grátis por dia). É zerado todos os dias.</li>
 <li><b>arc_lang:</b> lembra o idioma que você escolheu.</li>
 </ul>
 <p>Esses dados são necessários para o serviço que você solicita e não são compartilhados com ninguém. Você pode apagá-los a qualquer momento nas configurações do seu navegador.</p>
 <p>Ao carregar o site, o seu navegador se conecta à Cloudflare, ao jsDelivr e ao Google Fonts para baixar a página, as bibliotecas e as fontes; esses serviços podem registrar o seu endereço IP de acordo com as suas próprias políticas.</p>`,
 
 condiciones:`<h3>Condições de venda</h3>
-<p class="nota">Estas condições serão aplicadas quando as compras forem ativadas.</p>
 <p><b>Vendedora:</b> ${T.nombre}, NIF ${T.nif}, ${T.dir}, Ilhas Canárias (Espanha). Contato: ${T.email}.</p>
-<p><b>Produtos.</b> Conteúdos digitais de entretenimento: a leitura pessoal completa, o mapa astral completo, pacotes de leituras com IA e a assinatura Tara Premium. A descrição e o preço de cada produto são mostrados antes do pagamento.</p>
+<p><b>Produtos.</b> Conteúdos digitais de entretenimento: a leitura pessoal completa, o mapa astral completo, guias em PDF para baixar (tarô e quiromancia) e pacotes de leituras com IA. A descrição e o preço de cada produto são mostrados antes do pagamento.</p>
+<p><b>Pacote de leituras com IA.</b> Todos os dias você tem 2 consultas personalizadas com IA grátis. O pacote de 10 leituras (2,99 €) dá mais 10 consultas personalizadas, que você pode usar quando quiser durante 12 meses a partir da compra. Ele fica salvo no dispositivo e no navegador com que você pagou; se apagar os dados do site, escreva para nós e vamos recuperá-lo.</p>
 <p><b>Preços e impostos.</b> Os preços incluem os impostos indiretos aplicáveis de acordo com o seu local de residência (IGIC nas Ilhas Canárias, IVA no restante da Espanha e da União Europeia, ou o imposto correspondente em outros países).</p>
 <p><b>Idade.</b> Você precisa ser maior de 18 anos para fazer uma compra.</p>
 <p><b>Pagamento e entrega.</b> O pagamento é feito com cartão ou outros meios por meio da Stripe. O conteúdo é entregue imediatamente no site após o pagamento. Você receberá a fatura por e-mail.</p>
 <p><b>Direito de arrependimento.</b> Como consumidor, você tem 14 dias para desistir de uma compra. No entanto, no caso de conteúdo digital entregue imediatamente, antes do pagamento pediremos que você aceite expressamente a entrega imediata e reconheça que, por isso, perde o seu direito de arrependimento (artigo 103, alínea m, do Texto Refundido de la Ley General para la Defensa de los Consumidores y Usuarios — lei espanhola de defesa do consumidor). Os créditos não utilizados poderão ser reembolsados se você solicitar dentro de 14 dias a partir da compra.</p>
-<p><b>Assinatura.</b> Tara Premium é renovada automaticamente a cada mês ou a cada ano, conforme o plano, até que você a cancele. Você pode cancelar a qualquer momento na sua conta, com a mesma facilidade com que assinou; você manterá o acesso até o fim do período já pago.</p>
 <p><b>Reclamações.</b> Para qualquer questão, escreva para ${T.email}. Responderemos o quanto antes e, em todo caso, dentro do prazo estabelecido por lei. Você também pode procurar os serviços de defesa do consumidor da sua região.</p>
 <p><b>Legislação aplicável.</b> Estas condições são regidas pela legislação espanhola, sem prejuízo dos direitos que a lei do seu país de residência lhe concede como consumidor.</p>`,
 
 lecturas:`<h3>Sobre as leituras</h3>
 <p>As leituras de Tara são uma ferramenta de <b>entretenimento e autorreflexão</b>. Elas não preveem o futuro e não substituem a orientação de profissionais de saúde, psicologia, direito ou finanças. Não tome decisões importantes baseando-se apenas nelas.</p>
 <p>Se você estiver passando por um momento difícil, converse com alguém de confiança ou com um profissional. Se estiver pensando em fazer mal a si mesmo, entre em contato imediatamente com a linha de apoio emocional ou com os serviços de emergência do seu país (na Espanha: <b>024</b>, gratuito e disponível a qualquer hora; emergências: <b>112</b>).</p>
-<p><b>Uso de inteligência artificial.</b> As leituras gratuitas são compostas a partir de textos previamente escritos. As leituras com IA, quando estiverem disponíveis, serão geradas automaticamente por inteligência artificial e identificadas como tal.</p>
+<p><b>Uso de inteligência artificial.</b> Cada leitura parte dos símbolos que saem no ritual e de textos escritos pela Tara. Todos os dias, 2 consultas (e as do seu pacote, se você comprar um) são personalizadas para a sua pergunta com inteligência artificial (Anthropic); essas leituras são identificadas na tela como geradas com IA. A leitura pessoal e o mapa astral são compostos sem IA.</p>
 <p><b>Cálculos astrológicos.</b> As posições dos planetas são calculadas com dados astronômicos reais; a sua interpretação é simbólica.</p>`
   };
 }
@@ -3419,6 +3461,8 @@ function pickMethod(id){
   document.getElementById('mi').style.borderColor=m.color+'33';
   document.getElementById('qi').value='';
   document.getElementById('ab').disabled=true;
+  ['iabono-preg','iabono-resp'].forEach(id=>{ const e=document.getElementById(id); if(e) e.innerHTML=''; });
+  pintarIA();
   buildRing(m.color);
   goTo('s-preg');
 }
@@ -3880,7 +3924,7 @@ function rAstro(m){
 
 /* ═══ ORÁCULO LOCAL — lecturas escritas (coste cero) ═══
    Cuando activemos la lectura con IA de pago, cambiar MODO_IA a true. */
-const MODO_IA=false;
+const MODO_IA=true;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const lc=s=>s.charAt(0).toLowerCase()+s.slice(1);
 
@@ -4933,11 +4977,11 @@ privacidad:`<h3>Política de privacidad</h3>
 <li><b>Dictado por voz:</b> si usas el micrófono, el reconocimiento de voz lo realiza tu navegador. Según el navegador (por ejemplo Chrome o Safari), el audio puede enviarse a los servidores de su fabricante (Google, Apple) para convertirlo en texto, conforme a sus políticas. Tara no recibe ni guarda tu audio.</li>
 <li><b>Sugerencias de cursos:</b> el curso que propones y, si pides que te lo preparemos por encargo, tu correo electrónico. Los recibe la titular por correo para valorar la idea y, en su caso, enviarte presupuesto. No se usan para publicidad.</li>
 <li><b>Cuenta y compras</b> (cuando estén disponibles): correo electrónico, compras realizadas y créditos. Los pagos los procesa Stripe; nunca vemos ni guardamos los datos de tu tarjeta.</li>
-<li><b>Lecturas con inteligencia artificial</b> (cuando estén disponibles): tu pregunta y los símbolos obtenidos se envían a un proveedor de IA para generar la respuesta. No envíes datos de salud, datos de terceros ni otra información sensible.</li>
+<li><b>Lecturas con inteligencia artificial:</b> cuando haces una consulta, tu pregunta, el método y los símbolos obtenidos se envían a Anthropic, nuestro proveedor de IA, para redactar tu lectura. No se envía tu nombre ni otros datos tuyos, y Tara no guarda tu pregunta. No envíes datos de salud, datos de terceros ni otra información sensible.</li>
 </ul>
 <p><b>Base legal.</b> La ejecución del servicio que solicitas, el cumplimiento de obligaciones legales (por ejemplo, la facturación) y, cuando corresponda, tu consentimiento, que puedes retirar en cualquier momento.</p>
 <p><b>Conservación.</b> Los datos de cuenta, mientras la mantengas; las sugerencias y solicitudes de encargo, hasta 12 meses o hasta que pidas su borrado; los de facturación, durante los plazos que exige la ley; la memoria del día se borra sola al día siguiente.</p>
-<p><b>Proveedores que nos prestan servicio</b> (encargados del tratamiento): Cloudflare (alojamiento web y envío de avisos por correo), jsDelivr (distribución de librerías), Google Fonts (tipografías) y, cuando se activen, Supabase (cuentas), Stripe (pagos) y Anthropic (inteligencia artificial). Algunos están fuera del Espacio Económico Europeo; las transferencias se amparan en las garantías previstas en el RGPD (cláusulas contractuales tipo o el Marco de Privacidad de Datos UE-EE. UU.).</p>
+<p><b>Proveedores que nos prestan servicio</b> (encargados del tratamiento): Cloudflare (alojamiento web y envío de avisos por correo), jsDelivr (distribución de librerías), Google Fonts (tipografías) Stripe (pagos), Anthropic (inteligencia artificial) y, cuando se active, Supabase (cuentas). Algunos están fuera del Espacio Económico Europeo; las transferencias se amparan en las garantías previstas en el RGPD (cláusulas contractuales tipo o el Marco de Privacidad de Datos UE-EE. UU.).</p>
 <p><b>Tus derechos.</b> Puedes acceder a tus datos, rectificarlos, suprimirlos, oponerte o limitar su tratamiento y pedir su portabilidad escribiendo a ${T.email}. Si crees que no hemos atendido bien tu solicitud, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
 <p><b>Menores.</b> El servicio no está dirigido a menores de 14 años. Las compras solo pueden realizarlas personas mayores de 18 años.</p>`,
 
@@ -4950,27 +4994,27 @@ cookies:`<h3>Cookies y almacenamiento</h3>
 <li><b>arc_compras:</b> recuerda las lecturas que has comprado en este dispositivo, para que puedas volver a verlas.</li>
 <li><b>arc_pend:</b> guarda durante el pago los datos de la lectura que estás comprando y tu aceptación de las condiciones, para entregártela al volver de Stripe.</li>
 <li><b>arc_aviso:</b> recuerda que ya has visto el aviso de privacidad.</li>
+<li><b>arc_ia:</b> cuenta cuántas lecturas personalizadas con IA has recibido hoy (2 gratis al día). Se pone a cero cada día.</li>
 <li><b>arc_lang:</b> recuerda el idioma que has elegido.</li>
 </ul>
 <p>Son datos necesarios para el funcionamiento del servicio que pides y no se comparten con nadie. Puedes borrarlos cuando quieras desde los ajustes de tu navegador.</p>
 <p>Al cargar la web, tu navegador se conecta a Cloudflare, jsDelivr y Google Fonts para descargar la página, las librerías y las tipografías; estos servicios pueden registrar tu dirección IP conforme a sus políticas.</p>`,
 
 condiciones:`<h3>Condiciones de contratación</h3>
-<p class="nota">Estas condiciones se aplicarán cuando se activen las compras.</p>
 <p><b>Vendedor:</b> ${T.nombre}, NIF ${T.nif}, ${T.dir}, Canarias (España). Contacto: ${T.email}.</p>
-<p><b>Productos.</b> Contenido digital de entretenimiento: lectura personal completa, carta astral completa, packs de lecturas con IA y suscripción Tara Premium. La descripción y el precio de cada producto se muestran antes de pagar.</p>
+<p><b>Productos.</b> Contenido digital de entretenimiento: lectura personal completa, carta astral completa, guías descargables en PDF (tarot y quiromancia) y bonos de lecturas con IA. La descripción y el precio de cada producto se muestran antes de pagar.</p>
+<p><b>Bono de lecturas con IA.</b> Cada día tienes 2 consultas personalizadas con IA gratis. El bono de 10 lecturas (2,99 €) te da 10 consultas personalizadas más, que puedes usar cuando quieras durante 12 meses desde la compra. Se guarda en el dispositivo y el navegador con los que pagaste; si borras los datos de la web, escríbenos y lo recuperaremos.</p>
 <p><b>Precios e impuestos.</b> Los precios incluyen los impuestos indirectos que correspondan según tu lugar de residencia (IGIC en Canarias, IVA en el resto de España y en la Unión Europea, o el impuesto aplicable en otros países).</p>
 <p><b>Edad.</b> Para comprar tienes que ser mayor de 18 años.</p>
 <p><b>Pago y entrega.</b> El pago se realiza con tarjeta u otros medios a través de Stripe. El contenido se entrega de forma inmediata en la web tras el pago. Recibirás la factura en tu correo electrónico.</p>
 <p><b>Derecho de desistimiento.</b> Como consumidor, tienes 14 días para desistir de una compra. Sin embargo, en el contenido digital que se entrega al momento, antes de pagar te pediremos que aceptes expresamente que el contenido se te entregue de inmediato y que reconozcas que, por ello, pierdes el derecho de desistimiento (artículo 103 m del Texto Refundido de la Ley General para la Defensa de los Consumidores y Usuarios). Los créditos que no hayas usado podrán reembolsarse si lo pides en los 14 días siguientes a la compra.</p>
-<p><b>Suscripción.</b> Tara Premium se renueva automáticamente cada mes o cada año, según el plan elegido, hasta que la canceles. Puedes cancelarla en cualquier momento desde tu cuenta, de forma tan sencilla como la contrataste; seguirás teniendo acceso hasta el final del periodo ya pagado.</p>
 <p><b>Reclamaciones.</b> Para cualquier incidencia escribe a ${T.email}. Te responderemos lo antes posible y, en todo caso, en el plazo que marca la ley. También puedes acudir a los servicios de consumo de tu comunidad autónoma.</p>
 <p><b>Legislación.</b> Estas condiciones se rigen por la legislación española, sin perjuicio de los derechos que te reconozca la ley de tu país de residencia como consumidor.</p>`,
 
 lecturas:`<h3>Aviso sobre las lecturas</h3>
 <p>Las lecturas de Tara son una herramienta de <b>entretenimiento y reflexión personal</b>. No predicen el futuro y no sustituyen el consejo de profesionales de la salud, la psicología, el derecho o las finanzas. No tomes decisiones importantes basándote solo en ellas.</p>
 <p>Si estás pasando por un momento difícil, habla con alguien de confianza o con un profesional. En España, si tienes pensamientos de hacerte daño, llama al <b>024</b> (gratuito, a cualquier hora); en caso de emergencia, al <b>112</b>.</p>
-<p><b>Uso de inteligencia artificial.</b> Las lecturas gratuitas se componen a partir de textos redactados previamente. Las lecturas con IA, cuando estén disponibles, se generan automáticamente con inteligencia artificial y se señalarán como tales.</p>
+<p><b>Uso de inteligencia artificial.</b> Cada lectura parte de los símbolos que te salen en el ritual y de textos redactados por Tara. Cada día, 2 consultas (y las de tu bono, si lo compras) se personalizan para tu pregunta con inteligencia artificial (Anthropic); esas lecturas se señalan en pantalla como generadas con IA. La lectura personal y la carta astral se componen sin IA.</p>
 <p><b>Cálculos astrológicos.</b> Las posiciones de los astros se calculan con datos astronómicos reales; su interpretación es simbólica.</p>`
   };
 }
@@ -5012,6 +5056,7 @@ const PAGOS={
   personal:{link:'https://buy.stripe.com/test_00w4gt3G20RWcx07hn4F206',precio:'4,99 €'},
   carta:{link:'https://buy.stripe.com/test_14A4gt7Wiasw8gKgRX4F203',precio:'6,99 €'},
   guia:{link:'https://buy.stripe.com/test_28EdR3ccygQUcx03174F208',precio:'47 €'},
+  bono:{link:'',precio:'2,99 €'},
   quiro:{link:'https://buy.stripe.com/test_14A9ANekG4482Wq6dj4F209',precio:'57 €'}
 };
 const paywall=(P,prod)=>{
@@ -5058,18 +5103,25 @@ function pintarGuia(){ pintarProd('guia','guia-compra'); pintarProd('quiro','qui
 function avisoPago(t,ms){ const m=document.getElementById('pagomsg'); m.textContent=t; m.style.display='block'; clearTimeout(avisoPago._t); if(ms) avisoPago._t=setTimeout(()=>m.style.display='none',ms); }
 /* Al volver de Stripe: ?pago=cs_... → se comprueba en el servidor y se desbloquea la lectura */
 async function initPagos(){
-  const id=new URLSearchParams(location.search).get('pago'); if(!id) return;  /* ?pago=cs_... o ?pago=ok */
-  history.replaceState(null,'',location.pathname);
+  let id=new URLSearchParams(location.search).get('pago');  /* ?pago=cs_... o ?pago=ok */
   let pend=null; try{ pend=JSON.parse(localStorage.getItem('arc_pend')||'null'); }catch(e){}
-  avisoPago(T('Comprobando el pago…'));
+  /* Sin ?pago: si quedó un pago a medias (p. ej. la web no cargó al volver de Stripe), se comprueba en silencio */
+  const silencio=!id;
+  if(silencio){
+    if(!pend||!pend.ref) return;
+    if(Date.now()-(pend.t||0)>7*864e5){ try{ localStorage.removeItem('arc_pend'); }catch(e){} return; }
+    id='ok';
+  } else { history.replaceState(null,'',location.pathname); avisoPago(T('Comprobando el pago…')); }
   let r=null;
   const q=/^cs_/.test(id)?'id='+encodeURIComponent(id):'ref='+encodeURIComponent(pend&&pend.ref||'');
   try{ r=await fetch('/api/verificar?'+q).then(x=>x.json()); }catch(e){}
   if(!r||!r.pagado||!pend||(r.producto&&r.producto!==pend.p)){
+    if(silencio){ if(r&&!r.pagado&&Date.now()-(pend.t||0)>2*864e5){ try{ localStorage.removeItem('arc_pend'); }catch(e){} } return; }
     avisoPago(T('No hemos podido confirmar el pago. Si se te ha cobrado, escríbenos a')+' '+TITULAR.email,12000); return;
   }
   const sid=(r.id&&/^cs_/.test(r.id))?r.id:(/^cs_/.test(id)?id:pend.ref);
-  const c=compras(); if(!comprado(pend.p,pend.k)) c.push({p:pend.p,k:pend.k,id:sid}); try{ localStorage.setItem('arc_compras',JSON.stringify(c)); localStorage.removeItem('arc_pend'); }catch(e){}
+  const c=compras(); if(!comprado(pend.p,pend.k)) c.push(pend.p==='bono'?{p:'bono',k:pend.k,id:sid,quedan:10}:{p:pend.p,k:pend.k,id:sid}); try{ localStorage.setItem('arc_compras',JSON.stringify(c)); localStorage.removeItem('arc_pend'); }catch(e){}
+  if(pend.p==='bono'){ avisoPago(T('Pago confirmado. ¡Ya tienes 10 lecturas personalizadas con IA!'),8000); goTo('s-metodo'); return; }
   if(pend.p==='guia'||pend.p==='quiro'){ avisoPago(T('Pago confirmado. ¡Ya puedes descargar tu guía!'),8000); goTo('s-cursos'); pintarGuia(); return; }
   avisoPago(T('Pago confirmado. ¡Aquí tienes tu lectura completa!'),6000);
   const d=pend.datos;
@@ -5162,7 +5214,7 @@ async function setLang(l){
   document.documentElement.lang=l;
   document.documentElement.dir=(P&&P.dir)||'ltr';
   document.title='Tara';
-  traducirDOM(); pintarMetodos(); pintarGuia();
+  traducirDOM(); pintarMetodos(); pintarGuia(); pintarIA();
   if(selM){ const m=M.find(x=>x.id===selM); if(m){ document.getElementById('mt').textContent=m.name; document.getElementById('ms').textContent=m.desc; document.getElementById('mc').innerHTML=m.info; } }
   if(!document.getElementById('s-legal').classList.contains('off')) verLegal();
   document.getElementById('langb').textContent=l.toUpperCase()+' ▾';
@@ -5182,6 +5234,40 @@ function initIdioma(){
 }
 
 /* ═══ ORACLE API ═══ */
+/* Lecturas con IA: máximo 3 al día en este dispositivo (el servidor también limita) */
+const IA_DIA=2;
+function iaEstado(){ const hoy=new Date().toISOString().slice(0,10); let e; try{ e=JSON.parse(localStorage.getItem('arc_ia')||'{}'); }catch(x){ e={}; } return e.d===hoy?e:{d:hoy,n:0}; }
+function iaGuardar(e){ try{ localStorage.setItem('arc_ia',JSON.stringify(e)); }catch(x){} }
+function iaQuedan(){ return Math.max(0,IA_DIA-iaEstado().n); }
+function iaGastar(){ const e=iaEstado(); e.n++; iaGuardar(e); }
+function iaAgotar(){ const e=iaEstado(); e.n=IA_DIA; iaGuardar(e); }
+/* Bonos de 10 lecturas con IA, guardados en este dispositivo */
+function bonoActivo(){ return compras().find(c=>c.p==='bono'&&(c.quedan==null||c.quedan>0)); }
+function bonoQuedan(){ return compras().filter(c=>c.p==='bono').reduce((a,c)=>a+(c.quedan==null?10:c.quedan),0); }
+function bonoActualizar(id,quedan){ const c=compras(); const b=c.find(x=>x.p==='bono'&&x.id===id); if(b){ b.quedan=Math.max(0,quedan); try{ localStorage.setItem('arc_compras',JSON.stringify(c)); }catch(e){} } }
+function bonoPanel(donde){
+  ['iabono-preg','iabono-resp'].forEach(id=>{ const e=document.getElementById(id); if(e) e.innerHTML=''; });
+  const box=document.getElementById(donde); if(!box) return; const cfg=PAGOS.bono;
+  if(!cfg.link){ box.innerHTML=`<div class="bono-box"><p class="bono-t">${T('Bono de 10 lecturas personalizadas con IA')} · ${cfg.precio}</p><p>${T('Próximamente')}</p></div>`; return; }
+  _ultima.bono={k:'bono-'+Date.now(),datos:{}};
+  box.innerHTML=`<div class="bono-box"><p class="bono-t">${T('Bono de 10 lecturas personalizadas con IA')} · ${cfg.precio}</p>
+  <p>${T('Úsalas cuando quieras durante 12 meses, además de tus 2 lecturas gratis de cada día.')}</p>
+  <label class="pwc"><input type="checkbox" id="pw18-bono"> <span>${T('Soy mayor de 18 años.')}</span></label>
+  <label class="pwc"><input type="checkbox" id="pwdes-bono"> <span>${T('Quiero empezar a usar el bono de inmediato y acepto que pierdo el derecho de desistimiento sobre las lecturas que use.')}</span></label>
+  <p class="pwerr" id="pwerr-bono"></p>
+  <button class="bp w" onclick="pagar('bono')">${T('Comprar el bono')} · ${cfg.precio}</button>
+  <p class="pwleg">${T('Pago seguro con Stripe.')} <a onclick="verLegal('condiciones')">${T('Condiciones de contratación')}</a></p></div>`;
+}
+function pintarIA(){
+  const e=document.getElementById('iaestado'); if(!e||!MODO_IA) return;
+  const g=iaQuedan(), b=bonoQuedan();
+  let h='';
+  if(g>0) h=`✦ ${T('Lecturas personalizadas con IA gratis hoy:')} <b>${g}</b>`;
+  else h=T('Hoy ya has usado tus 2 lecturas personalizadas con IA gratis.');
+  if(b>0) h+=`<br>✦ ${T('Lecturas de tu bono:')} <b>${b}</b>`;
+  else if(g===0) h+=`<br><button class="bg" onclick="bonoPanel('iabono-preg')">${T('Comprar bono de 10 lecturas')} · ${PAGOS.bono.precio}</button>`;
+  e.innerHTML=h;
+}
 async function callOracle(){
   const q=document.getElementById('qi').value.trim();
   const m=M.find(x=>x.id===selM);
@@ -5191,25 +5277,32 @@ async function callOracle(){
   const bar=document.getElementById('lbar'); bar.style.width='0';
   let pg=0; const pi=setInterval(()=>{pg=Math.min(pg+Math.random()*9,88);bar.style.width=pg+'%';},380);
 
-  const sys=`Eres el Gran Oráculo Arcano. El consultante realizó el ritual de ${m.name}: ${ritSel}.
-Usa ese resultado como eje central de tu lectura.
-Responde SOLO en JSON sin texto fuera del bloque JSON:
-{"simbolo":"símbolo del ritual realizado","mensaje_corto":"frase poética máx 20 palabras","interpretacion":"3-4 oraciones profundas usando ${m.name} y el resultado ritual específico","guia_practica":"consejo concreto 2-3 oraciones","advertencia":"sombra o cautela 1-2 oraciones","conocimiento_arcano":"dato esotérico fascinante 2 oraciones","energia":"una palabra","color_energia":"color hex"}`;
 
   let ans;
   try{
-    if(!MODO_IA){
-      await new Promise(r=>setTimeout(r,1600+Math.random()*900));
-      ans=fixEs(lecturaLocal(m,q));
-    } else {
-    const r=await fetch('/api/oracle',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({system:sys,user:`Método:${m.name}\nRitual:${ritSel}\nPregunta:"${q}"`})
-    });
-    if(!r.ok) throw new Error('Backend error '+r.status);
-    const data=await r.json();
-    ans=JSON.parse((data.text||'').replace(/```json|```/g,'').trim());
+    const t0=Date.now();
+    ans=fixEs(lecturaLocal(m,q)); ans.ia=false;
+    if(MODO_IA && q){
+      const libre=iaQuedan()>0, bono=libre?null:bonoActivo();
+      if(libre||bono){
+        try{
+          const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),25000);
+          const r=await fetch('/api/oracle',{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,
+            body:JSON.stringify({metodo:m.id,nombre:m.name,ritual:String(ritSel||'').slice(0,300),pregunta:q.slice(0,500),lang:LANG,bono:bono?bono.id:'',
+              base:{simbolo:ans.simbolo,energia:ans.energia,mensaje_corto:ans.mensaje_corto,interpretacion:ans.interpretacion,guia_practica:ans.guia_practica,advertencia:ans.advertencia}})});
+          clearTimeout(to);
+          const data=await r.json().catch(()=>({}));
+          if(data.ok&&data.lectura){
+            const L=data.lectura;
+            ['mensaje_corto','interpretacion','guia_practica','advertencia'].forEach(k=>{ if(typeof L[k]==='string'&&L[k].trim()) ans[k]=L[k].trim(); });
+            ans.ia=true;
+            if(bono){ bonoActualizar(bono.id,data.restantes); ans.bonoQuedan=bonoQuedan(); } else iaGastar();
+          } else if(data.limite&&!bono){ ans.limiteIA=true; iaAgotar(); }
+          else if(data.agotado&&bono){ bonoActualizar(bono.id,0); ans.limiteIA=true; }
+        }catch(e){}
+      } else ans.limiteIA=true;
     }
+    const falta=1600-(Date.now()-t0); if(falta>0) await new Promise(r=>setTimeout(r,falta+Math.random()*700));
   }catch(e){
     ans={simbolo:'⚠️',mensaje_corto:'El velo está turbio…',
       interpretacion:'Las energías no permiten la visión ahora. Reformula tu pregunta con calma.',
@@ -5238,6 +5331,11 @@ function showResp(ans,m){
   document.getElementById('edot').style.background=col;
   document.getElementById('elbl').textContent=T('Energía: ')+ans.energia;
   document.getElementById('elbl').style.color=col;
+  const im=document.getElementById('iamark');
+  ['iabono-preg','iabono-resp'].forEach(id=>{ const e=document.getElementById(id); if(e) e.innerHTML=''; });
+  if(ans.ia){ im.textContent=T('✦ Lectura personalizada para tu pregunta con inteligencia artificial')+(ans.bonoQuedan!=null?' · '+T('Lecturas de tu bono:')+' '+ans.bonoQuedan:''); im.classList.remove('off'); }
+  else if(ans.limiteIA){ im.textContent=T('Hoy ya has usado tus 2 lecturas personalizadas con IA gratis. Esta es una lectura clásica de Tara; mañana tendrás 2 nuevas.'); im.classList.remove('off'); bonoPanel('iabono-resp'); }
+  else im.classList.add('off');
   document.getElementById('ac1t').textContent=ans.interpretacion;
   document.getElementById('ac2t').textContent=ans.guia_practica;
   document.getElementById('ac3t').textContent=ans.advertencia;
