@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8"/>
+<meta name="google" content="notranslate"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="color-scheme" content="dark only"/>
 <meta name="theme-color" content="#050014"/>
@@ -429,6 +430,11 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
   /* Fondo de los rituales opaco: que no se transparente la pantalla de detrás */
   #ov{background:#050014!important}
 }
+/* Estrellas fugaces del fondo de la portada */
+#fugaces{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
+#fugaces i{position:absolute;left:0;top:0;height:2px;border-radius:2px;transform-origin:100% 50%;
+  background:linear-gradient(90deg,#ffffff00,#e9d5ffaa 60%,#fff);filter:drop-shadow(0 0 4px #e9d5ff)}
+#fugaces i::after{content:'';position:absolute;right:-2px;top:-2px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #f5ecff}
 </style>
 </head>
 <body>
@@ -447,6 +453,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 
 <!-- INTRO -->
 <div class="scr" id="s-intro">
+  <div id="fugaces" aria-hidden="true"></div>
   <div style="position:relative;width:188px;height:188px;margin-bottom:24px">
     <svg width="188" height="188" viewBox="0 0 188 188"
          style="position:absolute;inset:0;animation:spin 28s linear infinite;opacity:.55">
@@ -630,7 +637,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
       <li>Cómo formular la pregunta y unir el mensaje de las cartas.</li>
       <li>Ejercicios prácticos para leer desde el primer día.</li>
     </ul>
-    <p class="cur-nota">PDF de 72 páginas · Guía en español</p>
+    <p class="cur-nota">PDF · Disponible en español, inglés, italiano y portugués</p>
     <div id="guia-compra"></div>
   </div>
   <div class="curso" style="margin-top:14px">
@@ -645,7 +652,7 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
       <li>Diez señales especiales y cómo interpretarlas.</li>
       <li>Un método de lectura paso a paso y un plan de práctica.</li>
     </ul>
-    <p class="cur-nota">PDF de 59 páginas · Guía en español</p>
+    <p class="cur-nota">PDF · Disponible en español, inglés, italiano y portugués</p>
     <div id="quiro-compra"></div>
   </div>
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
@@ -711,6 +718,7 @@ const UI={
 "Cursos":"Courses",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Learn with Tara. Our first courses are opening very soon.",
 "Curso de tarot":"Tarot course",
+"PDF · Disponible en español, inglés, italiano y portugués":"PDF · Available in Spanish, English, Italian and Portuguese",
 "Guía de Quiromancia de Tara":"Tara's Palmistry Guide",
 "Aprende a leer las manos desde cero: lo que cuentan su forma, sus montes, sus líneas y sus señales.":"Learn to read hands from scratch: what their shape, mounts, lines and signs reveal.",
 "Los cuatro tipos de mano: Tierra, Aire, Fuego y Agua.":"The four hand types: Earth, Air, Fire and Water.",
@@ -719,8 +727,6 @@ const UI={
 "Las líneas secundarias: Destino, Sol, Mercurio, Intuición y más.":"The minor lines: Fate, Sun, Mercury, Intuition and more.",
 "Diez señales especiales y cómo interpretarlas.":"Ten special signs and how to interpret them.",
 "Un método de lectura paso a paso y un plan de práctica.":"A step-by-step reading method and a practice plan.",
-"PDF de 59 páginas · Guía en español":"59-page PDF · Guide in Spanish",
-"PDF de 72 páginas · Guía en español":"72-page PDF · Guide in Spanish",
 "Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.":"You already have your guide. You can download it whenever you like from this device.",
 "Descargar mi guía (PDF)":"Download my guide (PDF)",
 "Quiero descargar la guía de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"I want to download the guide immediately and I accept that, once I receive it, I lose my right of withdrawal.",
@@ -1481,6 +1487,7 @@ const UI={
 "Cursos":"Corsi",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Impara con Tara. I nostri primi corsi apriranno molto presto.",
 "Curso de tarot":"Corso di tarocchi",
+"PDF · Disponible en español, inglés, italiano y portugués":"PDF · Disponibile in spagnolo, inglese, italiano e portoghese",
 "Guía de Quiromancia de Tara":"La Guida alla Chiromanzia di Tara",
 "Aprende a leer las manos desde cero: lo que cuentan su forma, sus montes, sus líneas y sus señales.":"Impara a leggere le mani da zero: cosa raccontano la forma, i monti, le linee e i segni.",
 "Los cuatro tipos de mano: Tierra, Aire, Fuego y Agua.":"I quattro tipi di mano: Terra, Aria, Fuoco e Acqua.",
@@ -1489,8 +1496,6 @@ const UI={
 "Las líneas secundarias: Destino, Sol, Mercurio, Intuición y más.":"Le linee secondarie: Destino, Sole, Mercurio, Intuizione e altre.",
 "Diez señales especiales y cómo interpretarlas.":"Dieci segni speciali e come interpretarli.",
 "Un método de lectura paso a paso y un plan de práctica.":"Un metodo di lettura passo dopo passo e un piano di pratica.",
-"PDF de 59 páginas · Guía en español":"PDF di 59 pagine · Guida in spagnolo",
-"PDF de 72 páginas · Guía en español":"PDF di 72 pagine · Guida in spagnolo",
 "Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.":"Hai già la tua guida. Puoi scaricarla quando vuoi da questo dispositivo.",
 "Descargar mi guía (PDF)":"Scarica la mia guida (PDF)",
 "Quiero descargar la guía de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Voglio scaricare subito la guida e accetto che, ricevendola, perdo il diritto di recesso.",
@@ -2251,6 +2256,7 @@ const UI={
 "Cursos":"Cursos",
 "Aprende con Tara. Muy pronto abriremos nuestros primeros cursos.":"Aprenda com a Tara. Muito em breve abriremos os nossos primeiros cursos.",
 "Curso de tarot":"Curso de tarô",
+"PDF · Disponible en español, inglés, italiano y portugués":"PDF · Disponível em espanhol, inglês, italiano e português",
 "Guía de Quiromancia de Tara":"O Guia de Quiromancia da Tara",
 "Aprende a leer las manos desde cero: lo que cuentan su forma, sus montes, sus líneas y sus señales.":"Aprenda a ler as mãos do zero: o que contam a sua forma, os montes, as linhas e os sinais.",
 "Los cuatro tipos de mano: Tierra, Aire, Fuego y Agua.":"Os quatro tipos de mão: Terra, Ar, Fogo e Água.",
@@ -2259,8 +2265,6 @@ const UI={
 "Las líneas secundarias: Destino, Sol, Mercurio, Intuición y más.":"As linhas secundárias: Destino, Sol, Mercúrio, Intuição e mais.",
 "Diez señales especiales y cómo interpretarlas.":"Dez sinais especiais e como interpretá-los.",
 "Un método de lectura paso a paso y un plan de práctica.":"Um método de leitura passo a passo e um plano de prática.",
-"PDF de 59 páginas · Guía en español":"PDF de 59 páginas · Guia em espanhol",
-"PDF de 72 páginas · Guía en español":"PDF de 72 páginas · Guia em espanhol",
 "Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.":"Você já tem o seu guia. Pode descarregá-lo quando quiser a partir deste dispositivo.",
 "Descargar mi guía (PDF)":"Descarregar o meu guia (PDF)",
 "Quiero descargar la guía de inmediato y acepto que, al recibirla, pierdo el derecho de desistimiento.":"Quero descarregar o guia de imediato e aceito que, ao recebê-lo, perco o direito de arrependimento.",
@@ -4891,7 +4895,7 @@ function pagar(prod){
 function pintarProd(prod,boxId){
   const box=document.getElementById(boxId); if(!box) return; const cfg=PAGOS[prod];
   const c=compras().find(x=>x.p===prod);
-  if(c){ box.innerHTML=`<div class="guia-ok"><p>${T('Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.')}</p><a class="bp" href="/api/guia?${/^cs_/.test(c.id)?'id':'ref'}=${encodeURIComponent(c.id)}">⬇ ${T('Descargar mi guía (PDF)')}</a></div>`; return; }
+  if(c){ box.innerHTML=`<div class="guia-ok"><p>${T('Ya tienes tu guía. Puedes descargarla cuando quieras desde este dispositivo.')}</p><a class="bp" href="/api/guia?${/^cs_/.test(c.id)?'id':'ref'}=${encodeURIComponent(c.id)}&lang=${LANG}" onclick="this.href=this.href.replace(/lang=[a-z]+/,'lang='+LANG)">⬇ ${T('Descargar mi guía (PDF)')}</a></div>`; return; }
   if(!cfg.link){ box.innerHTML=`<div class="cur-pie"><span class="cur-precio">${cfg.precio}</span><span class="prox">${T('Próximamente')}</span></div>`; return; }
   _ultima[prod]={k:prod,datos:{}};
   box.innerHTML=`<div class="cur-pie"><span class="cur-precio">${cfg.precio}</span></div>
@@ -5010,7 +5014,7 @@ async function setLang(l){
   document.documentElement.lang=l;
   document.documentElement.dir=(P&&P.dir)||'ltr';
   document.title='Tara';
-  traducirDOM(); pintarMetodos();
+  traducirDOM(); pintarMetodos(); pintarGuia();
   if(selM){ const m=M.find(x=>x.id===selM); if(m){ document.getElementById('mt').textContent=m.name; document.getElementById('ms').textContent=m.desc; document.getElementById('mc').innerHTML=m.info; } }
   if(!document.getElementById('s-legal').classList.contains('off')) verLegal();
   document.getElementById('langb').textContent=l.toUpperCase()+' ▾';
@@ -5128,6 +5132,40 @@ initPagos();
 initCarta();
 initAviso();
 initMic('mic','qi'); initMic('pmic','pq');
+</script>
+<script>
+/* Estrellas fugaces: cruzan el fondo de la portada sin pasar por la estrella central */
+(function(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const box=document.getElementById('fugaces'), intro=document.getElementById('s-intro');
+  if(!box||!intro||!box.animate)return;
+  function lejos(x1,y1,x2,y2,cx,cy,r){ // ¿el trazo queda fuera del círculo central?
+    const dx=x2-x1,dy=y2-y1,t=Math.max(0,Math.min(1,((cx-x1)*dx+(cy-y1)*dy)/(dx*dx+dy*dy)));
+    return Math.hypot(x1+t*dx-cx,y1+t*dy-cy)>r;
+  }
+  function lanzar(){
+    if(document.hidden||intro.classList.contains('off'))return;
+    const W=box.clientWidth,H=box.clientHeight; if(!W||!H)return;
+    const est=intro.firstElementChild.nextElementSibling.getBoundingClientRect(), b=box.getBoundingClientRect();
+    const cx=est.left-b.left+est.width/2, cy=est.top-b.top+est.height/2, R=est.width/2+40;
+    for(let k=0;k<12;k++){
+      const ang=(20+Math.random()*25)*Math.PI/180, dir=Math.random()<.5?1:-1;
+      const dist=Math.min(W,H)*(.35+Math.random()*.3);
+      const x1=Math.random()*W, y1=Math.random()*H*.75;
+      const x2=x1+dir*Math.cos(ang)*dist, y2=y1+Math.sin(ang)*dist;
+      if(!lejos(x1,y1,x2,y2,cx,cy,R))continue;
+      const el=document.createElement('i'), len=70+Math.random()*80, rot=dir>0?ang:Math.PI-ang;
+      el.style.width=len+'px';
+      box.appendChild(el);
+      const tr=(x,y)=>`translate(${x-len}px,${y-1}px) rotate(${rot}rad)`;
+      const a=el.animate([{transform:tr(x1,y1),opacity:0},{opacity:1,offset:.15},{opacity:1,offset:.7},{transform:tr(x2,y2),opacity:0}],
+        {duration:900+Math.random()*700,easing:'ease-in'});
+      a.onfinish=()=>el.remove();
+      return;
+    }
+  }
+  (function ciclo(){ lanzar(); if(Math.random()<.35)setTimeout(lanzar,250); setTimeout(ciclo,1400+Math.random()*2200); })();
+})();
 </script>
 </body>
 </html>
