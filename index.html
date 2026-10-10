@@ -50,7 +50,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   padding:13px 30px;cursor:pointer;transition:opacity .2s,transform .15s;
   display:inline-flex;align-items:center;gap:8px}
 .bp:active{transform:scale(.97)}
-.bp:disabled{opacity:.4;cursor:not-allowed}
+.bp:disabled{opacity:.6;cursor:not-allowed}
 .bp.w{width:100%;justify-content:center;padding:15px}
 .bg{background:transparent;border:1px solid #7c3aed55;border-radius:6px;color:var(--p3);
   font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
@@ -437,6 +437,24 @@ mark.ph{background:#fde68a;color:#2a1458;padding:0 4px;border-radius:3px;font-we
 #fugaces .pv{position:absolute;bottom:-8px;border-radius:50%;opacity:0;animation:pv var(--d) linear var(--dl) infinite}
 @keyframes pv{0%{transform:translate(0,0);opacity:0}12%{opacity:.85}50%{transform:translate(var(--x),-55vh)}85%{opacity:.6}100%{transform:translate(calc(var(--x) * -.6),-108vh);opacity:0}}
 @media (prefers-reduced-motion:reduce){#fugaces .tw{animation:none;opacity:.5}#fugaces .pv{display:none}}
+/* ── ORDENADOR Y MÓVIL: textos con buen contraste sobre el fondo oscuro ── */
+#s-intro p, #s-metodo>p, #ms, #mc, #ov-hint{color:#e6dcf7!important}
+#s-intro p.hf{color:#d6c2fb!important}
+#s-intro p:last-child, #aftr{color:#c4aef5!important}
+.mc{background:linear-gradient(135deg,#1c0b40,#271250)!important;border-color:#8b5cf688!important}
+.mc div[style*="italic"]{color:#d4c2f2!important}
+.mc .hf{color:#fff4e0!important}
+#mi{background:#1a0a3a!important;border-color:#8b5cf677!important}
+.ac{background:linear-gradient(135deg,#16063a,#21104a)!important}
+.at{color:#f7eedf!important}
+.al{filter:brightness(1.25)}
+#bnm{color:#cbb3f7!important}
+#elbl{filter:brightness(1.3)}
+.divl{color:#a78bfa!important}
+.crb-label{color:#e2ccff!important}
+.rune-bag-label{color:#bfdbfe!important}
+.zodiac-spin-hint{color:#fdba74!important}
+#ov-result{color:#fde68a!important}
 /* ── ORDENADOR Y MÓVIL: campos de datos y botón «Volver» bien visibles ── */
 .inp{background:#1a0a3a!important;border:1px solid #8b5cf6aa!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;caret-color:#fde68a}
 .inp:focus{border-color:#c084fc!important;box-shadow:0 0 0 3px #a855f733,0 0 14px #a855f744;outline:none}
@@ -3276,7 +3294,7 @@ function buildRing(col){
     e.textContent=RN[Math.floor(Math.random()*RN.length)];
     e.style.cssText=`position:absolute;top:50%;left:50%;width:22px;height:22px;
       margin:-11px 0 0 -11px;display:flex;align-items:center;justify-content:center;
-      font-family:serif;font-size:.88rem;color:${col}88;
+      font-family:serif;font-size:.88rem;color:${col}dd;text-shadow:0 0 6px ${col}88;
       transform:translate(${x}px,${y}px);
       animation:spin ${11+i*1.6}s linear infinite ${i%2?'reverse':''}`;
     r.appendChild(e);
@@ -4423,7 +4441,7 @@ async function descargarPDF(tipo){
   try{ b.disabled=true; b.textContent=PER.L.pdfCargando;
     const D=tipo==='carta'?_cartaPDF:_lecturaPDF;
     const blob=pdfLectura(D), url=URL.createObjectURL(blob), a=document.createElement('a');
-    a.href=url; a.download='Madre-Oraculo-'+(tipo==='carta'?'Carta-':'')+D.nombre.replace(/[^\p{L}\p{N}]+/gu,'-')+'.pdf';
+    a.href=url; a.download='Tara-'+(tipo==='carta'?'Carta-':'')+D.nombre.replace(/[^\p{L}\p{N}]+/gu,'-')+'.pdf';
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch(e){ alert(PER.L.pdfError); }
   b.disabled=false; b.innerHTML=txt;
