@@ -301,6 +301,14 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .cur-lista{list-style:none;padding:0;margin:0}
 .cur-lista li{color:#e6dcf7;font-size:.97rem;line-height:1.5;padding:5px 0 5px 22px;position:relative;border-bottom:1px solid #8b5cf622}
 .cur-lista li::before{content:'✦';position:absolute;left:2px;color:#fde68a;font-size:.8rem;top:7px}
+.sug textarea.inp{width:100%;margin:2px 0 10px;resize:vertical;min-height:84px}
+.sug input.inp{width:100%;margin:6px 0 2px}
+.sug-enc-t{color:#fff4e0;font-size:1rem;line-height:1.55;margin:4px 0 2px}
+.sug-enc-p{color:#e6dcf7;font-size:.92rem;line-height:1.5;margin:0 0 4px}.sug-enc-p b{color:#fde68a;font-weight:400}
+.sug .pwc{max-width:none;margin:10px 0}.sug .pwc a{color:#fde68a;text-decoration:underline;cursor:pointer}
+.sug #sug-btn{margin-top:6px}
+.sug-msg{margin-top:12px;text-align:center;font-size:.98rem;line-height:1.55;color:#fde68a;min-height:1em}
+.sug-msg.err{color:#fda4af}
 .cur-nota{color:#c4b5fd;font-size:.85rem;text-align:center;margin-top:12px;font-style:italic}
 #guia-compra .pwc,#quiro-compra .pwc{margin-top:8px}#guia-compra .bp,#quiro-compra .bp{margin-top:10px}
 .guia-ok{text-align:center;margin-top:12px}.guia-ok p{color:#e6dcf7;margin-bottom:8px}.guia-ok .bp{display:inline-block;text-decoration:none}
@@ -696,6 +704,23 @@ label.hf{color:#e6c98f!important}
     <p class="cur-nota">PDF · Disponible en español, inglés, italiano y portugués</p>
     <div id="quiro-compra"></div>
   </div>
+  <div class="curso sug" style="margin-top:14px">
+    <div class="cur-top"><div class="pi">💡</div><div><span class="cur-tipo">Tu opinión</span><h3>¿Qué curso te gustaría?</h3></div></div>
+    <p class="cur-desc">¿Te gustaría que Tara preparara algún curso más? Cuéntanos cuál y lo tendremos en cuenta.</p>
+    <form id="sug-form" onsubmit="enviarSugerencia(event)" novalidate>
+      <textarea id="sug-txt" class="inp" rows="3" maxlength="600" placeholder="Por ejemplo: numerología, péndulo, sueños…"></textarea>
+      <input id="sug-web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <p class="sug-enc-t">Si quieres, te lo preparamos por encargo y te lo enviamos a tu correo.</p>
+      <p class="sug-enc-p"><b>Es un servicio de pago:</b> antes te escribiremos con el precio y el plazo, sin compromiso.</p>
+      <label class="pwc"><input type="checkbox" id="sug-enc" onchange="document.getElementById('sug-extra').style.display=this.checked?'block':'none'"><span>Sí, lo quiero por encargo</span></label>
+      <div id="sug-extra" style="display:none">
+        <input id="sug-mail" class="inp" type="email" maxlength="120" autocomplete="email" placeholder="Tu correo electrónico">
+        <label class="pwc"><input type="checkbox" id="sug-priv"><span>Acepto que Tara use mi correo solo para responder a esta solicitud, según la <a onclick="verLegal('privacidad')">política de privacidad</a>.</span></label>
+      </div>
+      <button class="bp w" type="submit" id="sug-btn">✦ Enviar sugerencia</button>
+      <p id="sug-msg" class="sug-msg" role="status"></p>
+    </form>
+  </div>
   <button class="bt" onclick="goTo('s-intro')">← Volver</button>
 </div>
 
@@ -778,6 +803,25 @@ const UI={
 "Guía de Tarot de Tara":"Tara's Tarot Guide",
 "Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"Your complete guide to learning to read tarot from scratch, step by step and at your own pace.",
 "Qué vas a aprender":"What you will learn",
+"Tu opinión":"Your opinion",
+"¿Qué curso te gustaría?":"Which course would you like?",
+"¿Te gustaría que Tara preparara algún curso más? Cuéntanos cuál y lo tendremos en cuenta.":"Would you like Tara to create another course? Tell us which one and we'll take it into account.",
+"Por ejemplo: numerología, péndulo, sueños…":"For example: numerology, pendulum, dreams…",
+"Si quieres, te lo preparamos por encargo y te lo enviamos a tu correo.":"If you like, we can create it to order and send it to your email.",
+"Es un servicio de pago:":"This is a paid service:",
+"antes te escribiremos con el precio y el plazo, sin compromiso.":"we'll first write to you with the price and delivery time, with no obligation.",
+"Sí, lo quiero por encargo":"Yes, I'd like it made to order",
+"Tu correo electrónico":"Your email address",
+"Acepto que Tara use mi correo solo para responder a esta solicitud, según la":"I agree that Tara may use my email only to reply to this request, as set out in the",
+"política de privacidad":"privacy policy",
+"✦ Enviar sugerencia":"✦ Send suggestion",
+"Escribe qué curso te gustaría.":"Write which course you'd like.",
+"Escribe un correo válido para poder enviarte el precio.":"Enter a valid email so we can send you the price.",
+"Marca la casilla de privacidad para que podamos escribirte.":"Tick the privacy box so we can write to you.",
+"Enviando…":"Sending…",
+"¡Gracias! Hemos recibido tu sugerencia.":"Thank you! We've received your suggestion.",
+"Te escribiremos pronto a tu correo con el precio y el plazo.":"We'll soon email you with the price and delivery time.",
+"No se ha podido enviar. Inténtalo de nuevo en unos minutos.":"It couldn't be sent. Please try again in a few minutes.",
 "Los 78 arcanos: su significado al derecho y al revés.":"All 78 cards: their upright and reversed meanings.",
 "Los 22 Arcanos Mayores y el viaje del Loco.":"The 22 Major Arcana and the Fool's journey.",
 "Los cuatro palos de los Arcanos Menores y las cartas de la corte.":"The four suits of the Minor Arcana and the court cards.",
@@ -1149,12 +1193,13 @@ privacidad:`<h3>Privacy policy</h3>
 <li><b>Your questions, your name and your birth details</b> (date, time and place), only when you use a reading, the personal reading or the birth chart. These calculations are currently made on your own device and are not sent to our servers.</li>
 <li><b>Daily reading memory:</b> your device stores which symbols you have drawn today, so readings don't repeat or contradict each other. See «Cookies and storage».</li>
 <li><b>Voice dictation:</b> if you use the microphone, speech recognition is performed by your browser. Depending on the browser (for example Chrome or Safari), the audio may be sent to its maker's servers (Google, Apple) to be converted into text, under their policies. Tara neither receives nor stores your audio.</li>
+<li><b>Course suggestions:</b> the course you propose and, if you ask us to create it to order, your email address. The owner receives them by email to consider the idea and, where applicable, send you a quote. They are not used for advertising.</li>
 <li><b>Account and purchases</b> (when available): email address, purchases and credits. Payments are processed by Stripe; we never see or store your card details.</li>
 <li><b>AI readings</b> (when available): your question and the symbols drawn are sent to an AI provider to generate the answer. Please don't send health data, data about other people or other sensitive information.</li>
 </ul>
 <p><b>Legal basis.</b> Performance of the service you request, compliance with legal obligations (such as invoicing) and, where applicable, your consent, which you may withdraw at any time.</p>
-<p><b>Retention.</b> Account data for as long as you keep your account; invoicing data for the periods required by law; the daily memory is deleted automatically the next day.</p>
-<p><b>Service providers</b> (data processors): Vercel (web hosting), jsDelivr (library delivery), Google Fonts (typefaces) and, once activated, Supabase (accounts), Stripe (payments) and Anthropic (artificial intelligence). Some are located outside the European Economic Area; transfers rely on the safeguards provided by the GDPR (standard contractual clauses or the EU-US Data Privacy Framework).</p>
+<p><b>Retention.</b> Account data for as long as you keep your account; suggestions and made-to-order requests, for up to 12 months or until you ask us to delete them; invoicing data for the periods required by law; the daily memory is deleted automatically the next day.</p>
+<p><b>Service providers</b> (data processors): Cloudflare (web hosting and email notifications), jsDelivr (library delivery), Google Fonts (typefaces) and, once activated, Supabase (accounts), Stripe (payments) and Anthropic (artificial intelligence). Some are located outside the European Economic Area; transfers rely on the safeguards provided by the GDPR (standard contractual clauses or the EU-US Data Privacy Framework).</p>
 <p><b>Your rights.</b> You may access, rectify or erase your data, object to or restrict its processing and request its portability by writing to ${T.email}. If you believe your request has not been handled properly, you may complain to the Spanish Data Protection Agency (aepd.es) or to the authority in your country.</p>
 <p><b>Minors.</b> The service is not intended for children under 14. Purchases may only be made by people over 18.</p>`,
 
@@ -1170,7 +1215,7 @@ cookies:`<h3>Cookies and storage</h3>
 <li><b>arc_lang:</b> remembers the language you chose.</li>
 </ul>
 <p>This data is necessary for the service you request and is not shared with anyone. You can delete it at any time from your browser settings.</p>
-<p>When the website loads, your browser connects to Vercel, jsDelivr and Google Fonts to download the page, the libraries and the typefaces; these services may log your IP address under their own policies.</p>`,
+<p>When the website loads, your browser connects to Cloudflare, jsDelivr and Google Fonts to download the page, the libraries and the typefaces; these services may log your IP address under their own policies.</p>`,
 
 condiciones:`<h3>Terms of sale</h3>
 <p class="nota">These terms will apply once purchases are enabled.</p>
@@ -1547,6 +1592,25 @@ const UI={
 "Guía de Tarot de Tara":"La Guida ai Tarocchi di Tara",
 "Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"La tua guida completa per imparare a leggere i tarocchi da zero, passo dopo passo e ai tuoi tempi.",
 "Qué vas a aprender":"Cosa imparerai",
+"Tu opinión":"La tua opinione",
+"¿Qué curso te gustaría?":"Quale corso ti piacerebbe?",
+"¿Te gustaría que Tara preparara algún curso más? Cuéntanos cuál y lo tendremos en cuenta.":"Ti piacerebbe che Tara preparasse un altro corso? Dicci quale e lo terremo in considerazione.",
+"Por ejemplo: numerología, péndulo, sueños…":"Per esempio: numerologia, pendolo, sogni…",
+"Si quieres, te lo preparamos por encargo y te lo enviamos a tu correo.":"Se vuoi, lo prepariamo su richiesta e te lo inviamo per email.",
+"Es un servicio de pago:":"È un servizio a pagamento:",
+"antes te escribiremos con el precio y el plazo, sin compromiso.":"prima ti scriveremo con il prezzo e i tempi, senza impegno.",
+"Sí, lo quiero por encargo":"Sì, lo voglio su richiesta",
+"Tu correo electrónico":"Il tuo indirizzo email",
+"Acepto que Tara use mi correo solo para responder a esta solicitud, según la":"Accetto che Tara usi la mia email solo per rispondere a questa richiesta, secondo l’",
+"política de privacidad":"informativa sulla privacy",
+"✦ Enviar sugerencia":"✦ Invia suggerimento",
+"Escribe qué curso te gustaría.":"Scrivi quale corso ti piacerebbe.",
+"Escribe un correo válido para poder enviarte el precio.":"Inserisci un’email valida per poterti inviare il prezzo.",
+"Marca la casilla de privacidad para que podamos escribirte.":"Spunta la casella della privacy così potremo scriverti.",
+"Enviando…":"Invio in corso…",
+"¡Gracias! Hemos recibido tu sugerencia.":"Grazie! Abbiamo ricevuto il tuo suggerimento.",
+"Te escribiremos pronto a tu correo con el precio y el plazo.":"Ti scriveremo presto per email con il prezzo e i tempi.",
+"No se ha podido enviar. Inténtalo de nuevo en unos minutos.":"Non è stato possibile inviarlo. Riprova tra qualche minuto.",
 "Los 78 arcanos: su significado al derecho y al revés.":"I 78 arcani: il loro significato dritto e capovolto.",
 "Los 22 Arcanos Mayores y el viaje del Loco.":"I 22 Arcani Maggiori e il viaggio del Matto.",
 "Los cuatro palos de los Arcanos Menores y las cartas de la corte.":"I quattro semi degli Arcani Minori e le figure di corte.",
@@ -1918,12 +1982,13 @@ privacidad:`<h3>Informativa sulla privacy</h3>
 <li><b>Le tue domande, il tuo nome e i tuoi dati di nascita</b> (data, ora e luogo), solo quando usi una lettura, la lettura personale o il tema natale. Attualmente questi calcoli vengono eseguiti sul tuo dispositivo e non vengono inviati ai nostri server.</li>
 <li><b>Memoria delle letture del giorno:</b> il tuo dispositivo memorizza quali simboli hai estratto oggi, affinché le letture non si ripetano né si contraddicano. Vedi «Cookie e archiviazione».</li>
 <li><b>Dettatura vocale:</b> se usi il microfono, il riconoscimento vocale viene eseguito dal tuo browser. A seconda del browser (per esempio Chrome o Safari), l’audio può essere inviato ai server del suo produttore (Google, Apple) per essere convertito in testo, secondo le loro politiche. Tara non riceve né conserva il tuo audio.</li>
+<li><b>Suggerimenti di corsi:</b> il corso che proponi e, se chiedi di prepararlo su richiesta, il tuo indirizzo email. La titolare li riceve per email per valutare l’idea e, se del caso, inviarti un preventivo. Non vengono usati per pubblicità.</li>
 <li><b>Account e acquisti</b> (quando disponibili): indirizzo email, acquisti e crediti. I pagamenti sono gestiti da Stripe; non vediamo né conserviamo mai i dati della tua carta.</li>
 <li><b>Letture con IA</b> (quando disponibili): la tua domanda e i simboli estratti vengono inviati a un fornitore di intelligenza artificiale per generare la risposta. Ti chiediamo di non inviare dati sanitari, dati su altre persone o altre informazioni sensibili.</li>
 </ul>
 <p><b>Base giuridica.</b> L’esecuzione del servizio che richiedi, l’adempimento di obblighi di legge (come la fatturazione) e, ove applicabile, il tuo consenso, che puoi revocare in qualsiasi momento.</p>
-<p><b>Conservazione.</b> I dati dell’account, finché mantieni il tuo account; i dati di fatturazione, per i periodi previsti dalla legge; la memoria del giorno viene cancellata automaticamente il giorno successivo.</p>
-<p><b>Fornitori di servizi</b> (responsabili del trattamento): Vercel (hosting web), jsDelivr (distribuzione di librerie), Google Fonts (caratteri tipografici) e, una volta attivati, Supabase (account), Stripe (pagamenti) e Anthropic (intelligenza artificiale). Alcuni si trovano al di fuori dello Spazio economico europeo; i trasferimenti si basano sulle garanzie previste dal GDPR (clausole contrattuali tipo o EU-US Data Privacy Framework).</p>
+<p><b>Conservazione.</b> I dati dell’account, finché mantieni il tuo account; i suggerimenti e le richieste su misura, fino a 12 mesi o finché non ne chiedi la cancellazione; i dati di fatturazione, per i periodi previsti dalla legge; la memoria del giorno viene cancellata automaticamente il giorno successivo.</p>
+<p><b>Fornitori di servizi</b> (responsabili del trattamento): Cloudflare (hosting web e invio di avvisi via email), jsDelivr (distribuzione di librerie), Google Fonts (caratteri tipografici) e, una volta attivati, Supabase (account), Stripe (pagamenti) e Anthropic (intelligenza artificiale). Alcuni si trovano al di fuori dello Spazio economico europeo; i trasferimenti si basano sulle garanzie previste dal GDPR (clausole contrattuali tipo o EU-US Data Privacy Framework).</p>
 <p><b>I tuoi diritti.</b> Puoi accedere ai tuoi dati, rettificarli o cancellarli, opporti al loro trattamento o limitarlo e richiederne la portabilità scrivendo a ${T.email}. Se ritieni che la tua richiesta non sia stata gestita correttamente, puoi presentare reclamo all’Agenzia spagnola per la protezione dei dati (aepd.es) o all’autorità del tuo paese.</p>
 <p><b>Minori.</b> Il servizio non è destinato ai minori di 14 anni. Gli acquisti possono essere effettuati solo da persone maggiori di 18 anni.</p>`,
 
@@ -1939,7 +2004,7 @@ cookies:`<h3>Cookie e archiviazione</h3>
 <li><b>arc_lang:</b> ricorda la lingua che hai scelto.</li>
 </ul>
 <p>Questi dati sono necessari per il servizio che richiedi e non vengono condivisi con nessuno. Puoi cancellarli in qualsiasi momento dalle impostazioni del tuo browser.</p>
-<p>Quando il sito web si carica, il tuo browser si collega a Vercel, jsDelivr e Google Fonts per scaricare la pagina, le librerie e i caratteri tipografici; questi servizi possono registrare il tuo indirizzo IP secondo le proprie politiche.</p>`,
+<p>Quando il sito web si carica, il tuo browser si collega a Cloudflare, jsDelivr e Google Fonts per scaricare la pagina, le librerie e i caratteri tipografici; questi servizi possono registrare il tuo indirizzo IP secondo le proprie politiche.</p>`,
 
 condiciones:`<h3>Condizioni di vendita</h3>
 <p class="nota">Queste condizioni si applicheranno quando gli acquisti saranno attivati.</p>
@@ -2316,6 +2381,25 @@ const UI={
 "Guía de Tarot de Tara":"O Guia de Tarô da Tara",
 "Tu guía completa para aprender a leer el tarot desde cero, paso a paso y a tu ritmo.":"O seu guia completo para aprender a ler o tarô do zero, passo a passo e no seu ritmo.",
 "Qué vas a aprender":"O que você vai aprender",
+"Tu opinión":"A sua opinião",
+"¿Qué curso te gustaría?":"Que curso você gostaria?",
+"¿Te gustaría que Tara preparara algún curso más? Cuéntanos cuál y lo tendremos en cuenta.":"Você gostaria que a Tara preparasse mais algum curso? Conte qual e vamos levar em conta.",
+"Por ejemplo: numerología, péndulo, sueños…":"Por exemplo: numerologia, pêndulo, sonhos…",
+"Si quieres, te lo preparamos por encargo y te lo enviamos a tu correo.":"Se quiser, preparamos sob encomenda e enviamos para o seu e-mail.",
+"Es un servicio de pago:":"É um serviço pago:",
+"antes te escribiremos con el precio y el plazo, sin compromiso.":"antes vamos escrever para você com o preço e o prazo, sem compromisso.",
+"Sí, lo quiero por encargo":"Sim, quero sob encomenda",
+"Tu correo electrónico":"O seu e-mail",
+"Acepto que Tara use mi correo solo para responder a esta solicitud, según la":"Aceito que a Tara use o meu e-mail apenas para responder a este pedido, conforme a",
+"política de privacidad":"política de privacidade",
+"✦ Enviar sugerencia":"✦ Enviar sugestão",
+"Escribe qué curso te gustaría.":"Escreva que curso você gostaria.",
+"Escribe un correo válido para poder enviarte el precio.":"Digite um e-mail válido para podermos enviar o preço.",
+"Marca la casilla de privacidad para que podamos escribirte.":"Marque a caixa de privacidade para podermos escrever para você.",
+"Enviando…":"Enviando…",
+"¡Gracias! Hemos recibido tu sugerencia.":"Obrigado! Recebemos a sua sugestão.",
+"Te escribiremos pronto a tu correo con el precio y el plazo.":"Em breve vamos escrever para o seu e-mail com o preço e o prazo.",
+"No se ha podido enviar. Inténtalo de nuevo en unos minutos.":"Não foi possível enviar. Tente novamente em alguns minutos.",
 "Los 78 arcanos: su significado al derecho y al revés.":"Os 78 arcanos: o seu significado na posição normal e invertida.",
 "Los 22 Arcanos Mayores y el viaje del Loco.":"Os 22 Arcanos Maiores e a jornada do Louco.",
 "Los cuatro palos de los Arcanos Menores y las cartas de la corte.":"Os quatro naipes dos Arcanos Menores e as cartas da corte.",
@@ -2687,12 +2771,13 @@ privacidad:`<h3>Política de privacidade</h3>
 <li><b>As suas perguntas, o seu nome e os seus dados de nascimento</b> (data, hora e local), somente quando você usa uma leitura, a leitura pessoal ou o mapa astral. Atualmente, esses cálculos são feitos no seu próprio dispositivo e não são enviados aos nossos servidores.</li>
 <li><b>Memória diária das leituras:</b> o seu dispositivo guarda quais símbolos você tirou hoje, para que as leituras não se repitam nem se contradigam. Veja «Cookies e armazenamento».</li>
 <li><b>Ditado por voz:</b> se você usar o microfone, o reconhecimento de voz é feito pelo seu navegador. Dependendo do navegador (por exemplo, Chrome ou Safari), o áudio pode ser enviado aos servidores do fabricante (Google, Apple) para ser convertido em texto, de acordo com as políticas deles. Tara não recebe nem guarda o seu áudio.</li>
+<li><b>Sugestões de cursos:</b> o curso que você propõe e, se pedir que o preparemos sob encomenda, o seu e-mail. A titular os recebe por e-mail para avaliar a ideia e, se for o caso, enviar um orçamento. Não são usados para publicidade.</li>
 <li><b>Conta e compras</b> (quando disponíveis): endereço de e-mail, compras e créditos. Os pagamentos são processados pela Stripe; nunca vemos nem guardamos os dados do seu cartão.</li>
 <li><b>Leituras com IA</b> (quando disponíveis): a sua pergunta e os símbolos tirados são enviados a um provedor de IA para gerar a resposta. Não envie dados de saúde, dados de outras pessoas nem outras informações sensíveis.</li>
 </ul>
 <p><b>Base jurídica.</b> A execução do serviço que você solicita, o cumprimento de obrigações legais (como a emissão de faturas) e, quando for o caso, o seu consentimento, que você pode retirar a qualquer momento.</p>
-<p><b>Conservação.</b> Os dados da conta, enquanto você mantiver a sua conta; os dados de faturamento, durante os prazos exigidos por lei; a memória diária é apagada automaticamente no dia seguinte.</p>
-<p><b>Prestadores de serviços</b> (operadores de dados): Vercel (hospedagem do site), jsDelivr (distribuição de bibliotecas), Google Fonts (fontes tipográficas) e, quando forem ativados, Supabase (contas), Stripe (pagamentos) e Anthropic (inteligência artificial). Alguns estão localizados fora do Espaço Econômico Europeu; as transferências se baseiam nas garantias previstas no RGPD (cláusulas contratuais-padrão ou o Quadro de Privacidade de Dados UE-EUA).</p>
+<p><b>Conservação.</b> Os dados da conta, enquanto você mantiver a sua conta; as sugestões e os pedidos sob encomenda, por até 12 meses ou até você pedir que sejam apagados; os dados de faturamento, durante os prazos exigidos por lei; a memória diária é apagada automaticamente no dia seguinte.</p>
+<p><b>Prestadores de serviços</b> (operadores de dados): Cloudflare (hospedagem do site e envio de avisos por e-mail), jsDelivr (distribuição de bibliotecas), Google Fonts (fontes tipográficas) e, quando forem ativados, Supabase (contas), Stripe (pagamentos) e Anthropic (inteligência artificial). Alguns estão localizados fora do Espaço Econômico Europeu; as transferências se baseiam nas garantias previstas no RGPD (cláusulas contratuais-padrão ou o Quadro de Privacidade de Dados UE-EUA).</p>
 <p><b>Os seus direitos.</b> Você pode acessar, retificar ou apagar os seus dados, opor-se ao tratamento ou limitá-lo e solicitar a sua portabilidade escrevendo para ${T.email}. Se considerar que a sua solicitação não foi atendida corretamente, você pode apresentar uma reclamação à Agência Espanhola de Proteção de Dados (aepd.es) ou à autoridade do seu país.</p>
 <p><b>Menores de idade.</b> O serviço não é destinado a menores de 14 anos. As compras só podem ser feitas por maiores de 18 anos.</p>`,
 
@@ -2708,7 +2793,7 @@ cookies:`<h3>Cookies e armazenamento</h3>
 <li><b>arc_lang:</b> lembra o idioma que você escolheu.</li>
 </ul>
 <p>Esses dados são necessários para o serviço que você solicita e não são compartilhados com ninguém. Você pode apagá-los a qualquer momento nas configurações do seu navegador.</p>
-<p>Ao carregar o site, o seu navegador se conecta à Vercel, ao jsDelivr e ao Google Fonts para baixar a página, as bibliotecas e as fontes; esses serviços podem registrar o seu endereço IP de acordo com as suas próprias políticas.</p>`,
+<p>Ao carregar o site, o seu navegador se conecta à Cloudflare, ao jsDelivr e ao Google Fonts para baixar a página, as bibliotecas e as fontes; esses serviços podem registrar o seu endereço IP de acordo com as suas próprias políticas.</p>`,
 
 condiciones:`<h3>Condições de venda</h3>
 <p class="nota">Estas condições serão aplicadas quando as compras forem ativadas.</p>
@@ -3275,6 +3360,27 @@ function pintarMetodos(){
   });
 }
 pintarMetodos();
+
+/* ── SUGERENCIAS DE CURSOS ── */
+async function enviarSugerencia(ev){
+  ev.preventDefault();
+  const $=id=>document.getElementById(id), msg=$('sug-msg'), btn=$('sug-btn');
+  const texto=$('sug-txt').value.trim(), enc=$('sug-enc').checked, mail=$('sug-mail').value.trim();
+  const fallo=t=>{ msg.className='sug-msg err'; msg.textContent=T(t); };
+  if(texto.length<3) return fallo('Escribe qué curso te gustaría.');
+  if(enc && !/^[^\s@<>,;]+@[^\s@<>,;]+\.[a-z]{2,}$/i.test(mail)) return fallo('Escribe un correo válido para poder enviarte el precio.');
+  if(enc && !$('sug-priv').checked) return fallo('Marca la casilla de privacidad para que podamos escribirte.');
+  btn.disabled=true; msg.className='sug-msg'; msg.textContent=T('Enviando…');
+  try{
+    const r=await fetch('/api/sugerencia',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({texto,encargo:enc,email:enc?mail:'',lang:LANG,web:$('sug-web').value})});
+    if(!r.ok) throw new Error(r.status);
+    msg.className='sug-msg';
+    msg.textContent=T('¡Gracias! Hemos recibido tu sugerencia.')+(enc?' '+T('Te escribiremos pronto a tu correo con el precio y el plazo.'):'');
+    $('sug-form').reset(); $('sug-extra').style.display='none';
+  }catch(e){ fallo('No se ha podido enviar. Inténtalo de nuevo en unos minutos.'); }
+  btn.disabled=false;
+}
 
 /* ── NAV ── */
 function goTo(id){ if(id==='s-cursos') setTimeout(pintarGuia,0);
@@ -4825,12 +4931,13 @@ privacidad:`<h3>Política de privacidad</h3>
 <li><b>Tus preguntas, tu nombre y tus datos de nacimiento</b> (fecha, hora y lugar), solo cuando usas una lectura, la lectura personal o la carta astral. Hoy estos cálculos se hacen en tu propio dispositivo y no se envían a nuestros servidores.</li>
 <li><b>Memoria de lecturas del día:</b> tu dispositivo guarda qué símbolos te han salido hoy, para que las lecturas no se repitan ni se contradigan. Ver «Cookies y almacenamiento».</li>
 <li><b>Dictado por voz:</b> si usas el micrófono, el reconocimiento de voz lo realiza tu navegador. Según el navegador (por ejemplo Chrome o Safari), el audio puede enviarse a los servidores de su fabricante (Google, Apple) para convertirlo en texto, conforme a sus políticas. Tara no recibe ni guarda tu audio.</li>
+<li><b>Sugerencias de cursos:</b> el curso que propones y, si pides que te lo preparemos por encargo, tu correo electrónico. Los recibe la titular por correo para valorar la idea y, en su caso, enviarte presupuesto. No se usan para publicidad.</li>
 <li><b>Cuenta y compras</b> (cuando estén disponibles): correo electrónico, compras realizadas y créditos. Los pagos los procesa Stripe; nunca vemos ni guardamos los datos de tu tarjeta.</li>
 <li><b>Lecturas con inteligencia artificial</b> (cuando estén disponibles): tu pregunta y los símbolos obtenidos se envían a un proveedor de IA para generar la respuesta. No envíes datos de salud, datos de terceros ni otra información sensible.</li>
 </ul>
 <p><b>Base legal.</b> La ejecución del servicio que solicitas, el cumplimiento de obligaciones legales (por ejemplo, la facturación) y, cuando corresponda, tu consentimiento, que puedes retirar en cualquier momento.</p>
-<p><b>Conservación.</b> Los datos de cuenta, mientras la mantengas; los de facturación, durante los plazos que exige la ley; la memoria del día se borra sola al día siguiente.</p>
-<p><b>Proveedores que nos prestan servicio</b> (encargados del tratamiento): Vercel (alojamiento web), jsDelivr (distribución de librerías), Google Fonts (tipografías) y, cuando se activen, Supabase (cuentas), Stripe (pagos) y Anthropic (inteligencia artificial). Algunos están fuera del Espacio Económico Europeo; las transferencias se amparan en las garantías previstas en el RGPD (cláusulas contractuales tipo o el Marco de Privacidad de Datos UE-EE. UU.).</p>
+<p><b>Conservación.</b> Los datos de cuenta, mientras la mantengas; las sugerencias y solicitudes de encargo, hasta 12 meses o hasta que pidas su borrado; los de facturación, durante los plazos que exige la ley; la memoria del día se borra sola al día siguiente.</p>
+<p><b>Proveedores que nos prestan servicio</b> (encargados del tratamiento): Cloudflare (alojamiento web y envío de avisos por correo), jsDelivr (distribución de librerías), Google Fonts (tipografías) y, cuando se activen, Supabase (cuentas), Stripe (pagos) y Anthropic (inteligencia artificial). Algunos están fuera del Espacio Económico Europeo; las transferencias se amparan en las garantías previstas en el RGPD (cláusulas contractuales tipo o el Marco de Privacidad de Datos UE-EE. UU.).</p>
 <p><b>Tus derechos.</b> Puedes acceder a tus datos, rectificarlos, suprimirlos, oponerte o limitar su tratamiento y pedir su portabilidad escribiendo a ${T.email}. Si crees que no hemos atendido bien tu solicitud, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
 <p><b>Menores.</b> El servicio no está dirigido a menores de 14 años. Las compras solo pueden realizarlas personas mayores de 18 años.</p>`,
 
@@ -4846,7 +4953,7 @@ cookies:`<h3>Cookies y almacenamiento</h3>
 <li><b>arc_lang:</b> recuerda el idioma que has elegido.</li>
 </ul>
 <p>Son datos necesarios para el funcionamiento del servicio que pides y no se comparten con nadie. Puedes borrarlos cuando quieras desde los ajustes de tu navegador.</p>
-<p>Al cargar la web, tu navegador se conecta a Vercel, jsDelivr y Google Fonts para descargar la página, las librerías y las tipografías; estos servicios pueden registrar tu dirección IP conforme a sus políticas.</p>`,
+<p>Al cargar la web, tu navegador se conecta a Cloudflare, jsDelivr y Google Fonts para descargar la página, las librerías y las tipografías; estos servicios pueden registrar tu dirección IP conforme a sus políticas.</p>`,
 
 condiciones:`<h3>Condiciones de contratación</h3>
 <p class="nota">Estas condiciones se aplicarán cuando se activen las compras.</p>
